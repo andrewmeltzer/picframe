@@ -8,6 +8,8 @@ import sys
 import os
 import time
 import datetime
+import logging
+from pathlib import Path
 
 if sys.platform in ("linux", "linux2"):
     import pyheif
@@ -33,6 +35,7 @@ def print_help(rval=0):
     print("    <-d|--debug=<debug level (DEBUG, INFO, WARN, ERROR)")
     print("    <-l|--logfile=<path to log file>")
     print("    <-f|--fullscreen")
+    print("    <-g|--geom=<a geometry in the form 1920x1080)>")
     sys.exit(rval)
 
 ############################################################
@@ -49,8 +52,8 @@ def get_args(argv):
     """
 
     try:
-        opts, inargs = getopt.getopt(argv, "hfs:d:",
-                ["help", "fullscreen", "logfile=", "debuglevel=", "single=", "path="])
+        opts, inargs = getopt.getopt(argv, "hfs:d:g:",
+                ["help", "fullscreen", "logfile=", "debuglevel=", "single=", "path=", "geom="])
     except getopt.GetoptError:
         print_help()
         sys.exit(2)
@@ -59,11 +62,18 @@ def get_args(argv):
         if opt in ('-h', '--help'):
             print_help()
         elif opt in ('-d', '--debuglevel'):
-            PFSettings.debug = arg.upper()
+            PFSettings.debug_level = arg.upper()
         elif opt in ('-l', '--logfile'):
             PFSettings.logfile = arg
         elif opt in ('-f', '--fullscreen'):
             PFSettings.fullscreen = True
+        elif opt in ('-g', '--geom'):
+            PFSettings.fullscreen = False
+            PFEnv.geometry_str = arg
+            wstr, hstr = arg.split('x')
+            PFEnv.screen_height = int(hstr)
+            PFEnv.screen_width = int(wstr)
+            PFEnv.geometry = (PFEnv.screen_width, PFEnv.screen_height)
         elif opt in ('-s', '--single'):
             PFSettings.single_image = True
             PFSettings.image_dir = arg
@@ -75,9 +85,9 @@ def get_args(argv):
 
 ############################################################
 #
-# do_sleep
+# check_blackout_window
 #
-def do_sleep(canvas, win):
+def check_blackout_window(canvas, win):
     """
     See if in the sleep window, and if so then sleep for the 
     right number of seconds.
@@ -106,6 +116,9 @@ def do_sleep(canvas, win):
 
     if now_time > sleep_time and now_time < wake_time:
         sleep_interval = (wake_time - now_time) * secs_per_min
+
+    if sleep_interval == 0:
+        return
         
     print(f"Going to sleep for {sleep_interval} seconds.")
     display_image(canvas, win, None)
@@ -123,7 +136,7 @@ def get_window():
     Inputs:
     """
 
-    win = Tk(className = PFSettings.image_path)
+    win = Tk(className = str(PFSettings.get_image_dirs()))
     win.resizable(height = None, width = None)
     win.geometry(PFEnv.geometry_str)
     if PFSettings.fullscreen == True:
@@ -147,6 +160,37 @@ def get_canvas(win):
     canvas.grid(row=1, column=1)
 
     return canvas
+
+############################################################
+#
+# get_image_file_list
+#
+def get_image_file_list():
+    """
+    Get the list of supported image files from the list of directories
+    given for pictures to display.
+
+    Inputs: None
+    Returns: List of fully qualified paths in the right format for the
+        operating system.
+    """
+
+    image_file_list = []
+
+    # Traverse the recursive list of directories.
+    for dirname in PFSettings.get_image_dirs():
+        if Path(dirname).is_file():
+            if PFEnv.is_format_supported(dirname):
+                image_file_list.append(dirname)
+        else:
+            for root, dirs, files in os.walk(dirname):
+                path = root.split(os.sep)
+                for file in files:
+                    pathdir = '/'.join(path) + '/' + file
+                    if PFEnv.is_format_supported(pathdir):
+                        image_file_list.append(pathdir)
+
+    return image_file_list
 
 ############################################################
 #
@@ -175,34 +219,33 @@ def get_image(image_file):
         # Use the exif information to properly orient the image.
         pil_img = ImageOps.exif_transpose(pil_img)
 
-        # Calculate the image width/height ratio and use it 
-        # based on the width of the screen 
-        height_ratio = PFEnv.screen_height/pil_img.height
-        width_ratio = PFEnv.screen_width/pil_img.width
 
-        actual_width = None
-        actual_height = None
-        if height_ratio > width_ratio:
-            actual_width = int(width_ratio * pil_img.width)
-            actual_height = int(width_ratio * pil_img.height)
-        else:
-            actual_height = int(height_ratio * pil_img.height)
-            actual_width = int(height_ratio * pil_img.width)
-
-        pil_img = pil_img.resize((actual_width, actual_height), Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(pil_img)
-    elif file_extension.lower() == '.heic':
-        if sys.platform in ("linux", "linux2"):
-            pil_img = Image.frombytes(
-                image_file.mode, image_file.size, image_file.data,
-                "raw", image_file.mode, image_file.stride,)
-        else:
+    elif file_extension.lower() in ('.heic', '.avif'):
+        if sys.platform not in ("linux", "linux2"):
             raise TypeError("HEIC files are not supported on Windows.")
-        pil_img = ImageTk.PhotoImage(pil_img)
 
+        heif_img = pyheif.read_heif(image_file) 
+        pil_img = Image.frombytes(
+            heif_img.mode, heif_img.size, heif_img.data,
+            "raw", heif_img.mode, heif_img.stride,)
 
-    else: 
-        raise TypeError(f"Invalid file: {image_file}. Your file must be a JPG or PNG file.")
+    # Calculate the image width/height ratio and use it 
+    # based on the width of the screen 
+    height_ratio = PFEnv.screen_height/pil_img.height
+    width_ratio = PFEnv.screen_width/pil_img.width
+
+    actual_width = None
+    actual_height = None
+    if height_ratio > width_ratio:
+        actual_width = int(width_ratio * pil_img.width)
+        actual_height = int(width_ratio * pil_img.height)
+    else:
+        actual_height = int(height_ratio * pil_img.height)
+        actual_width = int(height_ratio * pil_img.width)
+
+    pil_img = pil_img.resize((actual_width, actual_height), Image.ANTIALIAS)
+    img = ImageTk.PhotoImage(pil_img)
+
 
     return img
 
@@ -216,19 +259,19 @@ def display_image(canvas, win, filepath):
     Inputs:
         filepath:  The full path to the file to display
     """
-    #++++++++++++++++++++++
-    #    if filepath is None:
-    #        canvas_image = canvas.create_image(0,0, anchor=NW, image='')
-    #        win.geometry(PFEnv.geometry_str)
-    #        canvas.configure(bg = 'black')
-    #        return False
+    if filepath is None:
+        img = get_image(PFEnv.black_image)
+        top = (PFEnv.screen_height - img.height())/2
+        left = (PFEnv.screen_width - img.width())/2
+        canvas_image = canvas.create_image(left,top, anchor=NW, image=img)
+        win.geometry(PFEnv.geometry_str)
+        canvas.configure(bg = 'black')
+        win.update()
+        return False
 
-    directory = PFSettings.get_image_dir()
     filename, file_extension = os.path.splitext(filepath)
     if file_extension.lower() in PFEnv.supported_types:
-        image_path = os.path.join(directory, filepath)
-
-        img = get_image(image_path)
+        img = get_image(filepath)
 
         # Calculate where to put the image in the frame
         top = (PFEnv.screen_height - img.height())/2
@@ -237,13 +280,52 @@ def display_image(canvas, win, filepath):
         win.geometry(PFEnv.geometry_str)
         canvas.configure(bg = 'black')
         win.update()
-        #if PFSettings.single_image:
-        #    win.mainloop()
         return True
     else:
         print(f"WARNING: File type '{file_extension}' is not supported.")
         return False
 
+
+############################################################
+#
+# setup_logger
+#
+def setup_logger():
+    """
+    Setup the logger for the application.
+    Args:
+    Returns:
+        none
+    """
+    if not PFEnv.logger_initialized:
+        logfile = None
+        logger_handler = None
+
+        # If the user wants the logfile to go to the default file location
+        # with a datestamp
+        if PFSettings.log_to_stdout == False:
+            timestamp = datetime.now(timezone.utc).strftime(PFEnv.MS_FMT_STR)
+            fname = "picframe_" + timestamp + ".log"
+            path = PFSettings.log_directory
+
+            if not os.path.exists(path):
+                os.makedirs(path)
+            logfile = os.path.join(path, fname)
+
+            logger_handler = logging.FileHandler(logfile)
+        else:
+            logger_handler = logging.StreamHandler(sys.stdout)
+
+        log_formatter = logging.Formatter('{"time": "%(asctime)s", "level": "%(levelname)s", "info": %(message)s}')
+        log_formatter.converter = time.gmtime
+        logger_root = logging.getLogger()
+        logger_root.setLevel(PFSettings.debug_level)
+
+        logger_handler.setLevel(PFSettings.debug_level)
+        logger_root.addHandler(logger_handler)
+        logger_handler.setFormatter(log_formatter)
+
+        PFEnv.logger_initialized = True
 
 ############################################################
 #
@@ -256,26 +338,20 @@ def main():
     win = get_window()
     canvas = get_canvas(win)
 
-    # Need to incorporate the do_sleep stuff for the night and
+    # Need to incorporate the check_blackout_window stuff for the night and
     # Need a way to shut it down.
     while True:
-        do_sleep(canvas, win)
-        if PFSettings.single_image:
-            display_image(canvas, win, PFSettings.get_image_dir())
-            # so that it can go to sleep, test the do_sleep every
-            # 15 mins
-            if PFSettings.single_image:
-                time.sleep(900)
+        image_file_list = get_image_file_list()
 
-        else:
-            # ++++ Need this to recursively walk the directory
-            for filepath in os.listdir(PFSettings.get_image_dir()):
-                if display_image(canvas, win, filepath):
-                    time.sleep(PFSettings.display_time)
+        for filepath in image_file_list:
+            if display_image(canvas, win, filepath):
+                time.sleep(PFSettings.display_time)
+            check_blackout_window(canvas, win)
 
 if __name__ == "__main__":
-    get_args(sys.argv[1:])
     PFEnv.init_environment()
+    get_args(sys.argv[1:])
+    setup_logger()
     main()
 
     sys.exit(0)

@@ -17,19 +17,24 @@ class PFSettings:
     """
 
     fullscreen = False
-    logfile = 'stdfile'
-    debuglevel = 'INFO'
-    single_image = False
-    #image_path = '/mnt/c/tmp/frame/images/IMG_1275.JPG'
-    image_path = '/mnt/c/tmp/frame/images/'
+
+    #
+    log_to_stdout = True
+    debug_level = 'INFO'
+
+    # image_paths can be a single path, the path to a single file,
+    # or a list of comma separated paths.
+    #image_paths = ('/mnt/c/tmp/images/IMG_1275.JPG',)
+    image_paths = ('/mnt/c/tmp/images/',)
     display_time = 5
-    sleep_hour = None
-    #sleep_hour = 13
+    #sleep_hour = None
+    sleep_hour = 12
     sleep_minute = 0
     wake_hour = 14
     wake_minute = 0
+    log_directory = '/mnt/c/tmp'
 
     @staticmethod
-    def get_image_dir():
-        return PFEnv.path_to_platform(PFSettings.image_path)
+    def get_image_dirs():
+        return PFEnv.path_to_platform(PFSettings.image_paths)
 

@@ -3,9 +3,12 @@ picframe_env.py gathers information about the environment that the fram
 is running in, such as the monitor information, the OS, etc.
 
 """
+import logging
 import ctypes
 import sys
 import subprocess
+import os
+from pathlib import Path
 
 class PFEnv:
     """
@@ -17,6 +20,16 @@ class PFEnv:
     screen_height = None
     geometry_str = None
     supported_types = None
+    logger_initialized = False
+
+    # Location of image used when the system is in sleep mode.
+    black_image = '../images/black.png'
+
+    # Format string for hour-minute-second dates
+    HMS_FMT_STR = '%Y-%m-%dT%H:%M:%S'
+
+    # Location of the log file.  This is set when the logger is initialized
+    logfile = None
 
     ############################################################
     #
@@ -25,19 +38,11 @@ class PFEnv:
     def init_environment():
         if sys.platform in ("linux", "linux2"):
             # ++++ Find a linux way of doing this
-            #PFEnv.geometry = (1920, 1080)
-            #PFEnv.screen_width = 1920
-            #PFEnv.screen_height = 1080
-            #PFEnv.geometry_str = '1920x1080'
-            PFEnv.geometry = (, 1080)
+            PFEnv.geometry = (1920, 1080)
             PFEnv.screen_width = 1920
             PFEnv.screen_height = 1080
             PFEnv.geometry_str = '1920x1080'
-
-
-            # FIX THIS BACK UP ++++
-            # PFEnv.supported_types = ('.heic', '.png', '.jpg')
-            PFEnv.supported_types = ('.png', '.jpg')
+            PFEnv.supported_types = ('.avif', '.heic', '.png', '.jpg')
         else:
             user32 = ctypes.windll.user32
             PFEnv.geometry = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
@@ -77,3 +82,26 @@ class PFEnv:
 
         return path
 
+    ############################################################
+    #
+    # is_format_supported
+    #
+    @staticmethod
+    def is_format_supported(image_file):
+        """
+        Returns whether the image file format is supported by the code on
+        this platform.
+        Inputs:
+            image_file: The file to check.
+
+        Returns
+            boolean indicating whether it is supported or not.
+
+        """
+
+        filename, file_extension = os.path.splitext(image_file)
+        if Path(image_file).is_file() and file_extension.lower() in PFEnv.supported_types:
+            return True
+
+        logging.warning(f"{image_file} format is not supported.")
+        return False
