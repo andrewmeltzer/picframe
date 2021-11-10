@@ -21,6 +21,9 @@ class PFSettings:
     #
     log_to_stdout = True
     debug_level = 'INFO'
+    
+    # Options are "Google Drive", "Filesystem"
+    image_source = 'Google Drive'
 
     # image_paths can be a single path, the path to a single file,
     # or a list of comma separated paths.
@@ -33,6 +36,16 @@ class PFSettings:
     wake_hour = 14
     wake_minute = 0
     log_directory = '/mnt/c/tmp'
+
+    # Settings if for Google Drive (if used)
+    # If there is a root level directory to start in, can save a lot of time
+    # not traversing the rest.  If the desired directory is at root level,
+    # then give both.
+    gdrive_root_folder = "Photos"
+
+    # The directory the photos are in.  It may be the same as the
+    # ROOT_FOLDER_TITLE
+    gdrive_photos_folder = "Photos"
 
     @staticmethod
     def get_image_dirs():

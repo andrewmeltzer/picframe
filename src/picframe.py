@@ -16,9 +16,11 @@ if sys.platform in ("linux", "linux2"):
 
 from picframe_settings import PFSettings
 from picframe_env import PFEnv
+from picframe_gdrive import PicframeGoogleDrive
 
 # TODO: ++++
 # - Need a way to kill it when it is sleeping.
+# - Want to support gif and videos.  
 
 ############################################################
 # get_args
@@ -170,11 +172,32 @@ def get_image_file_list():
     Get the list of supported image files from the list of directories
     given for pictures to display.
 
-    Inputs: None
-    Returns: List of fully qualified paths in the right format for the
-        operating system.
-    """
+    Inputs: None 
 
+    Returns: List of fully qualified paths in the right 
+            format for the operating system and image source.  
+    """ 
+
+    if PFSettings.image_source == "Filesystem": 
+        return get_filesystem_file_list() 
+    else: 
+        gdrive = PicframeGoogleDrive() 
+        return gdrive.id_list 
+
+############################################################ 
+#
+# get_filesystem_file_list
+#
+def get_filesystem_file_list():
+    """
+    Get the list of supported image files from the list of filesystem
+    directories given for pictures to display.
+
+    Inputs: None 
+
+    Returns: List of fully qualified paths in the right 
+            format for the operating system and image source.  
+    """
     image_file_list = []
 
     # Traverse the recursive list of directories.
@@ -331,7 +354,6 @@ def setup_logger():
 #
 # main
 #
-#def main(args):
 def main():
     """
     """
