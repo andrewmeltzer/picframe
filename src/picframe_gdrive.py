@@ -1,3 +1,5 @@
+
+import logging
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from picframe_settings import PFSettings
@@ -17,9 +19,12 @@ class PicframeGoogleDrive:
         self.drive = self.gdrive_authorize()
         self.id_list = []
         self.get_photo_list()
+        
+        # The gdrive connection seems to be fragile and so this code
+        # lets it do a partial restart without lots of mechanism.
+        self.top_level_completed_folders = []
 
-        # ++++ Turn this into debug logging
-        print(self.id_list)
+        logging.debug(self.id_list)
 
     ############################################################
     #
@@ -67,48 +72,35 @@ class PicframeGoogleDrive:
         """
 
         str = "\'" + parent_id + "\'" + " in parents and trashed=false"
-        file_list = self.drive.ListFile({'q': str}).GetList()
-        return file_list
-    
-    ############################################################
-    #
-    # add_children
-    #
-    def add_children(self, in_desired_folder, file_list, parent_id):
-        """
-        Add children to the id_list if they are of the right format.
-        Input:
-            in_desired_folder:
-            file_list:
-            parent_id:
-        """
-
-        for file in file_list:
-            # Save the desired files in the id_list if they are not 
-            # directories
-            # ++++ Check to see if the extension is a supported one
-            if in_desired_folder:
-                self.id_list.append(file['title'])
-    
-            # ++++ Turn this into a DEBUG logging thing.
-            print('parent: %s, title: %s, id: %s' % (parent_id, file['title'], file['id']))
+        children = self.drive.ListFile({'q': str}).GetList()
+        return children
     
     ############################################################
     #
     # process_children
     #
-    def process_children(self, in_desired_folder, parent_id):
+    def process_children(self, in_desired_folder, parent_name, parent_id):
         """
         Go down the tree until you reach a leaf 
         """
         children = self.get_children(parent_id)
-        self.add_children(in_desired_folder, children, parent_id)
-        if(len(children) > 0):
-            for child in children:
-                if child['title'] == PFSettings.gdrive_photos_folder or in_desired_folder == True:
-                    self.process_children(True, child['id'])
-                else:
-                    self.process_children(False, child['id'])
+
+        # If there are no children, then at a leaf, so see if it should
+        # be added to the list
+        if len(children) <= 0:
+            if PFEnv.is_format_supported(parent_name) and in_desired_folder:
+                self.id_list.append(parent_name)
+            
+        # Otherwise go through the list of subdirectories of this directory
+        for child in children:
+            child_name = child['title']
+            child_id = child['id']
+            logging.debug('title: %s, id: %s' % (child_name, child_id))
+
+            if child_name == PFSettings.gdrive_photos_folder:
+                self.process_children(True, child_name, child_id)
+            else:
+                self.process_children(False, child_name, child_id)
     
     
     ############################################################
@@ -129,5 +121,5 @@ class PicframeGoogleDrive:
             title = file['title']
             file_id = file['id']
             if title == PFSettings.gdrive_root_folder:
-                self.process_children(in_desired_folder, file_id)
+                self.process_children(in_desired_folder, title, file_id)
     

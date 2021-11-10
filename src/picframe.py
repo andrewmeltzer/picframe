@@ -20,7 +20,7 @@ from picframe_gdrive import PicframeGoogleDrive
 
 # TODO: ++++
 # - Need a way to kill it when it is sleeping.
-# - Want to support gif and videos.  
+# - Want to support gif,tif and videos (mp4, mov, wmv, mp3, wav).  
 
 ############################################################
 # get_args

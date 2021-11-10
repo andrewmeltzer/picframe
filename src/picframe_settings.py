@@ -20,7 +20,7 @@ class PFSettings:
 
     #
     log_to_stdout = True
-    debug_level = 'INFO'
+    debug_level = 'DEBUG'
     
     # Options are "Google Drive", "Filesystem"
     image_source = 'Google Drive'

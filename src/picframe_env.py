@@ -42,14 +42,14 @@ class PFEnv:
             PFEnv.screen_width = 1920
             PFEnv.screen_height = 1080
             PFEnv.geometry_str = '1920x1080'
-            PFEnv.supported_types = ('.avif', '.heic', '.png', '.jpg')
+            PFEnv.supported_types = ('.avif', '.heic', '.png', '.jpg', '.jpeg')
         else:
             user32 = ctypes.windll.user32
             PFEnv.geometry = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
             PFEnv.screen_width = PFEnv.geometry[0]
             PFEnv.screen_height = PFEnv.geometry[1]
             PFEnv.geometry_str = str(PFEnv.screen_width) + "x" + str(PFEnv.screen_height)
-            PFEnv.supported_types = ('.png', '.jpg')
+            PFEnv.supported_types = ('.png', '.jpg', '.jpeg')
 
 
     ############################################################
@@ -100,8 +100,9 @@ class PFEnv:
         """
 
         filename, file_extension = os.path.splitext(image_file)
-        if Path(image_file).is_file() and file_extension.lower() in PFEnv.supported_types:
+        if file_extension.lower() in PFEnv.supported_types:
             return True
 
-        logging.warning(f"{image_file} format is not supported.")
+        logging.warning(f"'{image_file}' format is not supported.")
         return False
+
