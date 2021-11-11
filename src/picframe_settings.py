@@ -41,11 +41,11 @@ class PFSettings:
     # If there is a root level directory to start in, can save a lot of time
     # not traversing the rest.  If the desired directory is at root level,
     # then give both.
-    gdrive_root_folder = "Photos"
+    gdrive_root_folder = "PicFrame"
 
     # The directory the photos are in.  It may be the same as the
     # ROOT_FOLDER_TITLE
-    gdrive_photos_folder = "Photos"
+    gdrive_photos_folder = "PicFrame"
 
     @staticmethod
     def get_image_dirs():

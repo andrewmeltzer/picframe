@@ -15,6 +15,12 @@ Simple command:
 WSL2
 To use this in WSL2 you'll need to install an xwindow manager like vcXsrv.
     - When you run XLaunch, remember to "disable access control"
+    - export DISPLAY=$(grep -m 1 nameserver /etc/resolv.conf | awk '{print $2}'):0
+
+Install:
+    sudo apt-get install python3-tk
+    pip3 install pillow
+    pip3 install pydrive2
 
 
 

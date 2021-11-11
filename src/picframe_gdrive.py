@@ -1,7 +1,7 @@
 
 import logging
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive
 from picframe_settings import PFSettings
 from picframe_env import PFEnv
 
@@ -20,10 +20,6 @@ class PicframeGoogleDrive:
         self.id_list = []
         self.get_photo_list()
         
-        # The gdrive connection seems to be fragile and so this code
-        # lets it do a partial restart without lots of mechanism.
-        self.top_level_completed_folders = []
-
         logging.debug(self.id_list)
 
     ############################################################
@@ -97,7 +93,7 @@ class PicframeGoogleDrive:
             child_id = child['id']
             logging.debug('title: %s, id: %s' % (child_name, child_id))
 
-            if child_name == PFSettings.gdrive_photos_folder:
+            if child_name == PFSettings.gdrive_photos_folder or in_desired_folder == True:
                 self.process_children(True, child_name, child_id)
             else:
                 self.process_children(False, child_name, child_id)
@@ -116,10 +112,12 @@ class PicframeGoogleDrive:
         in_desired_folder = False
     
         # List files in Google Drive
-        fileList = self.drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
-        for file in fileList:
+        file_list = self.drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
+        for file in file_list:
             title = file['title']
             file_id = file['id']
             if title == PFSettings.gdrive_root_folder:
+                if title == PFSettings.gdrive_photos_folder:
+                    in_desired_folder = True
                 self.process_children(in_desired_folder, title, file_id)
     
