@@ -10,6 +10,20 @@ import subprocess
 import os
 from pathlib import Path
 
+class NoImagesFoundException(Exception):
+    """
+    Used when the images location yields no usable images.
+    """
+    def __init(self):
+        self.message = []
+        if PFSettings.image_source == "Google Drive":
+            self.message = f"No images found on Google Drive in '{PFSettings.gdrive_photos_folder}'"
+        elif PFSettings.image_source == "Filesystem":
+            self.message = f"No images found on filesystem in '{str(PFSettings.image_paths)}'"
+        else:
+            self.message = f"Unknown image source: '{PFSettings.image_source}'"
+            
+        super().__init(self.message)
 class PFEnv:
     """
     PFEnv supplies information about the environment that the fram

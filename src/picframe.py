@@ -364,6 +364,8 @@ def main():
     # Need a way to shut it down.
     while True:
         image_file_list = get_image_file_list()
+        if len(image_file_list) == 0:
+            raise NoImagesFoundException()
 
         for filepath in image_file_list:
             if display_image(canvas, win, filepath):
