@@ -100,15 +100,18 @@ class PicframeGoogleDrive:
         # be added to the list
         if len(children) <= 0:
             if PFEnv.is_format_supported(parent_name) and in_desired_folder:
+                logging.debug(f"Returning {parent_name}")
                 if PicframeGoogleDrive.full_id_list_style:
                     PicframeGoogleDrive.id_list.append(parent_name)
                 else:
                     # Here download the file and put it into the right
-                    # location as stored in PFEnv (/tmp/blah for linux, 
-                    # C:\temp? for windows, then return the full path.
-                    yield parent_name
+                    # location as stored in PFEnv (/tmp/ for linux, 
+                    # C:\temp for windows, then return the full path.
+                    filepath = PFEnv.default_temp_file_path() + parent_name
+                    new_file = PicframeGoogleDrive.drive.CreateFile({'id': parent_id})
+                    new_file.GetContentFile(filepath) 
+                    yield filepath
 
-                logging.info(f"Returning {parent_name}")
             
         # Otherwise go through the list of subdirectories of this directory
         for child in children:

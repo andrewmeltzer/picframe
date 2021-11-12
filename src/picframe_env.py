@@ -98,6 +98,21 @@ class PFEnv:
 
     ############################################################
     #
+    # default_temp_file_path
+    #
+    @staticmethod
+    def default_temp_file_path():
+        """
+        Depending on the OS, return a proper path in which to put 
+        temporary files.
+        """
+        if sys.platform in ("linux", "linux2"):
+            return '/tmp/PICFRAME__'
+        elif sys.platform == "win32":
+            return 'C:\Temp\PICFRAME__'
+
+    ############################################################
+    #
     # is_format_supported
     #
     @staticmethod
