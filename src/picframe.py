@@ -9,14 +9,15 @@ import os
 import time
 import datetime
 import logging
-from pathlib import Path
 
 if sys.platform in ("linux", "linux2"):
     import pyheif
 
 from picframe_settings import PFSettings
 from picframe_env import PFEnv
+from picframe_env import NoImagesFoundException
 from picframe_gdrive import PicframeGoogleDrive
+from picframe_filesystem import PicframeFilesystem
 
 # TODO: ++++
 # - Need a way to kill it when it is sleeping.
@@ -172,6 +173,28 @@ def get_image_file_list():
     Get the list of supported image files from the list of directories
     given for pictures to display.
 
+    Inputs: None
+
+    Returns: List of fully qualified paths in the right
+            format for the operating system and image source.
+    """
+
+    if PFSettings.image_source == "Filesystem":
+        pfilesystem = PicframeFilesystem()
+        return pfilesystem.get_filesystem_file_list()
+    else:
+        gdrive = PicframeGoogleDrive()
+        return gdrive.id_list
+
+############################################################
+#
+# get_next_image_file
+#
+def get_next_image_file():
+    """
+    Get the next supported image files from the list of directories
+    given for pictures to display.
+
     Inputs: None 
 
     Returns: List of fully qualified paths in the right 
@@ -179,41 +202,11 @@ def get_image_file_list():
     """ 
 
     if PFSettings.image_source == "Filesystem": 
-        return get_filesystem_file_list() 
+        PicframeFilesystem.init() 
+        return PicframeFilesystem.get_filesystem_next_file() 
     else: 
-        gdrive = PicframeGoogleDrive() 
-        return gdrive.id_list 
-
-############################################################ 
-#
-# get_filesystem_file_list
-#
-def get_filesystem_file_list():
-    """
-    Get the list of supported image files from the list of filesystem
-    directories given for pictures to display.
-
-    Inputs: None 
-
-    Returns: List of fully qualified paths in the right 
-            format for the operating system and image source.  
-    """
-    image_file_list = []
-
-    # Traverse the recursive list of directories.
-    for dirname in PFSettings.get_image_dirs():
-        if Path(dirname).is_file():
-            if PFEnv.is_format_supported(dirname):
-                image_file_list.append(dirname)
-        else:
-            for root, dirs, files in os.walk(dirname):
-                path = root.split(os.sep)
-                for file in files:
-                    pathdir = '/'.join(path) + '/' + file
-                    if PFEnv.is_format_supported(pathdir):
-                        image_file_list.append(pathdir)
-
-    return image_file_list
+        PicframeGoogleDrive.init() 
+        return PicframeGoogleDrive.get_next_photo()
 
 ############################################################
 #
@@ -327,7 +320,9 @@ def setup_logger():
         # If the user wants the logfile to go to the default file location
         # with a datestamp
         if PFSettings.log_to_stdout == False:
-            timestamp = datetime.now(timezone.utc).strftime(PFEnv.MS_FMT_STR)
+            # If want it in utc
+            #timestamp = datetime.now(timezone.utc).strftime(PFEnv.MS_FMT_STR)
+            timestamp = datetime.now().strftime(PFEnv.MS_FMT_STR)
             fname = "picframe_" + timestamp + ".log"
             path = PFSettings.log_directory
 
@@ -363,14 +358,15 @@ def main():
     # Need to incorporate the check_blackout_window stuff for the night and
     # Need a way to shut it down.
     while True:
-        image_file_list = get_image_file_list()
-        if len(image_file_list) == 0:
-            raise NoImagesFoundException()
-
-        for filepath in image_file_list:
-            if display_image(canvas, win, filepath):
+        image_file_count = 0
+        for image_file in get_next_image_file():
+            if display_image(canvas, win, image_file):
                 time.sleep(PFSettings.display_time)
+                image_file_count = image_file_count + 1
             check_blackout_window(canvas, win)
+
+        if image_file_count == 0:
+            raise NoImagesFoundException()
 
 if __name__ == "__main__":
     PFEnv.init_environment()
