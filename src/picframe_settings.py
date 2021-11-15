@@ -23,8 +23,8 @@ class PFSettings:
     debug_level = 'DEBUG'
     
     # Options are "Google Drive", "Filesystem"
-    #image_source = 'Filesystem'
-    image_source = 'Google Drive'
+    image_source = 'Filesystem'
+    #image_source = 'Google Drive'
 
     # image_paths can be a single path, the path to a single file,
     # or a list of comma separated paths.
