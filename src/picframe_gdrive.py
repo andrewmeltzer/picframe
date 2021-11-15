@@ -3,7 +3,7 @@ import logging
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 from picframe_settings import PFSettings
-from picframe_env import PFEnv
+from picframe_env import *
 
 
 class PicframeGoogleDrive:
@@ -15,6 +15,7 @@ class PicframeGoogleDrive:
     drive = None
     full_id_list_style = False
     id_list = []
+    image_file_count = 0
 
     ############################################################
     #
@@ -110,6 +111,7 @@ class PicframeGoogleDrive:
                     filepath = PFEnv.default_temp_file_path() + parent_name
                     new_file = PicframeGoogleDrive.drive.CreateFile({'id': parent_id})
                     new_file.GetContentFile(filepath) 
+                    PicframeGoogleDrive.image_file_count = PicframeGoogleDrive.image_file_count + 1
                     yield filepath
 
             
@@ -139,13 +141,17 @@ class PicframeGoogleDrive:
         in_desired_folder = False
     
         # List files in Google Drive
-        file_list = PicframeGoogleDrive.drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
-        for file in file_list:
-            title = file['title']
-            file_id = file['id']
-            if title == PFSettings.gdrive_root_folder:
-                if title == PFSettings.gdrive_photos_folder:
-                    in_desired_folder = True
-                yield from PicframeGoogleDrive.process_children(in_desired_folder, title, file_id)
+        while True:
+            PicframeGoogleDrive.image_file_count = 0
+            file_list = PicframeGoogleDrive.drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
+            for file in file_list:
+                title = file['title']
+                file_id = file['id']
+                if title == PFSettings.gdrive_root_folder:
+                    if title == PFSettings.gdrive_photos_folder:
+                        in_desired_folder = True
+                    yield from PicframeGoogleDrive.process_children(in_desired_folder, title, file_id)
+            if PicframeGoogleDrive.image_file_count == 0:
+                raise NoImagesFoundException()
         return None
     

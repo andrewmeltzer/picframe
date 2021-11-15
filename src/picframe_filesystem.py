@@ -1,29 +1,32 @@
 
 import logging
 import os
-from picframe_settings import PFSettings
-from picframe_env import PFEnv
 from pathlib import Path
+from picframe_settings import PFSettings
+from picframe_env import *
 
 class PicframeFilesystem:
     """
     If the user's photos are on the local filesystem, this class gets
     them.
     """
+    initialized = False
+    
     ############################################################ 
     #
     # init
     #
     @staticmethod
     def init():
-        pass
+        PicframeFilesystem.initialized = True
+
 
     ############################################################ 
     #
-    # get_filesystem_next_file
+    # get_next_file
     #
     @staticmethod
-    def get_filesystem_next_file():
+    def get_next_file():
         """
         Get next supported image file from the list of filesystem
         directories given for pictures to display.
@@ -38,26 +41,32 @@ class PicframeFilesystem:
         """
     
         # Traverse the recursive list of directories.
-        for dirname in PFSettings.get_image_dirs():
-            if Path(dirname).is_file():
-                if PFEnv.is_format_supported(dirname):
-                    yield dirname
-            else:
-                for root, dirs, files in os.walk(dirname):
-                    path = root.split(os.sep)
-                    for file in files:
-                        pathdir = '/'.join(path) + '/' + file
-                        if PFEnv.is_format_supported(pathdir):
-                            yield pathdir
+        while True:
+            image_file_count = 0
+            for dirname in PFSettings.get_image_dirs():
+                if Path(dirname).is_file():
+                    if PFEnv.is_format_supported(dirname):
+                        image_file_count = image_file_count + 1
+                        yield dirname
+                else:
+                    for root, dirs, files in os.walk(dirname):
+                        path = root.split(os.sep)
+                        for file in files:
+                            pathdir = '/'.join(path) + '/' + file
+                            if PFEnv.is_format_supported(pathdir):
+                                image_file_count = image_file_count + 1
+                                yield pathdir
+            if image_file_count == 0:
+                raise NoImagesFoundException()
     
         return None
     
     ############################################################
     #
-    # get_filesystem_file_list
+    # get_file_list
     #
     @staticmethod
-    def get_filesystem_file_list():
+    def get_file_list():
         """
         Get the list of supported image files from the list of filesystem
         directories given for pictures to display.

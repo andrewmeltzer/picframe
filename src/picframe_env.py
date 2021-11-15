@@ -24,6 +24,7 @@ class NoImagesFoundException(Exception):
             self.message = f"Unknown image source: '{PFSettings.image_source}'"
             
         super().__init(self.message)
+
 class PFEnv:
     """
     PFEnv supplies information about the environment that the fram

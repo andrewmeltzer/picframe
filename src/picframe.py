@@ -196,7 +196,7 @@ def get_image_file_list():
 
     if PFSettings.image_source == "Filesystem":
         pfilesystem = PicframeFilesystem()
-        return pfilesystem.get_filesystem_file_list()
+        return pfilesystem.get_file_list()
     else:
         gdrive = PicframeGoogleDrive()
         return gdrive.id_list
@@ -217,10 +217,8 @@ def get_next_image_file():
     """ 
 
     if PFSettings.image_source == "Filesystem": 
-        PicframeFilesystem.init() 
-        return PicframeFilesystem.get_filesystem_next_file() 
+        return PicframeFilesystem.get_next_file() 
     else: 
-        PicframeGoogleDrive.init() 
         return PicframeGoogleDrive.get_next_photo()
 
 ############################################################
@@ -370,18 +368,21 @@ def main():
     win = get_window()
     canvas = get_canvas(win)
 
+    # Initialize the data source
+    if PFSettings.image_source == "Filesystem": 
+        PicframeFilesystem.init() 
+    elif PFSettings.image_source == "Google Drive": 
+        PicframeGoogleDrive.init() 
+    else: 
+        raise Exception(f"Image source from settings file: '{PFSettings.image_source}' is not supported.")
+
+
     # Need to incorporate the check_blackout_window stuff for the night and
     # Need a way to shut it down.
-    while True:
-        image_file_count = 0
-        for image_file in get_next_image_file():
-            if display_image(canvas, win, image_file):
-                time.sleep(PFSettings.display_time)
-                image_file_count = image_file_count + 1
-            check_blackout_window(canvas, win)
-
-        if image_file_count == 0:
-            raise NoImagesFoundException()
+    for image_file in get_next_image_file():
+        if display_image(canvas, win, image_file):
+            time.sleep(PFSettings.display_time)
+        check_blackout_window(canvas, win)
 
 if __name__ == "__main__":
     PFEnv.init_environment()
