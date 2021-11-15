@@ -140,11 +140,10 @@ def setup_logger():
 def main():
     """
     """
-    # Need to incorporate the check_blackout_window stuff for the night and
-    # Need a way to shut it down.
-    for image_file in PicframeImage.get_next_image_file():
-        if PicframeImage.display_image(image_file):
-            time.sleep(PicframeTimer.get_sleep_interval())
+    while True:
+        PicframeImage.display_next_image()
+        time.sleep(PicframeTimer.get_sleep_interval())
+
 
 if __name__ == "__main__":
     PFEnv.init_environment()

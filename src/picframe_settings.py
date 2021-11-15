@@ -30,7 +30,7 @@ class PFSettings:
     # or a list of comma separated paths.
     #image_paths = ('/mnt/c/tmp/images/IMG_1275.JPG',)
     image_paths = ('/mnt/c/tmp/images/',)
-    display_time = 5
+    display_time = 2
     #sleep_hour = None
     sleep_hour = 12
     sleep_minute = 0

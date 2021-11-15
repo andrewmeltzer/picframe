@@ -26,6 +26,7 @@ class PicframeImage:
     initialized = False
     win = None
     canvas = None
+    image_file = None
 
     ############################################################
     #
@@ -48,6 +49,7 @@ class PicframeImage:
         else: 
             raise Exception(f"Image source from settings file: '{PFSettings.image_source}' is not supported.")
 
+        PicframeImage.image_file = PicframeImage.get_next_image_file()
         PicframeImage.initialized = True
 
     ############################################################
@@ -127,13 +129,10 @@ class PicframeImage:
                 format for the operating system and image source.  
         """ 
     
-        if PicframeImage.initialized == False:
-            PicframeImage.init()
-
         if PFSettings.image_source == "Filesystem": 
-            return PicframeFilesystem.get_next_file() 
+            yield from PicframeFilesystem.get_next_file() 
         else: 
-            return PicframeGoogleDrive.get_next_photo()
+            yield from PicframeGoogleDrive.get_next_photo()
     
     ############################################################
     #
@@ -204,29 +203,42 @@ class PicframeImage:
         Inputs:
             filepath:  The full path to the file to display
         """
+
+        img = None
         if filepath is None:
             img = get_image(PFEnv.black_image)
-            top = (PFEnv.screen_height - img.height())/2
-            left = (PFEnv.screen_width - img.width())/2
-            canvas_image = PicframeImage.canvas.create_image(left,top, anchor=NW, image=img)
-            PicframeImage.win.geometry(PFEnv.geometry_str)
-            PicframeImage.canvas.configure(bg = 'black')
-            PicframeImage.win.update()
-            return False
-    
-        filename, file_extension = os.path.splitext(filepath)
-        if file_extension.lower() in PFEnv.supported_types:
-            img = PicframeImage.get_image(filepath)
-    
-            # Calculate where to put the image in the frame
-            top = (PFEnv.screen_height - img.height())/2
-            left = (PFEnv.screen_width - img.width())/2
-            canvas_image = PicframeImage.canvas.create_image(left, top, anchor=NW, image=img)
-            PicframeImage.win.geometry(PFEnv.geometry_str)
-            PicframeImage.canvas.configure(bg = 'black')
-            PicframeImage.win.update()
-            return True
         else:
-            print(f"WARNING: File type '{file_extension}' is not supported.")
-            return False
+            img = PicframeImage.get_image(filepath)
+
+        # Calculate where to put the image in the frame
+        top = (PFEnv.screen_height - img.height())/2
+        left = (PFEnv.screen_width - img.width())/2
+        canvas_image = PicframeImage.canvas.create_image(left, top, anchor=NW, image=img)
+        PicframeImage.win.geometry(PFEnv.geometry_str)
+        PicframeImage.canvas.configure(bg = 'black')
+        PicframeImage.win.update()
     
+    ############################################################
+    #
+    # display_next_image
+    #
+    @staticmethod
+    def display_next_image():
+        """
+        Get and display the next image as returned.  This is the external
+        interface to this class.
+        Inputs:
+            filepath:  The full path to the file to display
+        """
+        if PicframeImage.initialized == False:
+            PicframeImage.init()
+
+        image_file = next(PicframeImage.image_file)
+        filename, file_extension = os.path.splitext(image_file)
+        while file_extension.lower() not in PFEnv.supported_types:
+            print(f"WARNING: File type '{file_extension}' is not supported.")
+            image_file = next(PicframeImage.image_file)
+            filename, file_extension = os.path.splitext(image_file)
+
+        PicframeImage.display_image(image_file)
+
