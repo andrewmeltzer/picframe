@@ -1,16 +1,15 @@
 #!/mnt/c/tmp/frame/env/bin/python3
 
 import getopt
-from PIL import ImageTk, Image, ImageOps
 import sys
 import os
-import time
-import datetime
 import logging
+import time
 
 from picframe_settings import PFSettings
 from picframe_env import PFEnv
 from picframe_image import PicframeImage
+from picframe_timer import PicframeTimer
 
 # TODO: ++++
 # - Need a way to kill it when it is sleeping.
@@ -91,50 +90,6 @@ def get_args(argv):
             PFSettings.single_image = False
             PFSettings.image_dir = arg
 
-    
-
-############################################################
-#
-# check_blackout_window
-#
-def check_blackout_window():
-    """
-    See if in the sleep window, and if so then sleep for the 
-    right number of seconds.
-    """
-    if PFSettings.sleep_hour is None:
-        return
-
-    secs_per_min = 60
-    mins_per_hour = 60
-    hour = datetime.datetime.now().hour
-    minute = datetime.datetime.now().minute
-
-    now_time = hour*60 + minute
-    sleep_time = (PFSettings.sleep_hour * mins_per_hour) + PFSettings.sleep_minute
-    wake_time = (PFSettings.wake_hour * mins_per_hour) + PFSettings.wake_minute
-    sleep_interval = 0
-
-    # if it is sleeping across midnight and it is before midnight
-    if wake_time < sleep_time and now_time > sleep_time:
-        sleep_interval = (wake_time * secs_per_min) \
-            + (24 * mins_per_hour) - now_time
-
-    # if it is sleeping across midnight and it is after midnight
-    if wake_time < sleep_time and now_time < wake_time:
-        sleep_interval = (wake_time - now_time) * secs_per_min
-
-    if now_time > sleep_time and now_time < wake_time:
-        sleep_interval = (wake_time - now_time) * secs_per_min
-
-    if sleep_interval == 0:
-        return
-        
-    print(f"Going to sleep for {sleep_interval} seconds.")
-    PicframeImage.display_image(None)
-    time.sleep(sleep_interval)
-    
-    
 ############################################################
 #
 # setup_logger
@@ -189,8 +144,7 @@ def main():
     # Need a way to shut it down.
     for image_file in PicframeImage.get_next_image_file():
         if PicframeImage.display_image(image_file):
-            time.sleep(PFSettings.display_time)
-        check_blackout_window()
+            time.sleep(PicframeTimer.get_sleep_interval())
 
 if __name__ == "__main__":
     PFEnv.init_environment()
