@@ -8,8 +8,8 @@ import time
 
 from picframe_settings import PFSettings
 from picframe_env import PFEnv
-from picframe_image import PicframeImage
-from picframe_timer import PicframeTimer
+from picframe_image import PFImage
+from picframe_timer import PFTimer
 
 # TODO: ++++
 # - Need a way to kill it when it is sleeping.
@@ -150,8 +150,8 @@ def main():
     """
     """
     while True:
-        PicframeImage.display_next_image()
-        time.sleep(PicframeTimer.get_sleep_interval())
+        PFImage.display_next_image()
+        time.sleep(PFTimer.get_sleep_interval())
 
 
 if __name__ == "__main__":

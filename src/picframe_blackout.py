@@ -9,7 +9,7 @@ import logging
 from picframe_settings import PFSettings
 from picframe_env import PFEnv
 
-class PicframeBlackout:
+class PFBlackout:
     """
     See if we are in a nightly blackout window, and if so, send a message
     to black out the screen.
@@ -69,7 +69,7 @@ class PicframeBlackout:
         Determine the current blackout interval
         """
 
-        blackout_interval = PicframeBlackout.check_blackout_window()
+        blackout_interval = PFBlackout.check_blackout_window()
         return blackout_interval
 
 
@@ -84,17 +84,17 @@ class PicframeBlackout:
         and if so, send the blackout message.
         """
         while True:
-            blackout_interval = PicframeBlackout.check_blackout_window()
+            blackout_interval = PFBlackout.check_blackout_window()
             if blackout_interval > 0:
-                if PicframeBlackout.in_blackout == False:
+                if PFBlackout.in_blackout == False:
                     # ++++ Send blackout message
                     logging.info(f"Going dark for {blackout_interval} seconds.")
-                    PicframeBlackout.in_blackout = True
+                    PFBlackout.in_blackout = True
                     pass
             else:
-                if PicframeBlackout.in_blackout == True:
+                if PFBlackout.in_blackout == True:
                     # ++++ Send end blackout message
-                    PicframeBlackout.in_blackout = False
+                    PFBlackout.in_blackout = False
                     pass
 
             # Test every 60 seconds

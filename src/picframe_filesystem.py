@@ -5,7 +5,7 @@ from pathlib import Path
 from picframe_settings import PFSettings
 from picframe_env import *
 
-class PicframeFilesystem:
+class PFFilesystem:
     """
     If the user's photos are on the local filesystem, this class gets
     them.
@@ -18,7 +18,7 @@ class PicframeFilesystem:
     #
     @staticmethod
     def init():
-        PicframeFilesystem.initialized = True
+        PFFilesystem.initialized = True
 
     ############################################################ 
     #
@@ -53,7 +53,7 @@ class PicframeFilesystem:
         # Traverse the recursive list of directories.
         while True:
             image_file_count = 0
-            for dirname in PicframeFilesystem.get_image_dirs():
+            for dirname in PFFilesystem.get_image_dirs():
                 if Path(dirname).is_file():
                     if PFEnv.is_format_supported(dirname):
                         image_file_count = image_file_count + 1
@@ -89,7 +89,7 @@ class PicframeFilesystem:
         image_file_list = []
     
         # Traverse the recursive list of directories.
-        for dirname in PicframeFilesystem.get_image_dirs():
+        for dirname in PFFilesystem.get_image_dirs():
             if Path(dirname).is_file():
                 if PFEnv.is_format_supported(dirname):
                     image_file_list.append(dirname)

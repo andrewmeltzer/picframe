@@ -9,7 +9,7 @@ import logging
 from picframe_settings import PFSettings
 from picframe_env import PFEnv
 
-class PicframeTimer:
+class PFTimer:
     """
     Generate the timer messages for picframe for the between-frame
     timing.

@@ -6,7 +6,7 @@ from picframe_settings import PFSettings
 from picframe_env import *
 
 
-class PicframeGoogleDrive:
+class PFGoogleDrive:
     """
     If the user's photos are on google drive, this class finds them,
     downloads them, and makes them available.
@@ -24,13 +24,13 @@ class PicframeGoogleDrive:
     @staticmethod
     def init():
 
-        if not PicframeGoogleDrive.initialized:
-            PicframeGoogleDrive.drive = PicframeGoogleDrive.gdrive_authorize()
+        if not PFGoogleDrive.initialized:
+            PFGoogleDrive.drive = PFGoogleDrive.gdrive_authorize()
 
-        if PicframeGoogleDrive.full_id_list_style == True:
-            PicframeGoogleDrive.get_photo_list()
+        if PFGoogleDrive.full_id_list_style == True:
+            PFGoogleDrive.get_photo_list()
         
-        PicframeGoogleDrive.initialized = True
+        PFGoogleDrive.initialized = True
 
     ############################################################
     #
@@ -80,7 +80,7 @@ class PicframeGoogleDrive:
         """
 
         str = "\'" + parent_id + "\'" + " in parents and trashed=false"
-        children = PicframeGoogleDrive.drive.ListFile({'q': str}).GetList()
+        children = PFGoogleDrive.drive.ListFile({'q': str}).GetList()
         return children
     
     ############################################################
@@ -95,23 +95,23 @@ class PicframeGoogleDrive:
         are found, otherwise very large google drives will be way too
         slow and unwieldy.
         """
-        children = PicframeGoogleDrive.get_children(parent_id)
+        children = PFGoogleDrive.get_children(parent_id)
 
         # If there are no children, then at a leaf, so see if it should
         # be added to the list
         if len(children) <= 0:
             if PFEnv.is_format_supported(parent_name) and in_desired_folder:
                 logging.debug(f"Returning {parent_name}")
-                if PicframeGoogleDrive.full_id_list_style:
-                    PicframeGoogleDrive.id_list.append(parent_name)
+                if PFGoogleDrive.full_id_list_style:
+                    PFGoogleDrive.id_list.append(parent_name)
                 else:
                     # Here download the file and put it into the right
                     # location as stored in PFEnv (/tmp/ for linux, 
                     # C:\temp for windows, then return the full path.
                     filepath = PFEnv.default_temp_file_path() + parent_name
-                    new_file = PicframeGoogleDrive.drive.CreateFile({'id': parent_id})
+                    new_file = PFGoogleDrive.drive.CreateFile({'id': parent_id})
                     new_file.GetContentFile(filepath) 
-                    PicframeGoogleDrive.image_file_count = PicframeGoogleDrive.image_file_count + 1
+                    PFGoogleDrive.image_file_count = PFGoogleDrive.image_file_count + 1
                     yield filepath
 
             
@@ -122,9 +122,9 @@ class PicframeGoogleDrive:
             logging.debug('title: %s, id: %s' % (child_name, child_id))
 
             if child_name == PFSettings.gdrive_photos_folder or in_desired_folder == True:
-                yield from PicframeGoogleDrive.process_children(True, child_name, child_id)
+                yield from PFGoogleDrive.process_children(True, child_name, child_id)
             else:
-                yield from PicframeGoogleDrive.process_children(False, child_name, child_id)
+                yield from PFGoogleDrive.process_children(False, child_name, child_id)
     
         return None
     
@@ -142,16 +142,16 @@ class PicframeGoogleDrive:
     
         # List files in Google Drive
         while True:
-            PicframeGoogleDrive.image_file_count = 0
-            file_list = PicframeGoogleDrive.drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
+            PFGoogleDrive.image_file_count = 0
+            file_list = PFGoogleDrive.drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
             for file in file_list:
                 title = file['title']
                 file_id = file['id']
                 if title == PFSettings.gdrive_root_folder:
                     if title == PFSettings.gdrive_photos_folder:
                         in_desired_folder = True
-                    yield from PicframeGoogleDrive.process_children(in_desired_folder, title, file_id)
-            if PicframeGoogleDrive.image_file_count == 0:
+                    yield from PFGoogleDrive.process_children(in_desired_folder, title, file_id)
+            if PFGoogleDrive.image_file_count == 0:
                 raise NoImagesFoundException()
         return None
     

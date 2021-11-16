@@ -15,10 +15,10 @@ if sys.platform in ("linux", "linux2"):
 from picframe_settings import PFSettings
 from picframe_env import PFEnv
 from picframe_env import NoImagesFoundException
-from picframe_gdrive import PicframeGoogleDrive
-from picframe_filesystem import PicframeFilesystem
+from picframe_gdrive import PFGoogleDrive
+from picframe_filesystem import PFFilesystem
 
-class PicframeImage:
+class PFImage:
     """
     Get, load, and display images.
     """
@@ -38,19 +38,19 @@ class PicframeImage:
         One-time initialization of the class.
         """
 
-        PicframeImage.win = PicframeImage.get_window()
-        PicframeImage.canvas = PicframeImage.get_canvas(PicframeImage.win)
+        PFImage.win = PFImage.get_window()
+        PFImage.canvas = PFImage.get_canvas(PFImage.win)
 
         # Initialize the data source
         if PFSettings.image_source == "Filesystem": 
-            PicframeFilesystem.init() 
+            PFFilesystem.init() 
         elif PFSettings.image_source == "Google Drive": 
-            PicframeGoogleDrive.init() 
+            PFGoogleDrive.init() 
         else: 
             raise Exception(f"Image source from settings file: '{PFSettings.image_source}' is not supported.")
 
-        PicframeImage.image_file = PicframeImage.get_next_image_file()
-        PicframeImage.initialized = True
+        PFImage.image_file = PFImage.get_next_image_file()
+        PFImage.initialized = True
 
     ############################################################
     #
@@ -107,10 +107,10 @@ class PicframeImage:
         """
     
         if PFSettings.image_source == "Filesystem":
-            pfilesystem = PicframeFilesystem()
+            pfilesystem = PFFilesystem()
             return pfilesystem.get_file_list()
         else:
-            gdrive = PicframeGoogleDrive()
+            gdrive = PFGoogleDrive()
             return gdrive.id_list
     
     ############################################################
@@ -130,9 +130,9 @@ class PicframeImage:
         """ 
     
         if PFSettings.image_source == "Filesystem": 
-            yield from PicframeFilesystem.get_next_file() 
+            yield from PFFilesystem.get_next_file() 
         else: 
-            yield from PicframeGoogleDrive.get_next_photo()
+            yield from PFGoogleDrive.get_next_photo()
     
     ############################################################
     #
@@ -208,15 +208,15 @@ class PicframeImage:
         if filepath is None:
             img = get_image(PFEnv.black_image)
         else:
-            img = PicframeImage.get_image(filepath)
+            img = PFImage.get_image(filepath)
 
         # Calculate where to put the image in the frame
         top = (PFEnv.screen_height - img.height())/2
         left = (PFEnv.screen_width - img.width())/2
-        canvas_image = PicframeImage.canvas.create_image(left, top, anchor=NW, image=img)
-        PicframeImage.win.geometry(PFEnv.geometry_str)
-        PicframeImage.canvas.configure(bg = 'black')
-        PicframeImage.win.update()
+        canvas_image = PFImage.canvas.create_image(left, top, anchor=NW, image=img)
+        PFImage.win.geometry(PFEnv.geometry_str)
+        PFImage.canvas.configure(bg = 'black')
+        PFImage.win.update()
     
     ############################################################
     #
@@ -230,15 +230,15 @@ class PicframeImage:
         Inputs:
             filepath:  The full path to the file to display
         """
-        if PicframeImage.initialized == False:
-            PicframeImage.init()
+        if PFImage.initialized == False:
+            PFImage.init()
 
-        image_file = next(PicframeImage.image_file)
+        image_file = next(PFImage.image_file)
         filename, file_extension = os.path.splitext(image_file)
         while file_extension.lower() not in PFEnv.supported_types:
             print(f"WARNING: File type '{file_extension}' is not supported.")
-            image_file = next(PicframeImage.image_file)
+            image_file = next(PFImage.image_file)
             filename, file_extension = os.path.splitext(image_file)
 
-        PicframeImage.display_image(image_file)
+        PFImage.display_image(image_file)
 
