@@ -20,6 +20,16 @@ class PicframeFilesystem:
     def init():
         PicframeFilesystem.initialized = True
 
+    ############################################################ 
+    #
+    # get_image_dirs
+    #
+    @staticmethod
+    def get_image_dirs():
+        """
+        Get the OS appropriate image directory path.
+        """
+        return PFEnv.path_to_platform(PFSettings.image_paths)
 
     ############################################################ 
     #
@@ -43,7 +53,7 @@ class PicframeFilesystem:
         # Traverse the recursive list of directories.
         while True:
             image_file_count = 0
-            for dirname in PFSettings.get_image_dirs():
+            for dirname in PicframeFilesystem.get_image_dirs():
                 if Path(dirname).is_file():
                     if PFEnv.is_format_supported(dirname):
                         image_file_count = image_file_count + 1
@@ -79,7 +89,7 @@ class PicframeFilesystem:
         image_file_list = []
     
         # Traverse the recursive list of directories.
-        for dirname in PFSettings.get_image_dirs():
+        for dirname in PicframeFilesystem.get_image_dirs():
             if Path(dirname).is_file():
                 if PFEnv.is_format_supported(dirname):
                     image_file_list.append(dirname)

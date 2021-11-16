@@ -60,6 +60,15 @@ def get_args(argv):
         sets global settings and environmentt settings
     """
 
+    # Start with the geometry from the settings
+    if PFSettings.geometry_str != None:
+        PFSettings.fullscreen = False
+        PFEnv.geometry_str = PFSettings.geometry_str
+        wstr, hstr = PFSettings.geometry_str.split('x')
+        PFEnv.screen_height = int(hstr)
+        PFEnv.screen_width = int(wstr)
+        PFEnv.geometry = (PFEnv.screen_width, PFEnv.screen_height)
+
     try:
         opts, inargs = getopt.getopt(argv, "hfs:d:g:",
                 ["help", "fullscreen", "logfile=", "debuglevel=", "single=", "path=", "geom="])

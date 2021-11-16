@@ -13,30 +13,55 @@ from picframe_env import PFEnv
 #
 class PFSettings:
     """
-    This class holds user-configurable settings values.
+    This class holds user-configurable settings values.  All of these
+    can also be configured on the command line.
     """
 
-    fullscreen = False
-
-    #
+    ##########################################################
+    # Where should logging information be sent? If log_to_stdout is set 
+    # to true, it ignores log_directory and sends logging information to
+    # stdout.  Otherwise it creates a logfile and puts it into the log
+    # directory.  The logfile name is picframe_<timestamp>.log
     log_to_stdout = True
+    log_directory = '/mnt/c/tmp'
+
+    ##########################################################
+    # Debug level.  CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET
     debug_level = 'DEBUG'
     
-    # Options are "Google Drive", "Filesystem"
+    ##########################################################
+    # Should the images be displayed fullscreen?  You can also specify a 
+    # size by setting the geom.  If it is set to None, it defaults to the
+    # screen size.
+    fullscreen = False
+    geometry_str = "200x200"
+
+    ##########################################################
+    # How long should an image be displayed?
+    display_time = 2
+
+    ##########################################################
+    # Should the screen go dark during certain hours?  If not, set the
+    # blackout_hour to None.  Otherwise set the values using a 24 hour
+    # clock time.
+    #blackout_hour = None
+    blackout_hour = 12
+    blackout_minute = 0
+    end_blackout_hour = 14
+    end_blackout_minute = 0
+
+
+    ##########################################################
+    # Where should images be sourced from?
+    #   Options are "Google Drive", "Filesystem"
     image_source = 'Filesystem'
     #image_source = 'Google Drive'
 
+    # Settings if for Filesystem
     # image_paths can be a single path, the path to a single file,
     # or a list of comma separated paths.
     #image_paths = ('/mnt/c/tmp/images/IMG_1275.JPG',)
     image_paths = ('/mnt/c/tmp/images/',)
-    display_time = 2
-    #sleep_hour = None
-    sleep_hour = 12
-    sleep_minute = 0
-    wake_hour = 14
-    wake_minute = 0
-    log_directory = '/mnt/c/tmp'
 
     # Settings if for Google Drive (if used)
     # If there is a root level directory to start in, can save a lot of time
@@ -47,8 +72,4 @@ class PFSettings:
     # The directory the photos are in.  It may be the same as the
     # ROOT_FOLDER_TITLE
     gdrive_photos_folder = "PicFrame"
-
-    @staticmethod
-    def get_image_dirs():
-        return PFEnv.path_to_platform(PFSettings.image_paths)
 

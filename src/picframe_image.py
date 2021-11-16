@@ -64,7 +64,7 @@ class PicframeImage:
         Inputs:
         """
     
-        win = Tk(className = str(PFSettings.get_image_dirs()))
+        win = Tk(className = "Picframe")
         win.resizable(height = None, width = None)
         win.geometry(PFEnv.geometry_str)
         if PFSettings.fullscreen == True:
