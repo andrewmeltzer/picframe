@@ -5,11 +5,15 @@ import sys
 import os
 import logging
 import time
+import multiprocessing as mp
 
 from picframe_settings import PFSettings
 from picframe_env import PFEnv
 from picframe_image import PFImage
 from picframe_timer import PFTimer
+from picframe_blackout import PFBlackout
+from picframe_message import PFMessageContent
+from picframe_state import PFState, PFStates
 
 # TODO: ++++
 # - Need a way to kill it when it is sleeping.
@@ -144,14 +148,75 @@ def setup_logger():
 
 ############################################################
 #
+# process_message
+#
+def process_message(message):
+    """
+    Process the next message from the queue based on the current state
+    of the system and the message.  As a rule of thumb, keyboard actions
+    take precedence over everything else.
+    """
+
+    # Only go to the next message if in the normal state.
+    if message.message == PFMessageContent.TIMER_NEXT_IMAGE:
+        if PFState.current_state == PFStates.NORMAL:
+            PFImage.display_next_image()
+
+    # If the keyboard says next image, override any holds or blackouts
+    elif message.message == PFMessageContent.KEYBOARD_NEXT_IMAGE:
+        PFImage.display_next_image()
+
+    elif message.message == PFMessageContent.KEYBOARD_HOLD:
+        pass
+    elif message.message == PFMessageContent.KEYBOARD_END_HOLD:
+        PFImage.display_next_image()
+    elif message.message == PFMessageContent.KEYBOARD_BLACKOUT:
+        PFImage.display_black_image()
+    elif message.message == PFMessageContent.KEYBOARD_END_BLACKOUT:
+        PFImage.display_next_image()
+    elif message.message == PFMessageContent.KEYBOARD_INCREASE_BRIGHTNESS:
+        PFState.keyboard_brightness = True
+    elif message.message == PFMessageContent.KEYBOARD_DECREASE_BRIGHTNESS:
+        PFState.keyboard_brightness = True
+    elif message.message == PFMessageContent.KEYBOARD_USE_DEFAULT_BRIGHTNESS:
+        PFState.keyboard_brightness = False
+    elif message.message == PFMessageContent.KEYBOARD_EMULATE_MOTION:
+        PFImage.display_next_image()
+    elif message.message == PFMessageContent.KEYBOARD_EMULATE_MOTION_TIMEOUT:
+        PFImage.display_black_image()
+    elif message.message == PFMessageContent.BLACKOUT:
+        PFImage.display_black_image()
+    elif message.message == PFMessageContent.END_BLACKOUT:
+        pass
+    elif message.message == PFMessageContent.INCREASE_BRIGHTNESS:
+        pass
+    elif message.message == PFMessageContent.DECREASE_BRIGHTNESS:
+        pass
+    elif message.message == PFMessageContent.MOTION:
+        pass
+    elif message.message == PFMessageContent.MOTION_TIMEOUT:
+        PFImage.display_black_image()
+
+    PFState.new_state(message)
+
+
+############################################################
+#
 # main
 #
 def main():
     """
     """
+
+    queue = mp.Queue()
+    timer_p = mp.Process(target=PFTimer.timer_main, args=(queue,))
+    blackout_p = mp.Process(target=PFBlackout.blackout_main, args=(queue,))
+    timer_p.start()
+    blackout_p.start()
+
     while True:
-        PFImage.display_next_image()
-        time.sleep(PFTimer.get_sleep_interval())
+        message = queue.get()
+        process_message(message)
 
 
 if __name__ == "__main__":

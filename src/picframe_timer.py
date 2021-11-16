@@ -5,9 +5,11 @@ import os
 import time
 import datetime
 import logging
+import multiprocessing
 
 from picframe_settings import PFSettings
 from picframe_env import PFEnv
+from picframe_message import PFMessageContent, PFMessage
 
 class PFTimer:
     """
@@ -27,15 +29,17 @@ class PFTimer:
     # timer_main
     #
     @staticmethod
-    def timer_main():
+    def timer_main(queue):
         """
         Continually loop, sending a next-image message every sleep interval
+        Inputs: 
+            queue: The message queue
         """
 
         while True:
-            # ++++ Send next-image message
-            sleep(PFSettings.display_time)
-            pass
+            logging.debug("Putting next timer message.")
+            queue.put(PFMessage(PFMessageContent.TIMER_NEXT_IMAGE))
+            time.sleep(PFSettings.display_time)
 
 
     

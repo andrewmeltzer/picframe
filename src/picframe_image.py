@@ -206,7 +206,7 @@ class PFImage:
 
         img = None
         if filepath is None:
-            img = get_image(PFEnv.black_image)
+            img = PFImage.get_image(PFEnv.black_image)
         else:
             img = PFImage.get_image(filepath)
 
@@ -227,8 +227,6 @@ class PFImage:
         """
         Get and display the next image as returned.  This is the external
         interface to this class.
-        Inputs:
-            filepath:  The full path to the file to display
         """
         if PFImage.initialized == False:
             PFImage.init()
@@ -242,3 +240,13 @@ class PFImage:
 
         PFImage.display_image(image_file)
 
+    ############################################################
+    #
+    # display_black_image
+    #
+    @staticmethod
+    def display_black_image():
+        """
+        Get and display the blank-screen (black) image
+        """
+        PFImage.display_image(None)

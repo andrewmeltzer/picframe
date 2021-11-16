@@ -27,7 +27,7 @@ class PFSettings:
 
     ##########################################################
     # Debug level.  CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET
-    debug_level = 'DEBUG'
+    debug_level = 'INFO'
     
     ##########################################################
     # Should the images be displayed fullscreen?  You can also specify a 
@@ -45,10 +45,10 @@ class PFSettings:
     # blackout_hour to None.  Otherwise set the values using a 24 hour
     # clock time.
     #blackout_hour = None
-    blackout_hour = 12
+    blackout_hour = 15
     blackout_minute = 0
-    end_blackout_hour = 14
-    end_blackout_minute = 0
+    end_blackout_hour = 15
+    end_blackout_minute = 14
 
 
     ##########################################################

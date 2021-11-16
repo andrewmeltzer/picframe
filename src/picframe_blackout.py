@@ -8,6 +8,7 @@ import logging
 
 from picframe_settings import PFSettings
 from picframe_env import PFEnv
+from picframe_message import PFMessageContent, PFMessage
 
 class PFBlackout:
     """
@@ -78,26 +79,30 @@ class PFBlackout:
     # blackout_main
     #
     @staticmethod
-    def blackout_main():
+    def blackout_main(queue):
         """
         Continually loop, checking to see if the blackout status changes
         and if so, send the blackout message.
+        Inputs:
+            queue: The message queue
         """
         while True:
             blackout_interval = PFBlackout.check_blackout_window()
             if blackout_interval > 0:
                 if PFBlackout.in_blackout == False:
-                    # ++++ Send blackout message
+                    # Send blackout message
+                    queue.put(PFMessage(PFMessageContent.BLACKOUT))
                     logging.info(f"Going dark for {blackout_interval} seconds.")
                     PFBlackout.in_blackout = True
                     pass
             else:
                 if PFBlackout.in_blackout == True:
-                    # ++++ Send end blackout message
+                    # Send end blackout message
+                    queue.put(PFMessage(PFMessageContent.END_BLACKOUT))
                     PFBlackout.in_blackout = False
                     pass
 
             # Test every 60 seconds
-            sleep(60)
+            time.sleep(60)
 
     
