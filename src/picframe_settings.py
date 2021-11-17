@@ -58,8 +58,8 @@ class PFSettings:
     # image_paths can be a single path, the path to a single file,
     # or a list of comma separated paths.
     #image_paths = ('/mnt/c/tmp/images/IMG_1275.JPG',)
-    #image_paths = ('/mnt/c/tmp/images/',)
-    image_paths = ('/mnt/c/Users/andym/Pictures/',)
+    image_paths = ('/mnt/c/tmp/images/',)
+    #image_paths = ('/mnt/c/Users/andym/Pictures/',)
 
     # Settings if for Google Drive (if used)
     # If there is a root level directory to start in, can save a lot of time
