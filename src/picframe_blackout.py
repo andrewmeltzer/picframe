@@ -8,7 +8,8 @@ import logging
 
 from picframe_settings import PFSettings
 from picframe_env import PFEnv
-from picframe_message import PFMessageContent, PFMessage
+from picframe_message import PFMessage
+from picframe_messagecontent import PFMessageContent
 
 class PFBlackout:
     """

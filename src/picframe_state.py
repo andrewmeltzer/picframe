@@ -5,7 +5,7 @@ received and the current state.
 """
 import logging
 from enum import Enum, auto
-from picframe_message import PFMessageContent
+from picframe_messagecontent import PFMessageContent
 
 
 
@@ -36,7 +36,7 @@ class PFState:
     }
     blackout_state_map = {
         PFMessageContent.KEYBOARD_HOLD: PFStates.KEYBOARD_HOLD,
-        PFMessageContent.KEYBOARD_END_BLACKOUT: PFStates.NORMAL,
+        PFMessageContent.KEYBOARD_BLACKOUT: PFStates.NORMAL,
         PFMessageContent.END_BLACKOUT: PFStates.NORMAL,
     }
     motion_blackout_state_map = {
@@ -46,10 +46,10 @@ class PFState:
     }
     keyboard_blackout_state_map = {
         PFMessageContent.KEYBOARD_HOLD: PFStates.KEYBOARD_HOLD,
-        PFMessageContent.KEYBOARD_END_BLACKOUT: PFStates.NORMAL,
+        PFMessageContent.KEYBOARD_BLACKOUT: PFStates.NORMAL,
     }
     keyboard_hold_state_map = {
-        PFMessageContent.KEYBOARD_END_HOLD: PFStates.NORMAL,
+        PFMessageContent.KEYBOARD_HOLD: PFStates.NORMAL,
     }
 
         
@@ -67,7 +67,7 @@ class PFState:
         elif PFState.current_state == PFStates.BLACKOUT:
             state_map = PFState.blackout_state_map
         elif PFState.current_state == PFStates.MOTION_BLACKOUT:
-            state_map = PFState.motion_state_map
+            state_map = PFState.motion_blackout_state_map
         elif PFState.current_state == PFStates.KEYBOARD_HOLD:
             state_map = PFState.keyboard_hold_state_map
         elif PFState.current_state == PFStates.KEYBOARD_BLACKOUT:
