@@ -17,8 +17,8 @@ from picframe_message import PFMessage
 from picframe_state import PFState, PFStates
 
 # TODO: ++++
-# - Want to support videos (mp4, mov, wmv, mp3, wav).  
-# - Add a showhelp screen
+# - Someday support videos (mp4, mov, wmv, mp3, wav).  
+# - Someday create a smartphone app to control it over bluetooth or wifi
 
 ############################################################
 # print_help
