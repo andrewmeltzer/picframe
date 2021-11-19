@@ -60,7 +60,6 @@ class PFState:
     @staticmethod
     def new_state(message):
 
-        state_changed = False
         state_map = PFState.normal_state_map
         if PFState.current_state == PFStates.NORMAL:
             state_map = PFState.normal_state_map
@@ -76,5 +75,4 @@ class PFState:
         if message.message in state_map:
             PFState.previous_state = PFState.current_state
             PFState.current_state = state_map[message.message]
-
 

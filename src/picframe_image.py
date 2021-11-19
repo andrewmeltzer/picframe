@@ -17,29 +17,29 @@ from picframe_env import PFEnv
 from picframe_env import NoImagesFoundException
 from picframe_gdrive import PFGoogleDrive
 from picframe_filesystem import PFFilesystem
+from picframe_canvas import PFCanvas
+from picframe_state import PFState, PFStates
+from picframe_messagecontent import PFMessageContent
 
 class PFImage:
     """
     Get, load, and display images.
     """
 
-    initialized = False
-    win = None
-    canvas = None
     image_file = None
+    current_image = None
+    previous_image = None
+    queue = None
 
     ############################################################
     #
     # init
     #
     @staticmethod
-    def init():
+    def init(queue):
         """
         One-time initialization of the class.
         """
-
-        PFImage.win = PFImage.get_window()
-        PFImage.canvas = PFImage.get_canvas(PFImage.win)
 
         # Initialize the data source
         if PFSettings.image_source == "Filesystem": 
@@ -50,46 +50,8 @@ class PFImage:
             raise Exception(f"Image source from settings file: '{PFSettings.image_source}' is not supported.")
 
         PFImage.image_file = PFImage.get_next_image_file()
-        PFImage.initialized = True
+        PFImage.queue = queue
 
-    ############################################################
-    #
-    # get_window
-    #
-    @staticmethod
-    def get_window():
-        """
-        Get the window that will be displaying the image and set it up
-        appropriately.
-        Inputs:
-        """
-    
-        win = Tk(className = "Picframe")
-        win.resizable(height = None, width = None)
-        win.geometry(PFEnv.geometry_str)
-        if PFSettings.fullscreen == True:
-            win.attributes('-fullscreen', True)
-    
-        return win
-    
-    ############################################################
-    #
-    # get_canvas
-    #
-    @staticmethod
-    def get_canvas(win):
-        """
-        Return the appropriately sized and generated canvas which the picture
-        will appear on.
-        Inputs:
-            win: The Tk window to draw on.
-        """
-        canvas = Canvas(win, width=PFEnv.screen_width,height=PFEnv.screen_height)
-        canvas.pack(fill=tkinter.BOTH, expand=True)
-        canvas.grid(row=1, column=1)
-    
-        return canvas
-    
     ############################################################
     #
     # get_image_file_list
@@ -189,7 +151,6 @@ class PFImage:
         pil_img = pil_img.resize((actual_width, actual_height), Image.ANTIALIAS)
         img = ImageTk.PhotoImage(pil_img)
     
-    
         return img
     
     ############################################################
@@ -213,11 +174,12 @@ class PFImage:
         # Calculate where to put the image in the frame
         top = (PFEnv.screen_height - img.height())/2
         left = (PFEnv.screen_width - img.width())/2
-        canvas_image = PFImage.canvas.create_image(left, top, anchor=NW, image=img)
-        PFImage.win.geometry(PFEnv.geometry_str)
-        PFImage.canvas.configure(bg = 'black')
-        PFImage.win.update()
-    
+        PFCanvas.canvas.create_image(left, top, anchor=NW, image=img)
+        PFCanvas.win.geometry(PFEnv.geometry_str)
+        PFCanvas.canvas.configure(bg = 'black')
+        PFCanvas.win.update()
+        PFCanvas.win.mainloop()
+
     ############################################################
     #
     # display_next_image
@@ -228,16 +190,40 @@ class PFImage:
         Get and display the next image as returned.  This is the external
         interface to this class.
         """
-        if PFImage.initialized == False:
-            PFImage.init()
-
         image_file = next(PFImage.image_file)
+        PFImage.previous_image = PFImage.current_image
+        PFImage.current_image = image_file
+
         filename, file_extension = os.path.splitext(image_file)
         while file_extension.lower() not in PFEnv.supported_types:
             print(f"WARNING: File type '{file_extension}' is not supported.")
             image_file = next(PFImage.image_file)
             filename, file_extension = os.path.splitext(image_file)
 
+        PFImage.display_image(image_file)
+
+    ############################################################
+    #
+    # display_previous_image
+    #
+    @staticmethod
+    def display_previous_image():
+        """
+        Get and display the previous image over again.
+        """
+        image_file = PFImage.previous_image
+        PFImage.display_image(image_file)
+
+    ############################################################
+    #
+    # display_current_image
+    #
+    @staticmethod
+    def display_current_image():
+        """
+        Get and display the current image over again.
+        """
+        image_file = PFImage.current_image
         PFImage.display_image(image_file)
 
     ############################################################
@@ -249,4 +235,6 @@ class PFImage:
         """
         Get and display the blank-screen (black) image
         """
+        PFImage.previous_image = PFImage.current_image
+        PFImage.current_image = None
         PFImage.display_image(None)

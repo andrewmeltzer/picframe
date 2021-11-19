@@ -11,10 +11,13 @@ from picframe_settings import PFSettings
 from picframe_env import PFEnv
 from picframe_timer import PFTimer
 from picframe_blackout import PFBlackout
-from picframe_keyboard import PFKeyboard
 from picframe_messagecontent import PFMessageContent
 from picframe_message import PFMessage
 from picframe_state import PFState, PFStates
+from picframe_image import PFImage
+from picframe_canvas import PFCanvas
+from picframe_event import PFEvent
+
 
 # TODO: ++++
 # - Someday support videos (mp4, mov, wmv, mp3, wav).  
@@ -135,6 +138,26 @@ def setup_logger():
 
 ############################################################
 #
+# show_command_help
+#
+def show_command_help():
+    """
+    Display the keyboard commands.
+    """
+    print("f: Toggle fullscreen")
+    print("n: Next picture")
+    print("h: Toggle hold current picure")
+    print("b: Toggle blackout mode")
+    print("M: Motion start as if the motion detector went off")
+    print("m: Motion stop as if the motion detector timed out")
+    print("V: Increase video brightness")
+    print("v: Decrease video brightess")
+    print("a: Return to automatic video mode")
+    print("x or q: Quit")
+
+
+############################################################
+#
 # main
 #
 def main():
@@ -142,18 +165,22 @@ def main():
     """
 
     queue = mp.Queue()
+    PFImage.init(queue)
+    PFCanvas.init(queue)
+    
+    show_command_help()
     timer_p = mp.Process(target=PFTimer.timer_main, args=(queue,))
     blackout_p = mp.Process(target=PFBlackout.blackout_main, args=(queue,))
-    message_p = mp.Process(target=PFMessage.message_main, args=(queue,))
+    event_p = mp.Process(target=PFEvent.event_main, args=(queue,))
+    event_p.start()
     timer_p.start()
     blackout_p.start()
-    message_p.start()
 
-    PFKeyboard.keyboard_main(queue)
+    event_p.join()
 
+    event_p.terminate()
     timer_p.terminate()
     blackout_p.terminate()
-    message_p.terminate()
     queue.close()
 
 if __name__ == "__main__":
