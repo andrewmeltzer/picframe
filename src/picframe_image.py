@@ -29,6 +29,7 @@ class PFImage:
     image_file = None
     current_image = None
     previous_image = None
+    message = None
     queue = None
 
     ############################################################
@@ -52,6 +53,79 @@ class PFImage:
         PFImage.image_file = PFImage.get_next_image_file()
         PFImage.queue = queue
 
+    ############################################################
+    #
+    # process_message
+    #
+    @staticmethod
+    def process_message():
+        """
+        Process the next message from the queue based on the current state
+        of the system and the message.  As a rule of thumb, keyboard actions
+        take precedence over everything else.
+        """
+        PFImage.message = PFImage.queue.get()
+        message = PFImage.message
+    
+        # Only go to the next message if in the normal state.
+        print(f"Message: {str(message.message)}  State: {str(PFState.current_state)}")
+        if message.message == PFMessageContent.TIMER_NEXT_IMAGE:
+            if PFState.current_state == PFStates.NORMAL:
+                PFImage.display_next_image()
+            else:
+                PFImage.display_current_image()
+    
+        # If the keyboard says next image, override any holds or blackouts
+        elif message.message == PFMessageContent.KEYBOARD_NEXT_IMAGE:
+            PFImage.display_next_image()
+    
+        elif message.message == PFMessageContent.KEYBOARD_HOLD:
+            if PFState.current_state == PFStates.KEYBOARD_HOLD:
+                PFImage.display_next_image()
+            else:
+                PFImage.display_previous_image()
+    
+        elif message.message == PFMessageContent.KEYBOARD_BLACKOUT:
+            if PFState.current_state == PFStates.KEYBOARD_BLACKOUT:
+                PFImage.display_next_image()
+            else:
+                PFImage.display_black_image()
+    
+        elif message.message == PFMessageContent.KEYBOARD_INCREASE_BRIGHTNESS:
+            PFState.keyboard_brightness = True
+        elif message.message == PFMessageContent.KEYBOARD_DECREASE_BRIGHTNESS:
+            PFState.keyboard_brightness = True
+        elif message.message == PFMessageContent.KEYBOARD_USE_DEFAULT_BRIGHTNESS:
+            PFState.keyboard_brightness = False
+        elif message.message == PFMessageContent.KEYBOARD_EMULATE_MOTION:
+            PFImage.display_next_image()
+        elif message.message == PFMessageContent.KEYBOARD_EMULATE_MOTION_TIMEOUT:
+            PFImage.display_black_image()
+        elif message.message == PFMessageContent.BLACKOUT:
+            PFImage.display_black_image()
+        elif message.message == PFMessageContent.END_BLACKOUT:
+            PFImage.display_current_image()
+        elif message.message == PFMessageContent.INCREASE_BRIGHTNESS:
+            PFImage.display_current_image()
+        elif message.message == PFMessageContent.DECREASE_BRIGHTNESS:
+            PFImage.display_current_image()
+        elif message.message == PFMessageContent.MOTION:
+            PFImage.display_current_image()
+        elif message.message == PFMessageContent.KEYBOARD_FULLSCREEN:
+            logging.warn("Fullscreen toggling is not yet implemented.")
+            raise NotImplementedError("Fullscreen toggling is not yet implemented.")
+        elif message.message == PFMessageContent.MOTION_TIMEOUT:
+            PFImage.display_black_image()
+        elif message.message == PFMessageContent.KEYBOARD_QUIT:
+            return False
+        else:
+            PFImage.display_current_image()
+    
+        PFState.new_state(message)
+        PFCanvas.win.after(100, PFImage.process_message)
+    
+        return True
+    
     ############################################################
     #
     # get_image_file_list
@@ -165,6 +239,9 @@ class PFImage:
             filepath:  The full path to the file to display
         """
 
+        if PFImage.message is not None:
+            PFState.new_state(PFImage.message)
+
         img = None
         if filepath is None:
             img = PFImage.get_image(PFEnv.black_image)
@@ -178,6 +255,7 @@ class PFImage:
         PFCanvas.win.geometry(PFEnv.geometry_str)
         PFCanvas.canvas.configure(bg = 'black')
         PFCanvas.win.update()
+        PFCanvas.win.after(100, PFImage.process_message)
         PFCanvas.win.mainloop()
 
     ############################################################

@@ -1,23 +1,3 @@
-#!/mnt/c/tmp/frame/env/bin/python3
-
-import sys
-import os
-import time
-import datetime
-import logging
-
-from picframe_settings import PFSettings
-from picframe_env import PFEnv
-from picframe_state import PFState, PFStates
-from picframe_message import PFMessage
-from picframe_image import PFImage
-from picframe_messagecontent import PFMessageContent
-from picframe_canvas import PFCanvas
-
-class PFEvent:
-    """
-    Process the event queue in picframe.
-    """
 
     ############################################################
     #
@@ -89,25 +69,6 @@ class PFEvent:
     
         return True
     
-        
-    ############################################################
-    #
-    # event_main
-    #
-    @staticmethod
-    def event_main(queue):
-        """
-        Continually loop, processing the events on the queue as they
-        arrive.
-        Inputs: 
-            queue: The message queue
-        """
-
-        # Continually loop, receiving and processing messages
-        status = True
-        while status:
-            message = queue.get()
-            status = PFEvent.process_message(message)
 
 
 

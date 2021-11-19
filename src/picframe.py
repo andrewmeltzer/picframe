@@ -16,7 +16,6 @@ from picframe_message import PFMessage
 from picframe_state import PFState, PFStates
 from picframe_image import PFImage
 from picframe_canvas import PFCanvas
-from picframe_event import PFEvent
 
 
 # TODO: ++++
@@ -165,20 +164,18 @@ def main():
     """
 
     queue = mp.Queue()
-    PFImage.init(queue)
     PFCanvas.init(queue)
+    PFImage.init(queue)
     
     show_command_help()
     timer_p = mp.Process(target=PFTimer.timer_main, args=(queue,))
     blackout_p = mp.Process(target=PFBlackout.blackout_main, args=(queue,))
-    event_p = mp.Process(target=PFEvent.event_main, args=(queue,))
-    event_p.start()
     timer_p.start()
     blackout_p.start()
 
-    event_p.join()
+    # Continually loop, receiving and processing messages
+    PFImage.display_next_image()
 
-    event_p.terminate()
     timer_p.terminate()
     blackout_p.terminate()
     queue.close()
