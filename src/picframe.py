@@ -173,8 +173,7 @@ def main():
     timer_p.start()
     blackout_p.start()
 
-    # Continually loop, receiving and processing messages
-    PFImage.display_next_image()
+    PFImage.display_first_image()
 
     timer_p.terminate()
     blackout_p.terminate()

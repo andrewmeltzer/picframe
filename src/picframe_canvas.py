@@ -76,7 +76,6 @@ class PFCanvas:
         if key in ('q', 'x'):
             PFCanvas.queue.put(PFMessage(PFMessageContent.KEYBOARD_QUIT))
 
-        PFCanvas.win.quit()
 
     ############################################################
     #

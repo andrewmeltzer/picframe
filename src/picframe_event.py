@@ -12,7 +12,6 @@
         """
     
         # Only go to the next message if in the normal state.
-        print(f"Message: {str(message.message)}  State: {str(PFState.current_state)}")
         if message.message == PFMessageContent.TIMER_NEXT_IMAGE:
             if PFState.current_state == PFStates.NORMAL:
                 PFImage.display_next_image()

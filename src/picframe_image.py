@@ -26,11 +26,13 @@ class PFImage:
     Get, load, and display images.
     """
 
-    image_file = None
+    image_file_gen = None
     current_image = None
     previous_image = None
     message = None
     queue = None
+    image_id = None
+    displayed_img = None
 
     ############################################################
     #
@@ -50,7 +52,7 @@ class PFImage:
         else: 
             raise Exception(f"Image source from settings file: '{PFSettings.image_source}' is not supported.")
 
-        PFImage.image_file = PFImage.get_next_image_file()
+        PFImage.image_file_gen = PFImage.get_next_image_file()
         PFImage.queue = queue
 
     ############################################################
@@ -64,11 +66,14 @@ class PFImage:
         of the system and the message.  As a rule of thumb, keyboard actions
         take precedence over everything else.
         """
-        PFImage.message = PFImage.queue.get()
+        if PFImage.queue.empty():
+            PFCanvas.win.after(100, PFImage.process_message)
+            return
+
+        PFImage.message = PFImage.queue.get_nowait()
         message = PFImage.message
     
         # Only go to the next message if in the normal state.
-        print(f"Message: {str(message.message)}  State: {str(PFState.current_state)}")
         if message.message == PFMessageContent.TIMER_NEXT_IMAGE:
             if PFState.current_state == PFStates.NORMAL:
                 PFImage.display_next_image()
@@ -117,7 +122,9 @@ class PFImage:
         elif message.message == PFMessageContent.MOTION_TIMEOUT:
             PFImage.display_black_image()
         elif message.message == PFMessageContent.KEYBOARD_QUIT:
-            return False
+            PFCanvas.win.quit()
+            PFCanvas.canvas.quit()
+            PFCanvas.win.destroy()
         else:
             PFImage.display_current_image()
     
@@ -239,19 +246,34 @@ class PFImage:
             filepath:  The full path to the file to display
         """
 
-        if PFImage.message is not None:
-            PFState.new_state(PFImage.message)
-
-        img = None
         if filepath is None:
-            img = PFImage.get_image(PFEnv.black_image)
+            PFImage.displayed_img = PFImage.get_image(PFEnv.black_image)
         else:
-            img = PFImage.get_image(filepath)
+            PFImage.displayed_img = PFImage.get_image(filepath)
+
+        top = (PFEnv.screen_height - PFImage.displayed_img.height())/2
+        left = (PFEnv.screen_width - PFImage.displayed_img.width())/2
+        PFCanvas.canvas.itemconfig(PFImage.image_id, image=PFImage.displayed_img)
+        PFCanvas.canvas.coords(PFImage.image_id, (left, top))
+
+    ############################################################
+    #
+    # display_first_image
+    #
+    @staticmethod
+    def display_first_image():
+        """
+        Create and display an initial image.  This is just the black image
+        to get the canvas set up properly.
+        Inputs:
+        """
+
+        img = PFImage.get_image(PFEnv.black_image)
 
         # Calculate where to put the image in the frame
         top = (PFEnv.screen_height - img.height())/2
         left = (PFEnv.screen_width - img.width())/2
-        PFCanvas.canvas.create_image(left, top, anchor=NW, image=img)
+        PFImage.image_id = PFCanvas.canvas.create_image(left, top, anchor=NW, image=img)
         PFCanvas.win.geometry(PFEnv.geometry_str)
         PFCanvas.canvas.configure(bg = 'black')
         PFCanvas.win.update()
@@ -268,14 +290,15 @@ class PFImage:
         Get and display the next image as returned.  This is the external
         interface to this class.
         """
-        image_file = next(PFImage.image_file)
+        image_file = next(PFImage.image_file_gen)
+
         PFImage.previous_image = PFImage.current_image
         PFImage.current_image = image_file
 
         filename, file_extension = os.path.splitext(image_file)
         while file_extension.lower() not in PFEnv.supported_types:
             print(f"WARNING: File type '{file_extension}' is not supported.")
-            image_file = next(PFImage.image_file)
+            image_file = next(PFImage.image_file_gen)
             filename, file_extension = os.path.splitext(image_file)
 
         PFImage.display_image(image_file)

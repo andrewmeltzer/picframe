@@ -31,11 +31,11 @@ class PFSettings:
     # size by setting the geom.  If it is set to None, it defaults to the
     # screen size.
     fullscreen = False
-    geometry_str = "200x200"
+    geometry_str = "400x400"
 
     ##########################################################
     # How long should an image be displayed?
-    display_time = 2
+    display_time = 5
 
     ##########################################################
     # Should the screen go dark during certain hours?  If not, set the
@@ -58,8 +58,8 @@ class PFSettings:
     # image_paths can be a single path, the path to a single file,
     # or a list of comma separated paths.
     #image_paths = ('/mnt/c/tmp/images/IMG_1275.JPG',)
-    image_paths = ('/mnt/c/tmp/images/',)
-    #image_paths = ('/mnt/c/Users/andym/Pictures/',)
+    #image_paths = ('/mnt/c/tmp/images/',)
+    image_paths = ('/mnt/c/Users/andym/Pictures/',)
 
     # Settings if for Google Drive (if used)
     # If there is a root level directory to start in, can save a lot of time
