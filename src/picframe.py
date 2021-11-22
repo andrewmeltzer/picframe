@@ -163,32 +163,36 @@ def main():
     """
     """
 
-    queue = mp.Queue()
-    PFCanvas.init(queue)
-    PFImage.init(queue)
-    
     show_command_help()
-    timer_p = mp.Process(target=PFTimer.timer_main, args=(queue,))
-    blackout_p = mp.Process(target=PFBlackout.blackout_main, args=(queue,))
+
+    PFMessage.queue = mp.Queue()
+    PFCanvas.init()
+    PFImage.init()
+    
+    timer_p = mp.Process(target=PFTimer.timer_main, args=(PFMessage.queue,))
+    blackout_p = mp.Process(target=PFBlackout.blackout_main, args=(PFMessage.queue,))
     timer_p.start()
     blackout_p.start()
 
-    # enque a message to get the first real image on the screen 
-    PFCanvas.queue.put(PFMessage(PFMessageContent.KEYBOARD_NEXT_IMAGE))
-    
-    # Process non-keyboard messages
-    PFCanvas.win.after(100, PFImage.process_message)
+    # When a key is pressed on the canvas, send that message to keypress
+    PFCanvas.canvas.bind("<KeyPress>", PFMessage.keypress)
 
+    # enque a message to get the first real image on the screen 
+    PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_NEXT_IMAGE))
+    
     # Queue up a black image as the first image to set it up
     PFImage.display_first_image()
+    PFCanvas.win.update()
+
+    # Process non-keyboard messages
+    PFCanvas.win.after(100, PFMessage.process_message)
 
     # This runs forever until a 'q' or 'x' is entered.
-    PFCanvas.win.update()
     PFCanvas.win.mainloop()
 
     timer_p.terminate()
     blackout_p.terminate()
-    queue.close()
+    PFMessage.queue.close()
 
 if __name__ == "__main__":
     PFEnv.init_environment()

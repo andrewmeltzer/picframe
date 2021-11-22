@@ -16,23 +16,20 @@ from picframe_env import PFEnv
 from picframe_env import NoImagesFoundException
 from picframe_gdrive import PFGoogleDrive
 from picframe_filesystem import PFFilesystem
-from picframe_messagecontent import PFMessageContent
-from picframe_message import PFMessage
 
 class PFCanvas:
     """
-    Get, load, and display images.
+    Set up the canvas and window in which images will be displayed.
     """
     win = None
     canvas = None
-    queue = None
 
     ############################################################
     #
     # init
     #
     @staticmethod
-    def init(queue):
+    def init():
         """
         One-time initialization of the class.
         """
@@ -42,43 +39,6 @@ class PFCanvas:
         PFCanvas.win.geometry(PFEnv.geometry_str)
         PFCanvas.canvas.configure(bg = 'black')
         PFCanvas.win.update()
-
-        PFCanvas.queue = queue
-
-    ############################################################
-    #
-    # keypress
-    #
-    @staticmethod
-    def keypress(e):
-        """
-        Capture and react to a keypress event in the display window.
-        """
-        print(f"#########################{e} {e.char} pressed")
-        key = e.char
-
-        if key == 'f':
-            PFCanvas.queue.put(PFMessage(PFMessageContent.KEYBOARD_FULLSCREEN))
-        if key == 'n':
-            PFCanvas.queue.put(PFMessage(PFMessageContent.KEYBOARD_NEXT_IMAGE))
-        if key == 'h':
-            PFCanvas.queue.put(PFMessage(PFMessageContent.KEYBOARD_HOLD))
-        if key == 'b':
-            PFCanvas.queue.put(PFMessage(PFMessageContent.KEYBOARD_BLACKOUT))
-        if key == 'M':
-            PFCanvas.queue.put(PFMessage(PFMessageContent.KEYBOARD_EMULATE_MOTION))
-        if key == 'm':
-            PFCanvas.queue.put(PFMessage(PFMessageContent.KEYBOARD_EMULATE_MOTION_TIMEOUT))
-        if key == 'V':
-            PFCanvas.queue.put(PFMessage(PFMessageContent.KEYBOARD_INCREASE_BRIGHTNESS))
-        if key == 'v':
-            PFCanvas.queue.put(PFMessage(PFMessageContent.KEYBOARD_DECREASE_BRIGHTNESS))
-
-        if key == 'a':
-            PFCanvas.queue.put(PFMessage(PFMessageContent.KEYBOARD_USE_DEFAULT_BRIGHTNESS))
-        if key in ('q', 'x'):
-            PFCanvas.queue.put(PFMessage(PFMessageContent.KEYBOARD_QUIT))
-
 
     ############################################################
     #
@@ -114,7 +74,6 @@ class PFCanvas:
         """
         canvas = Canvas(PFCanvas.win, width=PFEnv.screen_width,height=PFEnv.screen_height)
 
-        canvas.bind("<KeyPress>", PFCanvas.keypress)
         canvas.pack(fill=tkinter.BOTH, expand=True)
         canvas.grid(row=1, column=1)
         canvas.focus_set()
