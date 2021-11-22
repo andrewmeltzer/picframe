@@ -14,6 +14,7 @@ class PFCanvas:
     """
     win = None
     canvas = None
+    fullscreen = True
 
     ############################################################
     #
@@ -25,8 +26,9 @@ class PFCanvas:
         One-time initialization of the class.
         """
 
-        PFCanvas.win = PFCanvas.get_window()
-        PFCanvas.canvas = PFCanvas.get_canvas()
+        PFCanvas.fullscreen = PFSettings.fullscreen
+        PFCanvas.get_window()
+        PFCanvas.get_canvas()
         PFCanvas.win.geometry(PFEnv.geometry_str)
         PFCanvas.canvas.configure(bg='black')
         PFCanvas.win.update()
@@ -43,13 +45,12 @@ class PFCanvas:
         Inputs:
         """
 
-        win = Tk(className="Picframe")
-        win.resizable(height=None, width=None)
-        win.geometry(PFEnv.geometry_str)
-        if PFSettings.fullscreen:
-            win.attributes('-fullscreen', True)
-
-        return win
+        PFCanvas.win = Tk(className="Picframe")
+        PFCanvas.win.resizable(height=None, width=None)
+        PFCanvas.win.geometry(PFEnv.geometry_str)
+        if PFCanvas.fullscreen:
+            PFCanvas.win.attributes('-fullscreen', True)
+            PFCanvas.win.attributes('-type', 'dock')
 
 
     ############################################################
@@ -63,10 +64,37 @@ class PFCanvas:
         will appear on.
         Inputs:
         """
-        canvas = Canvas(PFCanvas.win, width=PFEnv.screen_width, height=PFEnv.screen_height)
+        PFCanvas.canvas = Canvas(PFCanvas.win, width=PFEnv.screen_width, height=PFEnv.screen_height)
 
-        canvas.pack(fill=tkinter.BOTH, expand=True)
-        canvas.grid(row=1, column=1)
-        canvas.focus_set()
+        PFCanvas.canvas.pack(fill=tkinter.BOTH, expand=True)
+        PFCanvas.canvas.grid(row=1, column=1)
+        PFCanvas.canvas.focus_set()
 
-        return canvas
+
+    ############################################################
+    #
+    # toggle_fullscreen
+    #
+    @staticmethod
+    def toggle_fullscreen():
+        """
+        Toggle whether in fullscreen mode or not. 
+        """
+        PFCanvas.win.destroy()
+
+        if PFCanvas.fullscreen:
+            PFCanvas.fullscreen = False
+            PFEnv.set_settings_geom()
+        else:
+            PFCanvas.fullscreen = True
+            PFEnv.set_fullscreen_geom()
+
+        PFCanvas.get_window()
+        PFCanvas.get_canvas()
+
+        PFCanvas.win.geometry(PFEnv.geometry_str)
+        if PFCanvas.fullscreen:
+            PFCanvas.win.attributes('-type', 'dock')
+            PFCanvas.win.attributes('-fullscreen', True)
+        PFCanvas.canvas.configure(bg='black')
+        PFCanvas.win.update()

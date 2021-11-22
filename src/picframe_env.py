@@ -56,20 +56,51 @@ class PFEnv:
         supported image types.
         """
         if sys.platform in ("linux", "linux2"):
+            PFEnv.supported_types = ('.avif', '.heic', '.png', '.tif', '.gif', '.jpg', '.jpeg')
+        else:
+            PFEnv.supported_types = ('.png', '.jpg', '.tif', '.gif', '.jpeg')
+
+    ############################################################
+    #
+    # set_fullscreen_geom
+    #
+    @staticmethod
+    def set_fullscreen_geom():
+        """
+        Set the geometry for a full-screen display.
+        """
+        if sys.platform in ("linux", "linux2"):
             # ++++ Find a linux way of doing this
             PFEnv.geometry = (1920, 1080)
             PFEnv.screen_width = 1920
             PFEnv.screen_height = 1080
             PFEnv.geometry_str = '1920x1080'
-            PFEnv.supported_types = ('.avif', '.heic', '.png', '.tif', '.gif', '.jpg', '.jpeg')
         else:
             user32 = ctypes.windll.user32
             PFEnv.geometry = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
             PFEnv.screen_width = PFEnv.geometry[0]
             PFEnv.screen_height = PFEnv.geometry[1]
             PFEnv.geometry_str = str(PFEnv.screen_width) + "x" + str(PFEnv.screen_height)
-            PFEnv.supported_types = ('.png', '.jpg', '.tif', '.gif', '.jpeg')
 
+    ############################################################
+    #
+    # set_settings_geom
+    #
+    @staticmethod
+    def set_settings_geom():
+        """
+        Set the geometry based on a geometry string provided in the
+        settings file; if none default to 400x400.
+        """
+        if PFSettings.geometry_str is not None:
+            PFEnv.geometry_str = PFSettings.geometry_str
+        else:
+            PFEnv.geometry_str = "400x400"
+
+        wstr, hstr = PFEnv.geometry_str.split('x')
+        PFEnv.screen_height = int(hstr)
+        PFEnv.screen_width = int(wstr)
+        PFEnv.geometry = (PFEnv.screen_width, PFEnv.screen_height)
 
     ############################################################
     #

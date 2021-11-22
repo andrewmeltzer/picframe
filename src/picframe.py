@@ -56,15 +56,6 @@ def get_args(argv):
         sets global settings and environmentt settings
     """
 
-    # Start with the geometry from the settings
-    if PFSettings.geometry_str is not None:
-        PFSettings.fullscreen = False
-        PFEnv.geometry_str = PFSettings.geometry_str
-        wstr, hstr = PFSettings.geometry_str.split('x')
-        PFEnv.screen_height = int(hstr)
-        PFEnv.screen_width = int(wstr)
-        PFEnv.geometry = (PFEnv.screen_width, PFEnv.screen_height)
-
     try:
         opts, inargs = getopt.getopt(argv, "hfs:d:g:",
                 ["help", "fullscreen", "logfile=", "debuglevel=",
@@ -84,17 +75,19 @@ def get_args(argv):
             PFSettings.fullscreen = True
         elif opt in ('-g', '--geom'):
             PFSettings.fullscreen = False
-            PFEnv.geometry_str = arg
-            wstr, hstr = arg.split('x')
-            PFEnv.screen_height = int(hstr)
-            PFEnv.screen_width = int(wstr)
-            PFEnv.geometry = (PFEnv.screen_width, PFEnv.screen_height)
+            PFSettings.geometry_str = arg
         elif opt in ('-s', '--single'):
             PFSettings.single_image = True
             PFSettings.image_dir = arg
         elif opt in ('-p', '--path'):
             PFSettings.single_image = False
             PFSettings.image_dir = arg
+
+    # Start with the geometry from the settings
+    if PFSettings.geometry_str is not None and not PFSettings.fullscreen:
+        PFEnv.set_settings_geom() 
+    else:
+        PFEnv.set_fullscreen_geom() 
 
 ############################################################
 #
@@ -179,18 +172,13 @@ def main():
     timer_p.start()
     blackout_p.start()
 
-    # When a key is pressed on the canvas, send that message to keypress
-    PFCanvas.canvas.bind("<KeyPress>", PFMessage.keypress)
-
-    # enque a message to get the first real image on the screen
-    PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_NEXT_IMAGE))
+    # Add the messaging pieces (keyboard events and other events) to
+    # the canvas
+    PFMessage.setup_canvas_messaging()
 
     # Queue up a black image as the first image to set it up
     PFImage.display_first_image()
     PFCanvas.win.update()
-
-    # Process non-keyboard messages
-    PFCanvas.win.after(100, PFMessage.process_message)
 
     # This runs forever until a 'q' or 'x' is entered.
     PFCanvas.win.mainloop()

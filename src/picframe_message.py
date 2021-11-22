@@ -27,6 +27,24 @@ class PFMessage:
 
     ############################################################
     #
+    # setup_canvas_messaging
+    #
+    @staticmethod
+    def setup_canvas_messaging():
+        """
+        Set up the necessary messaging information for a canvas.
+        """
+        # When a key is pressed on the canvas, send message to keypress
+        PFCanvas.canvas.bind("<KeyPress>", PFMessage.keypress)
+        
+        # Process non-keyboard messages
+        PFCanvas.win.after(100, PFMessage.process_message)
+
+        # enque a message to get the first real image on the screen
+        PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_NEXT_IMAGE))
+
+    ############################################################
+    #
     # keypress
     #
     @staticmethod
@@ -81,8 +99,6 @@ class PFMessage:
         if message.message == PFMessageContent.TIMER_NEXT_IMAGE:
             if PFState.current_state == PFStates.NORMAL:
                 PFImage.display_next_image()
-            else:
-                PFImage.display_current_image()
 
         # If the keyboard says next image, override any holds or blackouts
         elif message.message == PFMessageContent.KEYBOARD_NEXT_IMAGE:
@@ -91,8 +107,6 @@ class PFMessage:
         elif message.message == PFMessageContent.KEYBOARD_HOLD:
             if PFState.current_state == PFStates.KEYBOARD_HOLD:
                 PFImage.display_next_image()
-            else:
-                PFImage.display_previous_image()
 
         elif message.message == PFMessageContent.KEYBOARD_BLACKOUT:
             if PFState.current_state == PFStates.KEYBOARD_BLACKOUT:
@@ -107,7 +121,7 @@ class PFMessage:
         elif message.message == PFMessageContent.KEYBOARD_USE_DEFAULT_BRIGHTNESS:
             PFState.keyboard_brightness = False
         elif message.message == PFMessageContent.KEYBOARD_EMULATE_MOTION:
-            PFImage.display_next_image()
+            pass
         elif message.message == PFMessageContent.KEYBOARD_EMULATE_MOTION_TIMEOUT:
             PFImage.display_black_image()
         elif message.message == PFMessageContent.BLACKOUT:
@@ -121,8 +135,13 @@ class PFMessage:
         elif message.message == PFMessageContent.MOTION:
             PFImage.display_current_image()
         elif message.message == PFMessageContent.KEYBOARD_FULLSCREEN:
-            logging.warn("Fullscreen toggling is not yet implemented.")
-            raise NotImplementedError("Fullscreen toggling is not yet implemented.")
+            PFCanvas.toggle_fullscreen()
+            PFMessage.setup_canvas_messaging()
+            PFImage.display_first_image()
+
+            # This runs forever until a 'q' or 'x' is entered.
+            PFCanvas.win.mainloop()
+
         elif message.message == PFMessageContent.MOTION_TIMEOUT:
             PFImage.display_black_image()
         elif message.message == PFMessageContent.KEYBOARD_QUIT:
