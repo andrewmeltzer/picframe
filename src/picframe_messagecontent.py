@@ -2,9 +2,7 @@
 picframe_message.py holds the messages passed on the picframe queue
 
 """
-import logging
 from enum import Enum, auto
-
 
 class PFMessageContent(Enum):
     """
@@ -14,7 +12,7 @@ class PFMessageContent(Enum):
     TIMER_NEXT_IMAGE = auto()
     KEYBOARD_NEXT_IMAGE = auto()
     KEYBOARD_HOLD = auto()
-    KEYBOARD_BLACKOUT= auto()
+    KEYBOARD_BLACKOUT = auto()
     KEYBOARD_INCREASE_BRIGHTNESS = auto()
     KEYBOARD_DECREASE_BRIGHTNESS = auto()
     KEYBOARD_USE_DEFAULT_BRIGHTNESS = auto()
@@ -31,4 +29,3 @@ class PFMessageContent(Enum):
 
     MOTION = auto()
     MOTION_TIMEOUT = auto()
-    

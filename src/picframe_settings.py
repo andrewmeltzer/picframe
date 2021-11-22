@@ -1,5 +1,5 @@
 """
-picframe_settings.py holds the user-configurable settings for the 
+picframe_settings.py holds the user-configurable settings for the
 frame.
 """
 
@@ -15,7 +15,7 @@ class PFSettings:
     """
 
     ##########################################################
-    # Where should logging information be sent? If log_to_stdout is set 
+    # Where should logging information be sent? If log_to_stdout is set
     # to true, it ignores log_directory and sends logging information to
     # stdout.  Otherwise it creates a logfile and puts it into the log
     # directory.  The logfile name is picframe_<timestamp>.log
@@ -25,13 +25,13 @@ class PFSettings:
     ##########################################################
     # Debug level.  CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET
     debug_level = 'INFO'
-    
+
     ##########################################################
-    # Should the images be displayed fullscreen?  You can also specify a 
+    # Should the images be displayed fullscreen?  You can also specify a
     # size by setting the geom.  If it is set to None, it defaults to the
     # screen size.
     fullscreen = False
-    geometry_str = "400x400"
+    geometry_str = "200x200"
 
     ##########################################################
     # How long should an image be displayed?
@@ -58,8 +58,8 @@ class PFSettings:
     # image_paths can be a single path, the path to a single file,
     # or a list of comma separated paths.
     #image_paths = ('/mnt/c/tmp/images/IMG_1275.JPG',)
-    #image_paths = ('/mnt/c/tmp/images/',)
-    image_paths = ('/mnt/c/Users/andym/Pictures/',)
+    image_paths = ('/mnt/c/tmp/images/',)
+    #image_paths = ('/mnt/c/Users/andym/Pictures/',)
 
     # Settings if for Google Drive (if used)
     # If there is a root level directory to start in, can save a lot of time
@@ -70,4 +70,3 @@ class PFSettings:
     # The directory the photos are in.  It may be the same as the
     # ROOT_FOLDER_TITLE
     gdrive_photos_folder = "PicFrame"
-

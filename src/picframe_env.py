@@ -6,15 +6,14 @@ is running in, such as the monitor information, the OS, etc.
 import logging
 import ctypes
 import sys
-import subprocess
 import os
-from pathlib import Path
+from picframe_settings import PFSettings
 
 class NoImagesFoundException(Exception):
     """
     Used when the images location yields no usable images.
     """
-    def __init(self):
+    def __init__(self):
         self.message = []
         if PFSettings.image_source == "Google Drive":
             self.message = f"No images found on Google Drive in '{PFSettings.gdrive_photos_folder}'"
@@ -22,19 +21,19 @@ class NoImagesFoundException(Exception):
             self.message = f"No images found on filesystem in '{str(PFSettings.image_paths)}'"
         else:
             self.message = f"Unknown image source: '{PFSettings.image_source}'"
-            
-        super().__init(self.message)
+
+        super().__init__(self.message)
 
 class PFEnv:
     """
     PFEnv supplies information about the environment that the fram
     is running in, such as the monitor information, the OS, etc.
     """
-    geometry = None
+    geometry = []
     screen_width = None
     screen_height = None
     geometry_str = None
-    supported_types = None
+    supported_types = []
     logger_initialized = False
 
     # Location of image used when the system is in sleep mode.
@@ -50,7 +49,12 @@ class PFEnv:
     #
     # init_environment
     #
+    @staticmethod
     def init_environment():
+        """
+        Initialize the os environment, the screen dimensions, and the
+        supported image types.
+        """
         if sys.platform in ("linux", "linux2"):
             # ++++ Find a linux way of doing this
             PFEnv.geometry = (1920, 1080)
@@ -104,13 +108,15 @@ class PFEnv:
     @staticmethod
     def default_temp_file_path():
         """
-        Depending on the OS, return a proper path in which to put 
+        Depending on the OS, return a proper path in which to put
         temporary files.
         """
         if sys.platform in ("linux", "linux2"):
             return '/tmp/PICFRAME__'
         elif sys.platform == "win32":
-            return 'C:\Temp\PICFRAME__'
+            return 'C:\\Temp\\PICFRAME__'
+        else:
+            return ''
 
     ############################################################
     #
@@ -133,6 +139,5 @@ class PFEnv:
         if file_extension.lower() in PFEnv.supported_types:
             return True
 
-        logging.warning(f"'{image_file}' format is not supported.")
+        logging.warning("'%s' format is not supported." % (image_file,))
         return False
-

@@ -1,9 +1,12 @@
+"""
+picframe_gdrive.py
+"""
 
 import logging
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 from picframe_settings import PFSettings
-from picframe_env import *
+from picframe_env import PFEnv, NoImagesFoundException
 
 
 class PFGoogleDrive:
@@ -23,13 +26,13 @@ class PFGoogleDrive:
     #
     @staticmethod
     def init():
+        """
+        Initialize the static variables for this class.
+        """
 
         if not PFGoogleDrive.initialized:
             PFGoogleDrive.drive = PFGoogleDrive.gdrive_authorize()
 
-        if PFGoogleDrive.full_id_list_style == True:
-            PFGoogleDrive.get_photo_list()
-        
         PFGoogleDrive.initialized = True
 
     ############################################################
@@ -44,7 +47,7 @@ class PFGoogleDrive:
         Returns: the google drive handle
         """
         gauth = GoogleAuth()
-    
+
         # Try to load saved client credentials
         gauth.LoadCredentialsFile("credentials.json")
         if gauth.credentials is None:
@@ -58,12 +61,12 @@ class PFGoogleDrive:
             gauth.Authorize()
         # Save the current credentials to a file
         gauth.SaveCredentialsFile("credentials.json")
-        
+
         drive = GoogleDrive(gauth)
         return drive
-    
-    
-    
+
+
+
     ############################################################
     #
     # get_children
@@ -79,10 +82,10 @@ class PFGoogleDrive:
             List of children.
         """
 
-        str = "\'" + parent_id + "\'" + " in parents and trashed=false"
-        children = PFGoogleDrive.drive.ListFile({'q': str}).GetList()
+        c_str = "\'" + parent_id + "\'" + " in parents and trashed=false"
+        children = PFGoogleDrive.drive.ListFile({'q': c_str}).GetList()
         return children
-    
+
     ############################################################
     #
     # process_children
@@ -101,33 +104,32 @@ class PFGoogleDrive:
         # be added to the list
         if len(children) <= 0:
             if PFEnv.is_format_supported(parent_name) and in_desired_folder:
-                logging.debug(f"Returning {parent_name}")
+                logging.debug("Returning %s" % (parent_name,))
                 if PFGoogleDrive.full_id_list_style:
                     PFGoogleDrive.id_list.append(parent_name)
                 else:
                     # Here download the file and put it into the right
-                    # location as stored in PFEnv (/tmp/ for linux, 
+                    # location as stored in PFEnv (/tmp/ for linux,
                     # C:\temp for windows, then return the full path.
                     filepath = PFEnv.default_temp_file_path() + parent_name
                     new_file = PFGoogleDrive.drive.CreateFile({'id': parent_id})
-                    new_file.GetContentFile(filepath) 
+                    new_file.GetContentFile(filepath)
                     PFGoogleDrive.image_file_count = PFGoogleDrive.image_file_count + 1
                     yield filepath
 
-            
+
         # Otherwise go through the list of subdirectories of this directory
         for child in children:
             child_name = child['title']
             child_id = child['id']
             logging.debug('title: %s, id: %s' % (child_name, child_id))
 
-            if child_name == PFSettings.gdrive_photos_folder or in_desired_folder == True:
+            if child_name == PFSettings.gdrive_photos_folder or in_desired_folder:
                 yield from PFGoogleDrive.process_children(True, child_name, child_id)
             else:
                 yield from PFGoogleDrive.process_children(False, child_name, child_id)
-    
-        return None
-    
+
+
     ############################################################
     #
     # get_next_photo
@@ -139,7 +141,7 @@ class PFGoogleDrive:
         """
 
         in_desired_folder = False
-    
+
         # List files in Google Drive
         while True:
             PFGoogleDrive.image_file_count = 0
@@ -153,5 +155,3 @@ class PFGoogleDrive:
                     yield from PFGoogleDrive.process_children(in_desired_folder, title, file_id)
             if PFGoogleDrive.image_file_count == 0:
                 raise NoImagesFoundException()
-        return None
-    

@@ -1,23 +1,23 @@
 #!/mnt/c/tmp/frame/env/bin/python3
+"""
+picframe_image.py
+"""
 
-import tkinter
-from tkinter import *
-from PIL import ImageTk, Image, ImageOps
 import sys
 import os
-import time
-import datetime
 import logging
+from tkinter import NW
+from PIL import ImageTk, Image, ImageOps
+
+from picframe_settings import PFSettings
+from picframe_env import PFEnv
+from picframe_gdrive import PFGoogleDrive
+from picframe_filesystem import PFFilesystem
+from picframe_canvas import PFCanvas
 
 if sys.platform in ("linux", "linux2"):
     import pyheif
 
-from picframe_settings import PFSettings
-from picframe_env import PFEnv
-from picframe_env import NoImagesFoundException
-from picframe_gdrive import PFGoogleDrive
-from picframe_filesystem import PFFilesystem
-from picframe_canvas import PFCanvas
 
 class PFImage:
     """
@@ -41,11 +41,11 @@ class PFImage:
         """
 
         # Initialize the data source
-        if PFSettings.image_source == "Filesystem": 
-            PFFilesystem.init() 
-        elif PFSettings.image_source == "Google Drive": 
-            PFGoogleDrive.init() 
-        else: 
+        if PFSettings.image_source == "Filesystem":
+            PFFilesystem.init()
+        elif PFSettings.image_source == "Google Drive":
+            PFGoogleDrive.init()
+        else:
             raise Exception(f"Image source from settings file: '{PFSettings.image_source}' is not supported.")
 
         PFImage.image_file_gen = PFImage.get_next_image_file()
@@ -59,20 +59,20 @@ class PFImage:
         """
         Get the list of supported image files from the list of directories
         given for pictures to display.
-    
+
         Inputs: None
-    
+
         Returns: List of fully qualified paths in the right
                 format for the operating system and image source.
         """
-    
+
         if PFSettings.image_source == "Filesystem":
             pfilesystem = PFFilesystem()
             return pfilesystem.get_file_list()
         else:
             gdrive = PFGoogleDrive()
             return gdrive.id_list
-    
+
     ############################################################
     #
     # get_next_image_file
@@ -82,18 +82,18 @@ class PFImage:
         """
         Get the next supported image files from the list of directories
         given for pictures to display.
-    
-        Inputs: None 
-    
-        Returns: List of fully qualified paths in the right 
-                format for the operating system and image source.  
-        """ 
-    
-        if PFSettings.image_source == "Filesystem": 
-            yield from PFFilesystem.get_next_file() 
-        else: 
+
+        Inputs: None
+
+        Returns: List of fully qualified paths in the right
+                format for the operating system and image source.
+        """
+
+        if PFSettings.image_source == "Filesystem":
+            yield from PFFilesystem.get_next_file()
+        else:
             yield from PFGoogleDrive.get_next_photo()
-    
+
     ############################################################
     #
     # get_image
@@ -105,38 +105,38 @@ class PFImage:
         converted to get it into PhotoImage format.  Often need to convert formats
         using the PIL library
             - JPG to PNG
-    
+
         Inputs:
             image_file: The image
-    
-        Returns: 
+
+        Returns:
             img
         """
         # Need PIL library to handle JPG files.
         filename, file_extension = os.path.splitext(image_file)
-    
+
         img = None
         if file_extension.lower() in ('.tif', '.gif', '.jpg', '.png'):
             pil_img = Image.open(image_file)
-    
+
             # Use the exif information to properly orient the image.
             pil_img = ImageOps.exif_transpose(pil_img)
-    
-    
+
+
         elif file_extension.lower() in ('.heic', '.avif'):
             if sys.platform not in ("linux", "linux2"):
                 raise TypeError("HEIC files are not supported on Windows.")
-    
-            heif_img = pyheif.read_heif(image_file) 
+
+            heif_img = pyheif.read_heif(image_file)
             pil_img = Image.frombytes(
                 heif_img.mode, heif_img.size, heif_img.data,
                 "raw", heif_img.mode, heif_img.stride,)
-    
-        # Calculate the image width/height ratio and use it 
-        # based on the width of the screen 
+
+        # Calculate the image width/height ratio and use it
+        # based on the width of the screen
         height_ratio = PFEnv.screen_height/pil_img.height
         width_ratio = PFEnv.screen_width/pil_img.width
-    
+
         actual_width = None
         actual_height = None
         if height_ratio > width_ratio:
@@ -145,12 +145,12 @@ class PFImage:
         else:
             actual_height = int(height_ratio * pil_img.height)
             actual_width = int(height_ratio * pil_img.width)
-    
+
         pil_img = pil_img.resize((actual_width, actual_height), Image.ANTIALIAS)
         img = ImageTk.PhotoImage(pil_img)
-    
+
         return img
-    
+
     ############################################################
     #
     # display_image

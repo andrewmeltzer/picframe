@@ -1,14 +1,12 @@
 #!/mnt/c/tmp/frame/env/bin/python3
+"""
+picframe_timer.py
+"""
 
-import sys
-import os
 import time
-import datetime
 import logging
-import multiprocessing
 
 from picframe_settings import PFSettings
-from picframe_env import PFEnv
 from picframe_message import PFMessage
 from picframe_messagecontent import PFMessageContent
 
@@ -17,12 +15,16 @@ class PFTimer:
     Generate the timer messages for picframe for the between-frame
     timing.
     """
-    
+
     ############################################################
     #
     # get_sleep_interval
     #
+    @staticmethod
     def get_sleep_interval():
+        """
+        How long is it set to sleep for between pictures.
+        """
         return PFSettings.display_time
 
     ############################################################
@@ -33,7 +35,7 @@ class PFTimer:
     def timer_main(queue):
         """
         Continually loop, sending a next-image message every sleep interval
-        Inputs: 
+        Inputs:
             queue: The message queue
         """
 
@@ -41,6 +43,3 @@ class PFTimer:
             logging.debug("Putting next timer message.")
             queue.put(PFMessage(PFMessageContent.TIMER_NEXT_IMAGE))
             time.sleep(PFSettings.display_time)
-
-
-    

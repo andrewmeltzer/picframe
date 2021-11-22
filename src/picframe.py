@@ -1,10 +1,14 @@
 #!/mnt/c/tmp/frame/env/bin/python3
+"""
+Display images in a Tk window from some set of directories.
+"""
 
 import getopt
 import sys
 import os
 import logging
 import time
+from datetime import datetime
 import multiprocessing as mp
 
 from picframe_settings import PFSettings
@@ -13,13 +17,12 @@ from picframe_timer import PFTimer
 from picframe_blackout import PFBlackout
 from picframe_messagecontent import PFMessageContent
 from picframe_message import PFMessage
-from picframe_state import PFState, PFStates
 from picframe_image import PFImage
 from picframe_canvas import PFCanvas
 
 
 # TODO: ++++
-# - Someday support videos (mp4, mov, wmv, mp3, wav).  
+# - Someday support videos (mp4, mov, wmv, mp3, wav).
 # - Someday create a smartphone app to control it over bluetooth or wifi
 
 ############################################################
@@ -54,7 +57,7 @@ def get_args(argv):
     """
 
     # Start with the geometry from the settings
-    if PFSettings.geometry_str != None:
+    if PFSettings.geometry_str is not None:
         PFSettings.fullscreen = False
         PFEnv.geometry_str = PFSettings.geometry_str
         wstr, hstr = PFSettings.geometry_str.split('x')
@@ -64,7 +67,8 @@ def get_args(argv):
 
     try:
         opts, inargs = getopt.getopt(argv, "hfs:d:g:",
-                ["help", "fullscreen", "logfile=", "debuglevel=", "single=", "path=", "geom="])
+                ["help", "fullscreen", "logfile=", "debuglevel=",
+                 "single=", "path=", "geom="])
     except getopt.GetoptError:
         print_help()
         sys.exit(2)
@@ -109,10 +113,10 @@ def setup_logger():
 
         # If the user wants the logfile to go to the default file location
         # with a datestamp
-        if PFSettings.log_to_stdout == False:
+        if not PFSettings.log_to_stdout:
             # If want it in utc
-            #timestamp = datetime.now(timezone.utc).strftime(PFEnv.MS_FMT_STR)
-            timestamp = datetime.now().strftime(PFEnv.MS_FMT_STR)
+            #timestamp = datetime.now(timezone.utc).strftime(PFEnv.HMS_FMT_STR)
+            timestamp = datetime.now().strftime(PFEnv.HMS_FMT_STR)
             fname = "picframe_" + timestamp + ".log"
             path = PFSettings.log_directory
 
@@ -161,6 +165,7 @@ def show_command_help():
 #
 def main():
     """
+    Execute the program.
     """
 
     show_command_help()
@@ -168,7 +173,7 @@ def main():
     PFMessage.queue = mp.Queue()
     PFCanvas.init()
     PFImage.init()
-    
+
     timer_p = mp.Process(target=PFTimer.timer_main, args=(PFMessage.queue,))
     blackout_p = mp.Process(target=PFBlackout.blackout_main, args=(PFMessage.queue,))
     timer_p.start()
@@ -177,9 +182,9 @@ def main():
     # When a key is pressed on the canvas, send that message to keypress
     PFCanvas.canvas.bind("<KeyPress>", PFMessage.keypress)
 
-    # enque a message to get the first real image on the screen 
+    # enque a message to get the first real image on the screen
     PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_NEXT_IMAGE))
-    
+
     # Queue up a black image as the first image to set it up
     PFImage.display_first_image()
     PFCanvas.win.update()

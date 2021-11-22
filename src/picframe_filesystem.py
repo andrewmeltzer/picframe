@@ -1,9 +1,11 @@
-
-import logging
+"""
+picframe_filesystem.py
+"""
 import os
 from pathlib import Path
 from picframe_settings import PFSettings
-from picframe_env import *
+from picframe_env import PFEnv
+from picframe_env import NoImagesFoundException
 
 class PFFilesystem:
     """
@@ -11,16 +13,20 @@ class PFFilesystem:
     them.
     """
     initialized = False
-    
-    ############################################################ 
+
+    ############################################################
     #
     # init
     #
     @staticmethod
     def init():
+        """
+        Initialize static class variables.
+        """
+
         PFFilesystem.initialized = True
 
-    ############################################################ 
+    ############################################################
     #
     # get_image_dirs
     #
@@ -31,7 +37,7 @@ class PFFilesystem:
         """
         return PFEnv.path_to_platform(PFSettings.image_paths)
 
-    ############################################################ 
+    ############################################################
     #
     # get_next_file
     #
@@ -40,16 +46,16 @@ class PFFilesystem:
         """
         Get next supported image file from the list of filesystem
         directories given for pictures to display.
-    
+
         Use a generator so it is compatible with the way the google drive
         version works, yielding a single file at a time.
-    
-        Inputs: None 
-    
-        Returns: List of fully qualified paths in the right 
-                format for the operating system and image source.  
+
+        Inputs: None
+
+        Returns: List of fully qualified paths in the right
+                format for the operating system and image source.
         """
-    
+
         # Traverse the recursive list of directories.
         while True:
             image_file_count = 0
@@ -68,9 +74,8 @@ class PFFilesystem:
                                 yield pathdir
             if image_file_count == 0:
                 raise NoImagesFoundException()
-    
-        return None
-    
+
+
     ############################################################
     #
     # get_file_list
@@ -80,14 +85,14 @@ class PFFilesystem:
         """
         Get the list of supported image files from the list of filesystem
         directories given for pictures to display.
-    
+
         Inputs: None
-    
+
         Returns: List of fully qualified paths in the right
                 format for the operating system and image source.
         """
         image_file_list = []
-    
+
         # Traverse the recursive list of directories.
         for dirname in PFFilesystem.get_image_dirs():
             if Path(dirname).is_file():
@@ -100,6 +105,5 @@ class PFFilesystem:
                         pathdir = '/'.join(path) + '/' + file
                         if PFEnv.is_format_supported(pathdir):
                             image_file_list.append(pathdir)
-    
+
         return image_file_list
-    

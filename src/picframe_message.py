@@ -2,13 +2,17 @@
 picframe_message.py holds the messages passed on the picframe queue
 
 """
+import logging
+
 from picframe_messagecontent import PFMessageContent
 from picframe_image import PFImage
 from picframe_state import PFState, PFStates
 from picframe_canvas import PFCanvas
 
+
 class PFMessage:
     """
+    Create and react to messages.
     """
     queue = None
     message = None
@@ -26,12 +30,12 @@ class PFMessage:
     # keypress
     #
     @staticmethod
-    def keypress(e):
+    def keypress(evnt):
         """
         Capture and react to a keypress event in the display window.
         """
-        print(f"#########################{e} {e.char} pressed")
-        key = e.char
+        print(f"#########################{evnt} {evnt.char} pressed")
+        key = evnt.char
 
         if key == 'f':
             PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_FULLSCREEN))
@@ -68,34 +72,34 @@ class PFMessage:
         """
         if PFMessage.queue.empty():
             PFCanvas.win.after(100, PFMessage.process_message)
-            return
+            return True
 
         PFMessage.message = PFMessage.queue.get_nowait()
         message = PFMessage.message
-    
+
         # Only go to the next message if in the normal state.
         if message.message == PFMessageContent.TIMER_NEXT_IMAGE:
             if PFState.current_state == PFStates.NORMAL:
                 PFImage.display_next_image()
             else:
                 PFImage.display_current_image()
-    
+
         # If the keyboard says next image, override any holds or blackouts
         elif message.message == PFMessageContent.KEYBOARD_NEXT_IMAGE:
             PFImage.display_next_image()
-    
+
         elif message.message == PFMessageContent.KEYBOARD_HOLD:
             if PFState.current_state == PFStates.KEYBOARD_HOLD:
                 PFImage.display_next_image()
             else:
                 PFImage.display_previous_image()
-    
+
         elif message.message == PFMessageContent.KEYBOARD_BLACKOUT:
             if PFState.current_state == PFStates.KEYBOARD_BLACKOUT:
                 PFImage.display_next_image()
             else:
                 PFImage.display_black_image()
-    
+
         elif message.message == PFMessageContent.KEYBOARD_INCREASE_BRIGHTNESS:
             PFState.keyboard_brightness = True
         elif message.message == PFMessageContent.KEYBOARD_DECREASE_BRIGHTNESS:
@@ -127,9 +131,8 @@ class PFMessage:
             PFCanvas.win.destroy()
         else:
             PFImage.display_current_image()
-    
+
         PFState.new_state(message)
         PFCanvas.win.after(100, PFMessage.process_message)
-    
+
         return True
-    
