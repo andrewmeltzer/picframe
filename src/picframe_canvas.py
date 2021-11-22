@@ -39,6 +39,9 @@ class PFCanvas:
 
         PFCanvas.win = PFCanvas.get_window()
         PFCanvas.canvas = PFCanvas.get_canvas()
+        PFCanvas.win.geometry(PFEnv.geometry_str)
+        PFCanvas.canvas.configure(bg = 'black')
+        PFCanvas.win.update()
 
         PFCanvas.queue = queue
 

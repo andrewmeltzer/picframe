@@ -274,11 +274,6 @@ class PFImage:
         top = (PFEnv.screen_height - img.height())/2
         left = (PFEnv.screen_width - img.width())/2
         PFImage.image_id = PFCanvas.canvas.create_image(left, top, anchor=NW, image=img)
-        PFCanvas.win.geometry(PFEnv.geometry_str)
-        PFCanvas.canvas.configure(bg = 'black')
-        PFCanvas.win.update()
-        PFCanvas.win.after(100, PFImage.process_message)
-        PFCanvas.win.mainloop()
 
     ############################################################
     #

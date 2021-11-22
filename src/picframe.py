@@ -173,7 +173,18 @@ def main():
     timer_p.start()
     blackout_p.start()
 
+    # enque a message to get the first real image on the screen 
+    PFCanvas.queue.put(PFMessage(PFMessageContent.KEYBOARD_NEXT_IMAGE))
+    
+    # Process non-keyboard messages
+    PFCanvas.win.after(100, PFImage.process_message)
+
+    # Queue up a black image as the first image to set it up
     PFImage.display_first_image()
+
+    # This runs forever until a 'q' or 'x' is entered.
+    PFCanvas.win.update()
+    PFCanvas.win.mainloop()
 
     timer_p.terminate()
     blackout_p.terminate()
