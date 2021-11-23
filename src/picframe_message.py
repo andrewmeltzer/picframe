@@ -52,7 +52,6 @@ class PFMessage:
         """
         Capture and react to a keypress event in the display window.
         """
-        print(f"#########################{evnt} {evnt.char} pressed")
         key = evnt.char
 
         if key == 'f':
@@ -77,6 +76,31 @@ class PFMessage:
         if key in ('q', 'x'):
             PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_QUIT))
 
+
+    ############################################################
+    #
+    # adjust_canvas_geom
+    #
+    @staticmethod
+    def adjust_canvas_geom():
+        """
+        See if the user has adjsuted the canvas geometry.  
+        """
+        width = PFCanvas.win.winfo_width()
+        height = PFCanvas.win.winfo_height()
+
+        if width != PFCanvas.width or height != PFCanvas.height:
+            PFCanvas.win.destroy()
+            PFCanvas.width = width
+            PFCanvas.height = height
+            PFCanvas.geometry = (width, height)
+            PFCanvas.geometry_str = str(width) + 'x' + str(height)
+
+            PFCanvas.reset_window_size()
+            PFImage.display_first_image()
+            PFMessage.setup_canvas_messaging()
+
+    
     ############################################################
     #
     # process_message
@@ -91,6 +115,9 @@ class PFMessage:
         if PFMessage.queue.empty():
             PFCanvas.win.after(100, PFMessage.process_message)
             return True
+
+        # See if the canvas has changed size
+        PFMessage.adjust_canvas_geom()
 
         PFMessage.message = PFMessage.queue.get_nowait()
         message = PFMessage.message

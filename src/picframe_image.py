@@ -147,6 +147,7 @@ class PFImage:
         Returns:
             img
         """
+
         # Need PIL library to handle JPG files.
         filename, file_extension = os.path.splitext(image_file)
 
@@ -167,9 +168,6 @@ class PFImage:
                 heif_img.mode, heif_img.size, heif_img.data,
                 "raw", heif_img.mode, heif_img.stride,)
 
-        # See if the user has resized the canvas. 
-        PFCanvas.adjust_canvas_geom()
-        
         # Calculate the image width/height ratio and use it
         # based on the width of the screen
         height_ratio = PFCanvas.height/pil_img.height
