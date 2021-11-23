@@ -22,8 +22,6 @@ from picframe_canvas import PFCanvas
 
 
 # TODO: ++++
-# - Put in a try-catch around the main loop and dump the settings, env,
-#   and current file if it fails.
 # - Support usb drive
 # - Someday support videos (mp4, mov, wmv, mp3, wav).
 # - Someday create a smartphone app to control it over bluetooth or wifi
