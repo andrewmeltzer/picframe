@@ -60,6 +60,8 @@ class PFEnv:
         else:
             PFEnv.supported_types = ('.png', '.jpg', '.tif', '.gif', '.jpeg')
 
+        PFEnv.set_fullscreen_geom()
+
     ############################################################
     #
     # set_fullscreen_geom
@@ -81,26 +83,6 @@ class PFEnv:
             PFEnv.screen_width = PFEnv.geometry[0]
             PFEnv.screen_height = PFEnv.geometry[1]
             PFEnv.geometry_str = str(PFEnv.screen_width) + "x" + str(PFEnv.screen_height)
-
-    ############################################################
-    #
-    # set_settings_geom
-    #
-    @staticmethod
-    def set_settings_geom():
-        """
-        Set the geometry based on a geometry string provided in the
-        settings file; if none default to 400x400.
-        """
-        if PFSettings.geometry_str is not None:
-            PFEnv.geometry_str = PFSettings.geometry_str
-        else:
-            PFEnv.geometry_str = "400x400"
-
-        wstr, hstr = PFEnv.geometry_str.split('x')
-        PFEnv.screen_height = int(hstr)
-        PFEnv.screen_width = int(wstr)
-        PFEnv.geometry = (PFEnv.screen_width, PFEnv.screen_height)
 
     ############################################################
     #

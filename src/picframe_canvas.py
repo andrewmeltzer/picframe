@@ -15,6 +15,10 @@ class PFCanvas:
     win = None
     canvas = None
     fullscreen = True
+    width = None
+    height = None
+    geometry = None
+    geometry_str = None
 
     ############################################################
     #
@@ -25,14 +29,77 @@ class PFCanvas:
         """
         One-time initialization of the class.
         """
+        if PFSettings.fullscreen:
+            PFCanvas.set_fullscreen_geom()
+        elif PFSettings.geometry_str is not None:
+            PFCanvas.set_settings_geom()
 
         PFCanvas.fullscreen = PFSettings.fullscreen
         PFCanvas.get_window()
         PFCanvas.get_canvas()
-        PFCanvas.win.geometry(PFEnv.geometry_str)
         PFCanvas.canvas.configure(bg='black')
         PFCanvas.win.update()
 
+    ############################################################
+    #
+    # set_settings_geom
+    #
+    @staticmethod
+    def set_settings_geom():
+        """
+        Set the geometry based on a geometry string provided in the
+        settings file; if none default to 400x400.
+        """
+        if PFSettings.geometry_str is not None:
+            PFCanvas.geometry_str = PFSettings.geometry_str
+        else:
+            PFCanvas.geometry_str = "400x400"
+
+        wstr, hstr = PFCanvas.geometry_str.split('x')
+        PFCanvas.height = int(hstr)
+        PFCanvas.width = int(wstr)
+        PFCanvas.geometry = (PFEnv.screen_width, PFEnv.screen_height)
+
+    ############################################################
+    #
+    # set_fullscreen_geom
+    #
+    @staticmethod
+    def set_fullscreen_geom():
+        """
+        Set the geometry based on  the computed fullscreen geometry in
+        PFEnv
+        """
+        PFCanvas.width = PFEnv.screen_width
+        PFCanvas.height = PFEnv.screen_height
+        PFCanvas.geometry = PFEnv.geometry
+        PFCanvas.geometry_str = PFEnv.geometry_str
+
+    ############################################################
+    #
+    # adjust_canvas_geom
+    #
+    @staticmethod
+    def adjust_canvas_geom():
+        """
+        See if the user has adjsuted the canvas geometry.  
+        """
+        width = PFCanvas.win.winfo_width()
+        height = PFCanvas.win.winfo_height()
+
+        if width != PFCanvas.width or height != PFCanvas.height:
+            PFCanvas.win.destroy()
+            PFCanvas.width = width
+            PFCanvas.height = height
+            PFCanvas.geometry = (width, height)
+            PFCanvas.geometry_str = str(width) + 'x' + str(height)
+            PFCanvas.reset_window_size()
+
+            # ++++ Need to be able to do this, so maybe in caller?
+            PFMessage.setup_canvas_messaging()
+            PFImage.display_first_image()
+
+    
     ############################################################
     #
     # get_window
@@ -47,7 +114,7 @@ class PFCanvas:
 
         PFCanvas.win = Tk(className="Picframe")
         PFCanvas.win.resizable(height=None, width=None)
-        PFCanvas.win.geometry(PFEnv.geometry_str)
+        PFCanvas.win.geometry(PFCanvas.geometry_str)
         if PFCanvas.fullscreen:
             PFCanvas.win.attributes('-fullscreen', True)
             PFCanvas.win.attributes('-type', 'dock')
@@ -64,12 +131,35 @@ class PFCanvas:
         will appear on.
         Inputs:
         """
-        PFCanvas.canvas = Canvas(PFCanvas.win, width=PFEnv.screen_width, height=PFEnv.screen_height)
+        PFCanvas.canvas = Canvas(PFCanvas.win, width=PFCanvas.width, height=PFCanvas.height)
 
         PFCanvas.canvas.pack(fill=tkinter.BOTH, expand=True)
         PFCanvas.canvas.grid(row=1, column=1)
         PFCanvas.canvas.focus_set()
 
+
+    ############################################################
+    #
+    # reset_window_size
+    #
+    @staticmethod
+    def reset_window_size():
+        """
+        The window size has changed.  Adjust everything.
+        """
+        PFCanvas.get_window()
+        PFCanvas.get_canvas()
+
+        PFCanvas.win.geometry(PFCanvas.geometry_str)
+        if PFCanvas.fullscreen:
+            PFCanvas.win.attributes('-type', 'dock')
+            PFCanvas.win.attributes('-fullscreen', True)
+        else:
+            PFCanvas.win.attributes('-fullscreen', False)
+
+        PFCanvas.win.geometry(PFCanvas.geometry_str)
+        PFCanvas.canvas.configure(bg='black')
+        PFCanvas.win.update()
 
     ############################################################
     #
@@ -84,17 +174,9 @@ class PFCanvas:
 
         if PFCanvas.fullscreen:
             PFCanvas.fullscreen = False
-            PFEnv.set_settings_geom()
+            PFCanvas.set_settings_geom()
         else:
             PFCanvas.fullscreen = True
-            PFEnv.set_fullscreen_geom()
+            PFCanvas.set_fullscreen_geom()
 
-        PFCanvas.get_window()
-        PFCanvas.get_canvas()
-
-        PFCanvas.win.geometry(PFEnv.geometry_str)
-        if PFCanvas.fullscreen:
-            PFCanvas.win.attributes('-type', 'dock')
-            PFCanvas.win.attributes('-fullscreen', True)
-        PFCanvas.canvas.configure(bg='black')
-        PFCanvas.win.update()
+        PFCanvas.reset_window_size()

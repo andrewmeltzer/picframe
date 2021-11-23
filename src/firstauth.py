@@ -1,13 +1,5 @@
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
-import picframe_settings
-import picframe_env
-
-class GoogleDriveAccess:
-    """
-    If the user's photos are on google drive, this class finds them,
-    downloads them, and makes them available.
-    """
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive
 
 def gdrive_authorize():
     # client_secrets.json needs to be in the same directory as the script
@@ -20,7 +12,8 @@ def gdrive_authorize():
         gauth.CommandLineAuth()
     elif gauth.access_token_expired:
         # Refresh them if expired
-        gauth.Refresh()
+        # gauth.Refresh()
+        gauth.Authorize()
     else:
         # Initialize the saved creds
         gauth.Authorize()

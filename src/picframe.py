@@ -86,12 +86,6 @@ def get_args(argv):
             PFSettings.single_image = False
             PFSettings.image_dir = arg
 
-    # Start with the geometry from the settings
-    if PFSettings.geometry_str is not None and not PFSettings.fullscreen:
-        PFEnv.set_settings_geom() 
-    else:
-        PFEnv.set_fullscreen_geom() 
-
 ############################################################
 #
 # setup_logger

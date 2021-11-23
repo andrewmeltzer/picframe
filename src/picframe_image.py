@@ -167,16 +167,19 @@ class PFImage:
                 heif_img.mode, heif_img.size, heif_img.data,
                 "raw", heif_img.mode, heif_img.stride,)
 
+        # See if the user has resized the canvas. 
+        PFCanvas.adjust_canvas_geom()
+        
         # Calculate the image width/height ratio and use it
         # based on the width of the screen
-        height_ratio = PFEnv.screen_height/pil_img.height
-        width_ratio = PFEnv.screen_width/pil_img.width
+        height_ratio = PFCanvas.height/pil_img.height
+        width_ratio = PFCanvas.width/pil_img.width
 
         actual_width = None
         actual_height = None
         if height_ratio > width_ratio:
-            actual_width = int(width_ratio * pil_img.width)
             actual_height = int(width_ratio * pil_img.height)
+            actual_width = int(width_ratio * pil_img.width)
         else:
             actual_height = int(height_ratio * pil_img.height)
             actual_width = int(height_ratio * pil_img.width)
@@ -209,8 +212,8 @@ class PFImage:
         else:
             PFImage.displayed_img = PFImage.get_image(filepath)
 
-        top = (PFEnv.screen_height - PFImage.displayed_img.height())/2
-        left = (PFEnv.screen_width - PFImage.displayed_img.width())/2
+        top = (PFCanvas.height - PFImage.displayed_img.height())/2
+        left = (PFCanvas.width - PFImage.displayed_img.width())/2
         PFCanvas.canvas.itemconfig(PFImage.image_id, image=PFImage.displayed_img)
         PFCanvas.canvas.coords(PFImage.image_id, (left, top))
         PFCanvas.canvas.focus_set()
@@ -230,8 +233,8 @@ class PFImage:
         img = PFImage.get_image(PFEnv.black_image)
 
         # Calculate where to put the image in the frame
-        top = (PFEnv.screen_height - img.height())/2
-        left = (PFEnv.screen_width - img.width())/2
+        top = (PFCanvas.height - img.height())/2
+        left = (PFCanvas.width - img.width())/2
         PFImage.image_id = PFCanvas.canvas.create_image(left, top, anchor=NW, image=img)
 
     ############################################################
