@@ -70,3 +70,28 @@ class PFSettings:
     # The directory the photos are in.  It may be the same as the
     # ROOT_FOLDER_TITLE
     gdrive_photos_folder = "PicFrame"
+
+    ############################################################
+    #
+    # print_settings
+    #
+    @staticmethod
+    def print_settings():
+        """
+        Print the current settings.
+        """
+        print("%-20s: %s" % ("log_to_stdout", str(PFSettings.log_to_stdout)))
+        print("%-20s: %s" % ("log_directory", str(PFSettings.log_directory)))
+        print("%-20s: %s" % ("debug_level", str(PFSettings.debug_level)))
+        print("%-20s: %s" % ("fullscreen", str(PFSettings.fullscreen)))
+        print("%-20s: %s" % ("geometry_str", str(PFSettings.geometry_str)))
+        print("%-20s: %s" % ("display_time", str(PFSettings.display_time)))
+        print("%-20s: %s" % ("blackout_hour", str(PFSettings.blackout_hour)))
+        print("%-20s: %s" % ("blackout_minute", str(PFSettings.blackout_minute)))
+        print("%-20s: %s" % ("end_blackout_hour", str(PFSettings.end_blackout_hour)))
+        print("%-20s: %s" % ("end_blackout_minute", str(PFSettings.end_blackout_minute)))
+        print("%-20s: %s" % ("image_source", str(PFSettings.image_source)))
+        print("%-20s: %s" % ("image_paths", str(PFSettings.image_paths)))
+        print("%-20s: %s" % ("gdrive_root_folder", str(PFSettings.gdrive_root_folder)))
+        print("%-20s: %s" % ("gdrive_photos_folder", str(PFSettings.gdrive_photos_folder)))
+

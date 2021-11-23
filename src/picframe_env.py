@@ -172,3 +172,20 @@ class PFEnv:
 
         logging.warning("'%s' format is not supported." % (image_file,))
         return False
+
+    ############################################################
+    #
+    # print_environment
+    #
+    @staticmethod
+    def print_environment():
+        """
+        Print the current settings.
+        """
+        print("%-20s: %s" % ("geometry", str(PFEnv.geometry)))
+        print("%-20s: %s" % ("screen_width", str(PFEnv.screen_width)))
+        print("%-20s: %s" % ("screen_height", str(PFEnv.screen_height)))
+        print("%-20s: %s" % ("geometry_str", str(PFEnv.geometry_str)))
+        print("%-20s: %s" % ("supported_types", str(PFEnv.supported_types)))
+        print("%-20s: %s" % ("logfile", str(PFEnv.logfile)))
+

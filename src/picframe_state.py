@@ -25,8 +25,6 @@ class PFState:
     current_state = PFStates.NORMAL
     previous_state = PFStates.NORMAL
 
-    keyboard_brightness = False
-
     normal_state_map = {
         PFMessageContent.KEYBOARD_HOLD: PFStates.KEYBOARD_HOLD,
         PFMessageContent.KEYBOARD_BLACKOUT: PFStates.KEYBOARD_BLACKOUT,

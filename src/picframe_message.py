@@ -115,11 +115,11 @@ class PFMessage:
                 PFImage.display_black_image()
 
         elif message.message == PFMessageContent.KEYBOARD_INCREASE_BRIGHTNESS:
-            PFState.keyboard_brightness = True
+            PFImage.adjust_brightness('up')
         elif message.message == PFMessageContent.KEYBOARD_DECREASE_BRIGHTNESS:
-            PFState.keyboard_brightness = True
+            PFImage.adjust_brightness('down')
         elif message.message == PFMessageContent.KEYBOARD_USE_DEFAULT_BRIGHTNESS:
-            PFState.keyboard_brightness = False
+            PFImage.brightness = 1
         elif message.message == PFMessageContent.KEYBOARD_EMULATE_MOTION:
             pass
         elif message.message == PFMessageContent.KEYBOARD_EMULATE_MOTION_TIMEOUT:
@@ -129,9 +129,9 @@ class PFMessage:
         elif message.message == PFMessageContent.END_BLACKOUT:
             PFImage.display_current_image()
         elif message.message == PFMessageContent.INCREASE_BRIGHTNESS:
-            PFImage.display_current_image()
+            PFImage.adjust_brightness('up')
         elif message.message == PFMessageContent.DECREASE_BRIGHTNESS:
-            PFImage.display_current_image()
+            PFImage.adjust_brightness('down')
         elif message.message == PFMessageContent.MOTION:
             PFImage.display_current_image()
         elif message.message == PFMessageContent.KEYBOARD_FULLSCREEN:

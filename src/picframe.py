@@ -22,6 +22,9 @@ from picframe_canvas import PFCanvas
 
 
 # TODO: ++++
+# - Put in a try-catch around the main loop and dump the settings, env,
+#   and current file if it fails.
+# - Support usb drive
 # - Someday support videos (mp4, mov, wmv, mp3, wav).
 # - Someday create a smartphone app to control it over bluetooth or wifi
 
@@ -148,7 +151,7 @@ def show_command_help():
     print("m: Motion stop as if the motion detector timed out")
     print("V: Increase video brightness")
     print("v: Decrease video brightess")
-    print("a: Return to automatic video mode")
+    print("a: Set to default video brightness")
     print("x or q: Quit")
 
 
@@ -177,11 +180,17 @@ def main():
     PFMessage.setup_canvas_messaging()
 
     # Queue up a black image as the first image to set it up
-    PFImage.display_first_image()
-    PFCanvas.win.update()
+    try:
+        PFImage.display_first_image()
+        PFCanvas.win.update()
 
     # This runs forever until a 'q' or 'x' is entered.
-    PFCanvas.win.mainloop()
+        PFCanvas.win.mainloop()
+    except Exception as e:
+        PFSettings.print_settings()
+        PFEnv.print_environment()
+        PFImage.print_image_state()
+        raise(e)
 
     timer_p.terminate()
     blackout_p.terminate()

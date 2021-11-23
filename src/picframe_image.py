@@ -7,7 +7,7 @@ import sys
 import os
 import logging
 from tkinter import NW
-from PIL import ImageTk, Image, ImageOps
+from PIL import ImageTk, Image, ImageOps, ImageEnhance
 
 from picframe_settings import PFSettings
 from picframe_env import PFEnv
@@ -29,6 +29,7 @@ class PFImage:
     previous_image = None
     image_id = None
     displayed_img = None
+    brightness = 1
 
     ############################################################
     #
@@ -52,6 +53,21 @@ class PFImage:
 
     ############################################################
     #
+    # print_image_state
+    #
+    @staticmethod
+    def print_image_state():
+        """
+        Print the current images state
+        """
+        print("%-20s: %s" % ("current_image", str(PFImage.current_image)))
+        print("%-20s: %s" % ("previous_image", str(PFImage.previous_image)))
+        print("%-20s: %s" % ("image_id", str(PFImage.image_id)))
+        print("%-20s: %s" % ("displayed_img", str(PFImage.displayed_img)))
+        print("%-20s: %s" % ("brightness", str(PFImage.brightness)))
+
+    ############################################################
+    #
     # get_image_file_list
     #
     @staticmethod
@@ -72,6 +88,25 @@ class PFImage:
         else:
             gdrive = PFGoogleDrive()
             return gdrive.id_list
+
+    ############################################################
+    #
+    # adjust_brightness
+    #
+    @staticmethod
+    def adjust_brightness(direction):
+        """
+        Adjust the brightness of the displayed image.
+        """
+
+        if direction == 'down':
+            if PFImage.brightness > 0.1:
+                PFImage.brightness = PFImage.brightness - 0.05
+        else:
+            if PFImage.brightness < 2.0:
+                PFImage.brightness = PFImage.brightness + 0.05
+
+        PFImage.display_current_image()
 
     ############################################################
     #
@@ -147,6 +182,12 @@ class PFImage:
             actual_width = int(height_ratio * pil_img.width)
 
         pil_img = pil_img.resize((actual_width, actual_height), Image.ANTIALIAS)
+        if PFImage.brightness != 1:
+            pil_img = pil_img.convert('RGB')
+            abx()
+            enhancer = ImageEnhance.Brightness(pil_img)
+            pil_img = enhancer.enhance(PFImage.brightness)
+
         img = ImageTk.PhotoImage(pil_img)
 
         return img
