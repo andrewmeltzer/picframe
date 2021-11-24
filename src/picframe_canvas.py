@@ -1,6 +1,9 @@
 #!/mnt/c/tmp/frame/env/bin/python3
 """
 picframe_canvas.py
+
+The picframe canvas also includes the window in which the image is 
+displayed.  It uses the tkinter libraries.
 """
 import tkinter
 from tkinter import Tk, Canvas

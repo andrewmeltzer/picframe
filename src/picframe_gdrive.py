@@ -1,5 +1,10 @@
 """
 picframe_gdrive.py
+
+This file implements the code necessary to pull files from google drive. 
+It uses a generator so only one file (rather than all at once) can be
+pulled.
+
 """
 
 import logging

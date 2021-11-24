@@ -1,6 +1,8 @@
 #!/mnt/c/tmp/frame/env/bin/python3
 """
 picframe_timer.py
+
+Send a new image message on the settings-requested time schedule.
 """
 
 import time

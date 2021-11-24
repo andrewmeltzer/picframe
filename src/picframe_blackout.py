@@ -1,7 +1,10 @@
 #!/mnt/c/tmp/frame/env/bin/python3
 """
 Calculate and send a message when in a blackout window (usually meant for
-turning the screen off overnight).
+turning the screen off overnight) and when coming out of blackout.
+
+This runs as a separate process in a continual loop, sleeping until it is
+next tested.  
 
 """
 import time
@@ -60,20 +63,6 @@ class PFBlackout:
             blackout_length = (end_blackout_time - now_time) * secs_per_min
 
         return blackout_length
-
-
-    ############################################################
-    #
-    # get_blackout_length
-    #
-    @staticmethod
-    def get_blackout_length():
-        """
-        Determine the current blackout interval
-        """
-
-        blackout_interval = PFBlackout.check_blackout_window()
-        return blackout_interval
 
 
     ############################################################

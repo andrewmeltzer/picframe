@@ -1,5 +1,5 @@
 """
-picframe_env.py gathers information about the environment that the fram
+picframe_env.py holds information about the environment that the frame
 is running in, such as the monitor information, the OS, etc.
 
 """

@@ -1,6 +1,10 @@
 #!/mnt/c/tmp/frame/env/bin/python3
 """
 picframe_image.py
+
+Pull and generate images from image files as retrieved from whatever
+repository they are in.  This sizes the images properly and places them
+in the correct location in the canvas.
 """
 
 import sys

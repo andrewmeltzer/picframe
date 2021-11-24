@@ -1,5 +1,7 @@
 """
-picframe_message.py holds the messages passed on the picframe queue
+picframe_message.py holds and processes the messages passed on the 
+picframe queue. It also generates the messages from key events on 
+the canvas.
 
 """
 import logging

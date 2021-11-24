@@ -1,6 +1,16 @@
 #!/mnt/c/tmp/frame/env/bin/python3
 """
-Display images in a Tk window from some set of directories.
+Picframe is a digital frame that can
+- pull pictures from
+    - any local directory
+    - gdrive
+    - samba
+
+- Sleep (go dark) during the night
+- Adjust brightness automatically
+- Turn on and off based on motion
+- Work on linux (also Raspberri pi) and Windows
+- Run fullscreen or in a window of any chosen size
 """
 
 import getopt
@@ -36,8 +46,7 @@ def print_help(rval=0):
 
     print("picframe.py ")
     print("    <-h|--help>")
-    print("    <-s|--single=<path to single image>")
-    print("    <-p|--path=<path to image root directory>")
+    print("    <-p|--path=<path to image root directory (local filesytem only)>")
     print("    <-d|--debug=<debug level (DEBUG, INFO, WARN, ERROR)")
     print("    <-l|--logfile=<path to log file>")
     print("    <-f|--fullscreen")
@@ -60,7 +69,7 @@ def get_args(argv):
     try:
         opts, inargs = getopt.getopt(argv, "hfs:d:g:",
                 ["help", "fullscreen", "logfile=", "debuglevel=",
-                 "single=", "path=", "geom="])
+                 "path=", "geom="])
     except getopt.GetoptError:
         print_help()
         sys.exit(2)
@@ -77,10 +86,8 @@ def get_args(argv):
         elif opt in ('-g', '--geom'):
             PFSettings.fullscreen = False
             PFSettings.geometry_str = arg
-        elif opt in ('-s', '--single'):
-            PFSettings.single_image = True
-            PFSettings.image_dir = arg
         elif opt in ('-p', '--path'):
+            PFSettings.image_source = 'Filesystem'
             PFSettings.single_image = False
             PFSettings.image_dir = arg
 
@@ -176,8 +183,9 @@ def main():
         PFImage.display_first_image()
         PFCanvas.win.update()
 
-    # This runs forever until a 'q' or 'x' is entered.
+        # This runs forever until a 'q' or 'x' is entered.
         PFCanvas.win.mainloop()
+
     except Exception as e:
         PFSettings.print_settings()
         PFEnv.print_environment()

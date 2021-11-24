@@ -1,5 +1,6 @@
 """
-picframe_filesystem.py
+picframe_filesystem.py pulls new images from an ordinarily mounted Windows
+or linux filesystem.
 """
 import os
 from pathlib import Path
