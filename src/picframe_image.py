@@ -172,6 +172,10 @@ class PFImage:
                 heif_img.mode, heif_img.size, heif_img.data,
                 "raw", heif_img.mode, heif_img.stride,)
 
+        else:
+            pil_img = Image.open(PFEnv.black_image)
+            logging.warning("'%s' Unexpected error in get_image(). Format is not supported." % (image_file,))
+
         # Calculate the image width/height ratio and use it
         # based on the width of the screen
         height_ratio = PFCanvas.height/pil_img.height
