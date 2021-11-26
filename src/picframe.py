@@ -32,7 +32,9 @@ from picframe_canvas import PFCanvas
 
 
 # TODO: ++++
-# - Support usb drive
+# - Properly identify the size of the screen on linux
+# - Test with usb drive
+# - Better installation process
 # - Someday support videos (mp4, mov, wmv, mp3, wav).
 # - Someday create a smartphone app to control it over bluetooth or wifi
 # BUGS:
