@@ -1,24 +1,59 @@
 Picframe is a digital frame that can 
-- pull pictures from 
-    - any local directory
-    - gdrive
-    - samba
-
-- Sleep (go dark) during the night
-- Adjust brightness automatically
-- Turn on and off based on motion
-- Work on linux (also Raspberri pi) and Windows
-- Run fullscreen or in a window of any chosen size
+	- pull pictures from 
+    		- any local directory
+    		- gdrive
+    		- samba
+	- Sleep (go dark) during the night
+	- Adjust brightness automatically
+	- Turn on and off based on motion
+	- Work on linux (also Raspberri pi) and Windows
+	- Run fullscreen or in a window of any chosen size
 
 Simple command:
+--------------
     python3 picframe.py
+
+Configuring picframe
+--------------------
+Edit src/picframe_settings.py
 
 Install
 -------
     sudo apt-get install python3-tk
     pip3 install pillow
     pip3 install pydrive2
+    pip3 install pyheif
 
+To Install pyheif on a raspberry pi
+------------------------------------
+sudo apt-get remove libde265-0 -y 
+sudo apt-get remove libheif1 -y 
+sudo apt-get remove libheif-dev -y 
+sudo apt-get remove libde265-dev -y 
+sudo apt install autotools-dev automake libtool texinfo x265 -y 
+git clone https://github.com/strukturag/libde265.git 
+cd libde265 
+./autogen.sh 
+./configure --disable-dec265 --disable-sherlock265 --prefix /usr 
+make 
+sudo make install 
+cd .. 
+git clone https://github.com/strukturag/libheif.git 
+cd libheif 
+./autogen.sh 
+./configure --prefix /usr 
+make 
+sudo make install 
+cd .. 
+git clone https://github.com/libffi/libffi.git 
+cd libffi 
+./autogen.sh 
+./configure --prefix /usr 
+make 
+sudo make install 
+cd .. 
+pip install git+https://github.com/carsales/pyheif.git 
+pip install pyheif
 
 WSL2 Setup
 ----------
@@ -35,4 +70,11 @@ Google Drive setup:
 - Either download a client_secrets.json or edit the client_secrets.sample.json
 - Once you have a client_secrets.json file, 
     run firstauth.py to set up access to your data.
+
+To mount a remote linux filesystem
+----------------------------------
+sudo mkdir /mnt/<your-favorite-mount-point-name>
+sudo sshfs <username>@<ipaddress>:/dir /mnt/<your-favorite-mount-point-name>
+sudo sshfs
+
 
