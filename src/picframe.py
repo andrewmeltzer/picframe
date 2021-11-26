@@ -35,6 +35,9 @@ from picframe_canvas import PFCanvas
 # - Support usb drive
 # - Someday support videos (mp4, mov, wmv, mp3, wav).
 # - Someday create a smartphone app to control it over bluetooth or wifi
+# BUGS:
+# - Need to be able to start it from any directory.  Need to use a better
+#   pathname for the black screen image.
 
 ############################################################
 # print_help

@@ -23,6 +23,7 @@ Install
     pip3 install pillow
     pip3 install pydrive2
     pip3 install pyheif
+    pip3 install pydrive2
 
 To Install pyheif on a raspberry pi
 ------------------------------------
@@ -74,7 +75,13 @@ Google Drive setup:
 To mount a remote linux filesystem
 ----------------------------------
 sudo mkdir /mnt/<your-favorite-mount-point-name>
-sudo sshfs <username>@<ipaddress>:/dir /mnt/<your-favorite-mount-point-name>
-sudo sshfs
+sudo sshfs -o allow_other <username>@<ip-address>:<remote-dir> /mnt/<your-favorite-mount-point-name>
+add the following line to the bottom of /etc/fstab
+sshfs#<username>@<ip-address>:<remote-dir> /mnt/<your-favorite-mount-point-name> fuse.sshfs defaults 0 0
+
+To unmount a remote linux filesystem
+umount /mnt/<your-favorite-mount-point>
+
+
 
 

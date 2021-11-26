@@ -95,7 +95,6 @@ class PFCanvas:
         PFCanvas.win.geometry(PFCanvas.geometry_str)
         if PFCanvas.fullscreen:
             PFCanvas.win.attributes('-fullscreen', True)
-            PFCanvas.win.attributes('-type', 'dock')
 
     ############################################################
     #
@@ -129,7 +128,6 @@ class PFCanvas:
 
         PFCanvas.win.geometry(PFCanvas.geometry_str)
         if PFCanvas.fullscreen:
-            PFCanvas.win.attributes('-type', 'dock')
             PFCanvas.win.attributes('-fullscreen', True)
         else:
             PFCanvas.win.attributes('-fullscreen', False)
@@ -157,3 +155,4 @@ class PFCanvas:
             PFCanvas.set_fullscreen_geom()
 
         PFCanvas.reset_window_size()
+        PFCanvas.canvas.focus_set()
