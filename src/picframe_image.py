@@ -156,7 +156,7 @@ class PFImage:
         filename, file_extension = os.path.splitext(image_file)
 
         img = None
-        if file_extension.lower() in ('.tif', '.gif', '.jpg', '.png'):
+        if file_extension.lower() in ('.jpeg', '.tif', '.gif', '.jpg', '.png'):
             pil_img = Image.open(image_file)
 
             # Use the exif information to properly orient the image.
