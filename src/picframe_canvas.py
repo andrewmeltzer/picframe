@@ -110,7 +110,6 @@ class PFCanvas:
         PFCanvas.canvas = Canvas(PFCanvas.win, width=PFCanvas.width, height=PFCanvas.height)
 
         PFCanvas.canvas.pack(fill=tkinter.BOTH, expand=True)
-        PFCanvas.canvas.grid(row=1, column=1)
         PFCanvas.canvas.focus_set()
 
 
