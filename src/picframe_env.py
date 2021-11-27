@@ -7,6 +7,7 @@ import logging
 import ctypes
 import sys
 import os
+from tkinter import Tk
 from picframe_settings import PFSettings
 
 class NoImagesFoundException(Exception):
@@ -72,11 +73,20 @@ class PFEnv:
         Set the geometry for a full-screen display.
         """
         if sys.platform in ("linux", "linux2"):
-            # ++++ Find a linux way of doing this
-            PFEnv.geometry = (1920, 1080)
-            PFEnv.screen_width = 1920
-            PFEnv.screen_height = 1080
-            PFEnv.geometry_str = '1920x1080'
+            # This works if there is only one monitor
+            if PFSettings.fullscreen_geom_str is None:
+                win = Tk()
+                PFEnv.screen_width = win.winfo_screenwidth()
+                PFEnv.screen_height = win.winfo_screenheight()
+                PFEnv.geometry = (PFEnv.screen_width, PFEnv.screen_height)
+                PFEnv.geometry_str = str(PFEnv.screen_width) + "x" + str(PFEnv.screen_height)
+                win.destroy()
+            else:
+                wstr, hstr = PFSettings.fullscreen_geom_str.split('x')
+                PFEnv.screen_width = int(wstr)
+                PFEnv.screen_height = int(hstr)
+                PFEnv.geometry = (PFEnv.screen_width, PFEnv.screen_height)
+                PFEnv.geometry_str = PFSettings.geometry_str
         else:
             user32 = ctypes.windll.user32
             PFEnv.geometry = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)

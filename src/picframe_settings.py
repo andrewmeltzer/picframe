@@ -20,7 +20,7 @@ class PFSettings:
     # stdout.  Otherwise it creates a logfile and puts it into the log
     # directory.  The logfile name is picframe_<timestamp>.log
     log_to_stdout = True
-    log_directory = '/mnt/c/tmp'
+    log_directory = '/tmp'
 
     ##########################################################
     # Debug level.  CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET
@@ -28,10 +28,18 @@ class PFSettings:
 
     ##########################################################
     # Should the images be displayed fullscreen?  You can also specify a
-    # size by setting the geom.  If it is set to None, it defaults to the
-    # screen size.
+    # default non-fullscreen size by setting the geom.  If it is 
+    # set to None, it defaults to 400x400
     fullscreen = False
-    geometry_str = "200x200"
+    geometry_str = "400x400"
+
+    ##########################################################
+    # The fullscreen_geom is calculated by the program and is 
+    # generally right unless you are on linux and using more than
+    # one monitor, in which case it WILL BE WRONG.
+    # Put in the form of fullscreen_geom_str = "1920x1080"
+    fullscreen_geom_str = None
+
 
     ##########################################################
     # How long should an image be displayed?
@@ -58,7 +66,7 @@ class PFSettings:
     # image_paths can be a single path, the path to a single file,
     # or a list of comma separated paths.
     #image_paths = ('/mnt/c/tmp/images/IMG_1275.JPG',)
-    image_paths = ('/mnt/c/tmp/images/',)
+    image_paths = ('../images/black.png',)
     #image_paths = ('/mnt/c/Users/andym/Pictures/',)
 
     # Settings if for Google Drive (if used)
