@@ -214,7 +214,7 @@ class PFImage:
             filepath:  The full path to the file to display
         """
 
-        logging.debug("Entering display_image(%s)." % (image_file,))
+        logging.debug("Entering display_image(%s)." % (filepath,))
         if filepath is None:
             PFImage.displayed_img = PFImage.get_image(PFEnv.black_image)
         else:
