@@ -3,6 +3,8 @@ picframe_filesystem.py pulls new images from an ordinarily mounted Windows
 or linux filesystem.
 """
 import os
+import logging
+
 from pathlib import Path
 from picframe_settings import PFSettings
 from picframe_env import PFEnv
