@@ -153,6 +153,7 @@ class PFImage:
         """
 
         # Need PIL library to handle JPG files.
+
         filename, file_extension = os.path.splitext(image_file)
 
         img = None
@@ -213,6 +214,7 @@ class PFImage:
             filepath:  The full path to the file to display
         """
 
+        logging.debug("Entering display_image(%s)." % (image_file,))
         if filepath is None:
             PFImage.displayed_img = PFImage.get_image(PFEnv.black_image)
         else:
@@ -223,6 +225,7 @@ class PFImage:
         PFCanvas.canvas.itemconfig(PFImage.image_id, image=PFImage.displayed_img)
         PFCanvas.canvas.coords(PFImage.image_id, (left, top))
         PFCanvas.canvas.focus_set()
+        logging.debug("Exiting display_image(%s)." % (filepath,))
 
     ############################################################
     #
@@ -299,6 +302,8 @@ class PFImage:
         """
         Get and display the blank-screen (black) image
         """
+        logging.debug("Entering display_black_image().")
         PFImage.previous_image = PFImage.current_image
         PFImage.current_image = None
         PFImage.display_image(None)
+        logging.debug("Exiting display_black_image().")

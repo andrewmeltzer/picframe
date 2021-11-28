@@ -123,6 +123,7 @@ class PFMessage:
 
         PFMessage.message = PFMessage.queue.get_nowait()
         message = PFMessage.message
+        logging.debug("process_message:" % (str(message.message),))
 
         # Only go to the next message if in the normal state.
         if message.message == PFMessageContent.TIMER_NEXT_IMAGE:

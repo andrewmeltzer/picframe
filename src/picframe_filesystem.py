@@ -58,12 +58,14 @@ class PFFilesystem:
         """
 
         # Traverse the recursive list of directories.
+        logging.debug("Entering get_next_file()")
         while True:
             image_file_count = 0
             for dirname in PFFilesystem.get_image_dirs():
                 if Path(dirname).is_file():
                     if PFEnv.is_format_supported(dirname):
                         image_file_count = image_file_count + 1
+                        logging.debug("Exiting get_next_file: %s" % (dirname,))
                         yield dirname
                 else:
                     for root, dirs, files in os.walk(dirname):
@@ -72,6 +74,7 @@ class PFFilesystem:
                             pathdir = '/'.join(path) + '/' + file
                             if PFEnv.is_format_supported(pathdir):
                                 image_file_count = image_file_count + 1
+                                logging.debug("Exiting get_next_file: %s" % (pathdir,))
                                 yield pathdir
             if image_file_count == 0:
                 raise NoImagesFoundException()

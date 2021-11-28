@@ -129,7 +129,7 @@ def setup_logger():
             logger_handler = logging.StreamHandler(sys.stdout)
 
         log_formatter = logging.Formatter('{"time": "%(asctime)s", "level": "%(levelname)s", "info": %(message)s}')
-        log_formatter.converter = time.gmtime
+        # log_formatter.converter = time.gmtime
         logger_root = logging.getLogger()
         logger_root.setLevel(PFSettings.debug_level)
 
