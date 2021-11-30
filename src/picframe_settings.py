@@ -55,6 +55,11 @@ class PFSettings:
     end_blackout_hour = 15
     end_blackout_minute = 14
 
+    ##########################################################
+    # How long (minutes) should the motion sensor wait to see motion before
+    # blacking out the screen.  Set to none to disable the motion
+    # detector.
+    motion_sensor_timeout = 10
 
     ##########################################################
     # Where should images be sourced from?
@@ -66,8 +71,9 @@ class PFSettings:
     # image_paths can be a single path, the path to a single file,
     # or a list of comma separated paths.
     #image_paths = ('/mnt/c/tmp/images/IMG_1275.JPG',)
+    image_paths = ('/mnt/c/tmp/images/',)
     #image_paths = ('../images/black.png',)
-    image_paths = ('/mnt/c/Users/andym/Pictures/',)
+    #image_paths = ('/mnt/c/Users/andym/Pictures/',)
 
     # Settings if for Google Drive (if used)
     # If there is a root level directory to start in, can save a lot of time

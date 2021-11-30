@@ -26,6 +26,7 @@ Install on Linux
     pip3 install pillow
     pip3 install pydrive2
     pip3 install pyheif
+    pip3 install opencv-python
 
 Configure picframe
 --------------------

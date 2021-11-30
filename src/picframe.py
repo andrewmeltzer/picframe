@@ -29,17 +29,20 @@ from picframe_messagecontent import PFMessageContent
 from picframe_message import PFMessage
 from picframe_image import PFImage
 from picframe_canvas import PFCanvas
+from picframe_motion import PFMotion
 
 
 # TODO: ++++
 # - Properly identify the size of the screen on linux
-# - Test with usb drive
+# - Test with usb drive and document how to do it
 # - Better installation process
+# - Option to turn it off if it is dark.
 # - Someday support videos (mp4, mov, wmv, mp3, wav).
 # - Someday create a smartphone app to control it over bluetooth or wifi
 # BUGS:
 # - Need to be able to start it from any directory.  Need to use a better
 #   pathname for the black screen image.
+# - Problems logging from Windows for multiprocessor stuff.
 
 ############################################################
 # print_help
@@ -174,10 +177,14 @@ def main():
     PFCanvas.init()
     PFImage.init()
 
+
     timer_p = mp.Process(target=PFTimer.timer_main, args=(PFMessage.queue,))
     blackout_p = mp.Process(target=PFBlackout.blackout_main, args=(PFMessage.queue,))
+    motion_p = mp.Process(target=PFMotion.motion_main, args=(PFMessage.queue,))
     timer_p.start()
     blackout_p.start()
+    if PFSettings.motion_sensor_timeout is not None and PFSettings.motion_sensor_timeout > 0:
+        motion_p.start()
 
     # Add the messaging pieces (keyboard events and other events) to
     # the canvas
@@ -197,6 +204,9 @@ def main():
         PFImage.print_image_state()
         raise(e)
 
+    if PFSettings.motion_sensor_timeout is not None and PFSettings.motion_sensor_timeout > 0:
+        PFMotion.motion_cleanup()
+        motion_p.terminate()
     timer_p.terminate()
     blackout_p.terminate()
     PFMessage.queue.close()
