@@ -221,7 +221,7 @@ class PFImage:
             try:
                 PFImage.displayed_img = PFImage.get_image(filepath)
             except ValueError as exc:
-                logging.warning("Image error %s for file: %s." % (str(exc), filepath))
+                logging.warning("Image error %s: %s." % (str(exc), filepath))
                 PFImage.displayed_img = PFImage.get_image(PFEnv.black_image)
                 
         top = (PFCanvas.height - PFImage.displayed_img.height())/2
