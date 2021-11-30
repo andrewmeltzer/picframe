@@ -36,6 +36,7 @@ class PFEnv:
     geometry_str = None
     supported_types = []
     logger_initialized = False
+    logger = None
 
     # Location of image used when the system is in sleep mode.
     black_image = '../images/black.png'
@@ -62,6 +63,50 @@ class PFEnv:
             PFEnv.supported_types = ('.png', '.jpg', '.tif', '.gif', '.jpeg')
 
         PFEnv.set_fullscreen_geom()
+
+
+    ############################################################
+    #
+    # setup_logger
+    #
+    def setup_logger():
+        """
+        Setup the logger for the application.
+        Args:
+        Returns:
+            none
+        """
+        if not PFEnv.logger_initialized:
+            logfile = None
+            logger_handler = None
+            PFEnv.logger = logging.getLogger('picframe')
+    
+            # If the user wants the logfile to go to the default file location
+            # with a datestamp
+            if not PFSettings.log_to_stdout:
+                # If want it in utc
+                #timestamp = datetime.now(timezone.utc).strftime(PFEnv.HMS_FMT_STR)
+                timestamp = datetime.now().strftime(PFEnv.HMS_FMT_STR)
+                fname = "picframe_" + timestamp + ".log"
+                path = PFSettings.log_directory
+    
+                if not os.path.exists(path):
+                    os.makedirs(path)
+                logfile = os.path.join(path, fname)
+    
+                logger_handler = logging.FileHandler(logfile)
+            else:
+                logger_handler = logging.StreamHandler(sys.stdout)
+    
+            log_formatter = logging.Formatter('{"time": "%(asctime)s", "level": "%(levelname)s", "info": %(message)s}')
+            # log_formatter.converter = time.gmtime
+            PFEnv.logger.setLevel(PFSettings.debug_level)
+    
+            logger_handler.setLevel(PFSettings.debug_level)
+            PFEnv.logger.addHandler(logger_handler)
+            logger_handler.setFormatter(log_formatter)
+    
+            PFEnv.logger_initialized = True
 
     ############################################################
     #
@@ -162,7 +207,7 @@ class PFEnv:
         if file_extension.lower() in PFEnv.supported_types:
             return True
 
-        logging.warning("'%s' format is not supported." % (image_file,))
+        PFEnv.logger.warning("'%s' format is not supported." % (image_file,))
         return False
 
     ############################################################

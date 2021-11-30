@@ -9,7 +9,6 @@ next tested.
 """
 import time
 import datetime
-import logging
 
 from picframe_settings import PFSettings
 from picframe_message import PFMessage
@@ -77,13 +76,15 @@ class PFBlackout:
         Inputs:
             queue: The message queue
         """
+        PFEnv.setup_logger()
+
         while True:
             blackout_interval = PFBlackout.check_blackout_window()
             if blackout_interval > 0:
                 if not PFBlackout.in_blackout:
                     # Send blackout message
                     queue.put(PFMessage(PFMessageContent.BLACKOUT))
-                    logging.info("Going dark for %d seconds." % (blackout_interval,))
+                    PFEnv.logger.info("Going dark for %d seconds." % (blackout_interval,))
                     PFBlackout.in_blackout = True
             else:
                 if PFBlackout.in_blackout:

@@ -16,7 +16,6 @@ Picframe is a digital frame that can
 import getopt
 import sys
 import os
-import logging
 import time
 from datetime import datetime
 import multiprocessing as mp
@@ -42,7 +41,6 @@ from picframe_motion import PFMotion
 # BUGS:
 # - Need to be able to start it from any directory.  Need to use a better
 #   pathname for the black screen image.
-# - Problems logging from Windows for multiprocessor stuff.
 
 ############################################################
 # print_help
@@ -101,49 +99,6 @@ def get_args(argv):
 
 ############################################################
 #
-# setup_logger
-#
-def setup_logger():
-    """
-    Setup the logger for the application.
-    Args:
-    Returns:
-        none
-    """
-    if not PFEnv.logger_initialized:
-        logfile = None
-        logger_handler = None
-
-        # If the user wants the logfile to go to the default file location
-        # with a datestamp
-        if not PFSettings.log_to_stdout:
-            # If want it in utc
-            #timestamp = datetime.now(timezone.utc).strftime(PFEnv.HMS_FMT_STR)
-            timestamp = datetime.now().strftime(PFEnv.HMS_FMT_STR)
-            fname = "picframe_" + timestamp + ".log"
-            path = PFSettings.log_directory
-
-            if not os.path.exists(path):
-                os.makedirs(path)
-            logfile = os.path.join(path, fname)
-
-            logger_handler = logging.FileHandler(logfile)
-        else:
-            logger_handler = logging.StreamHandler(sys.stdout)
-
-        log_formatter = logging.Formatter('{"time": "%(asctime)s", "level": "%(levelname)s", "info": %(message)s}')
-        # log_formatter.converter = time.gmtime
-        logger_root = logging.getLogger()
-        logger_root.setLevel(PFSettings.debug_level)
-
-        logger_handler.setLevel(PFSettings.debug_level)
-        logger_root.addHandler(logger_handler)
-        logger_handler.setFormatter(log_formatter)
-
-        PFEnv.logger_initialized = True
-
-############################################################
-#
 # show_command_help
 #
 def show_command_help():
@@ -170,6 +125,8 @@ def main():
     """
     Execute the program.
     """
+
+    PFEnv.setup_logger()
 
     show_command_help()
 
@@ -214,7 +171,6 @@ def main():
 if __name__ == "__main__":
     PFEnv.init_environment()
     get_args(sys.argv[1:])
-    setup_logger()
 
     main()
 

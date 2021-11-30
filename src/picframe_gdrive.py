@@ -7,7 +7,6 @@ pulled.
 
 """
 
-import logging
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 from picframe_settings import PFSettings
@@ -109,7 +108,7 @@ class PFGoogleDrive:
         # be added to the list
         if len(children) <= 0:
             if PFEnv.is_format_supported(parent_name) and in_desired_folder:
-                logging.debug("Returning %s" % (parent_name,))
+                PFEnv.logger.debug("Returning %s" % (parent_name,))
                 if PFGoogleDrive.full_id_list_style:
                     PFGoogleDrive.id_list.append(parent_name)
                 else:
@@ -127,7 +126,7 @@ class PFGoogleDrive:
         for child in children:
             child_name = child['title']
             child_id = child['id']
-            logging.debug('title: %s, id: %s' % (child_name, child_id))
+            PFEnv.logger.debug('title: %s, id: %s' % (child_name, child_id))
 
             if child_name == PFSettings.gdrive_photos_folder or in_desired_folder:
                 yield from PFGoogleDrive.process_children(True, child_name, child_id)

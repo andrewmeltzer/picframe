@@ -4,12 +4,12 @@ picframe queue. It also generates the messages from key events on
 the canvas.
 
 """
-import logging
 
 from picframe_messagecontent import PFMessageContent
 from picframe_image import PFImage
 from picframe_state import PFState, PFStates
 from picframe_canvas import PFCanvas
+from picframe_env import PFEnv
 
 
 class PFMessage:
@@ -123,7 +123,7 @@ class PFMessage:
 
         PFMessage.message = PFMessage.queue.get_nowait()
         message = PFMessage.message
-        logging.debug("process_message: %s" % (str(message.message),))
+        PFEnv.logger.debug("process_message: %s" % (str(message.message),))
 
         # Only go to the next message if in the normal state.
         if message.message == PFMessageContent.TIMER_NEXT_IMAGE:

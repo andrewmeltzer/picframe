@@ -9,7 +9,6 @@ in the correct location in the canvas.
 
 import sys
 import os
-import logging
 from tkinter import NW
 from PIL import ImageTk, Image, ImageOps, ImageEnhance
 
@@ -44,6 +43,8 @@ class PFImage:
         """
         One-time initialization of the class.
         """
+
+        PFEnv.setup_logger()
 
         # Initialize the data source
         if PFSettings.image_source == "Filesystem":
@@ -175,7 +176,7 @@ class PFImage:
 
         else:
             pil_img = Image.open(PFEnv.black_image)
-            logging.warning("'%s' Unexpected error in get_image(). Format is not supported." % (image_file,))
+            PFEnv.logger.warning("'%s' Unexpected error in get_image(). Format is not supported." % (image_file,))
 
         # Calculate the image width/height ratio and use it
         # based on the width of the screen
@@ -214,14 +215,14 @@ class PFImage:
             filepath:  The full path to the file to display
         """
 
-        logging.debug("Entering display_image(%s)." % (filepath,))
+        PFEnv.logger.debug("Entering display_image(%s)." % (filepath,))
         if filepath is None:
             PFImage.displayed_img = PFImage.get_image(PFEnv.black_image)
         else:
             try:
                 PFImage.displayed_img = PFImage.get_image(filepath)
             except ValueError as exc:
-                logging.warning("Image error %s: %s." % (str(exc), filepath))
+                PFEnv.logger.warning("Image error %s: %s." % (str(exc), filepath))
                 PFImage.displayed_img = PFImage.get_image(PFEnv.black_image)
                 
         top = (PFCanvas.height - PFImage.displayed_img.height())/2
@@ -229,7 +230,7 @@ class PFImage:
         PFCanvas.canvas.itemconfig(PFImage.image_id, image=PFImage.displayed_img)
         PFCanvas.canvas.coords(PFImage.image_id, (left, top))
         PFCanvas.canvas.focus_set()
-        logging.debug("Exiting display_image(%s)." % (filepath,))
+        PFEnv.logger.debug("Exiting display_image(%s)." % (filepath,))
 
     ############################################################
     #
@@ -306,8 +307,8 @@ class PFImage:
         """
         Get and display the blank-screen (black) image
         """
-        logging.debug("Entering display_black_image().")
+        PFEnv.logger.debug("Entering display_black_image().")
         PFImage.previous_image = PFImage.current_image
         PFImage.current_image = None
         PFImage.display_image(None)
-        logging.debug("Exiting display_black_image().")
+        PFEnv.logger.debug("Exiting display_black_image().")

@@ -7,8 +7,10 @@ Send a new image message on the settings-requested time schedule.
 
 import time
 import logging
+import sys
 
 from picframe_settings import PFSettings
+from picframe_env import PFEnv
 from picframe_message import PFMessage
 from picframe_messagecontent import PFMessageContent
 
@@ -40,8 +42,8 @@ class PFTimer:
         Inputs:
             queue: The message queue
         """
-
+        PFEnv.setup_logger()
         while True:
-            logging.debug("Putting next timer message.")
+            PFEnv.logger.debug("Putting next timer message.")
             queue.put(PFMessage(PFMessageContent.TIMER_NEXT_IMAGE))
             time.sleep(PFSettings.display_time)

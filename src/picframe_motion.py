@@ -7,7 +7,6 @@ number of minutes.
 """
 
 import cv2
-import logging
 from datetime import datetime
 
 from picframe_settings import PFSettings
@@ -50,6 +49,8 @@ class PFMotion:
         Inputs:
             queue: The message queue
         """
+
+        PFEnv.setup_logger()
 
         # Assigning our static_back to None
         static_back = None
@@ -118,7 +119,7 @@ class PFMotion:
         
             # Identify start time of motion
             if motion_list[-1] == 1 and motion_list[-2] == 0:
-                logging.info("Motion detected")
+                PFEnv.logger.info("Motion detected")
                 last_motion = datetime.now()
                 if in_motion_timeout:
                     in_motion_timeout = False
@@ -126,7 +127,7 @@ class PFMotion:
         
             # Identify end time of motion
             if motion_list[-1] == 0 and motion_list[-2] == 1:
-                logging.info("Motion stopped")
+                PFEnv.logger.info("Motion stopped")
                 last_motion = datetime.now()
         
             minutes_diff = (datetime.now() - last_motion).total_seconds()/60.0
