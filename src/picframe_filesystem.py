@@ -38,7 +38,11 @@ class PFFilesystem:
         """
         Get the OS appropriate image directory path.
         """
-        return PFEnv.path_to_platform(PFSettings.image_paths)
+        result_dirs = []
+        for idir in PFSettings.image_paths:
+            result_dirs.append(PFEnv.path_to_platform(idir))
+
+        return result_dirs
 
     ############################################################
     #
