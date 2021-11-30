@@ -218,8 +218,12 @@ class PFImage:
         if filepath is None:
             PFImage.displayed_img = PFImage.get_image(PFEnv.black_image)
         else:
-            PFImage.displayed_img = PFImage.get_image(filepath)
-
+            try:
+                PFImage.displayed_img = PFImage.get_image(filepath)
+            except ValueError as exc:
+                logging.warning("Image error %s for file: %s." % (str(exc), filepath))
+                PFImage.displayed_img = PFImage.get_image(PFEnv.black_image)
+                
         top = (PFCanvas.height - PFImage.displayed_img.height())/2
         left = (PFCanvas.width - PFImage.displayed_img.width())/2
         PFCanvas.canvas.itemconfig(PFImage.image_id, image=PFImage.displayed_img)
