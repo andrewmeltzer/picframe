@@ -5,11 +5,16 @@ Picframe is a digital frame that can
     		- any local directory
     		- gdrive
     		- samba
+            - USB drive
 	- Sleep (go dark) during the night
-	- Adjust brightness automatically
+	- Adjust brightness automatically based on the brightness of the room
 	- Turn on and off based on motion
+    - Turn off if the room is dark
 	- Work on linux (also Raspberri pi) and Windows
 	- Run fullscreen or in a window of any chosen size
+
+- The motion sensor will not work in WSL2 (Windows Linux).
+- The motion sensor is based on light, so it also will disable itself in a dark room.
 
 Getting picframe
 ----------------

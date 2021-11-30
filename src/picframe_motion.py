@@ -9,6 +9,7 @@ number of minutes.
 import cv2
 from datetime import datetime
 
+from picframe_env import PFEnv
 from picframe_settings import PFSettings
 from picframe_message import PFMessage
 from picframe_messagecontent import PFMessageContent
@@ -134,6 +135,7 @@ class PFMotion:
             if minutes_diff > PFSettings.motion_sensor_timeout:
                 if not in_motion_timeout:
                     in_motion_timeout = True
+                    PFEnv.logger.info("Motion timeout occurred.")
                     queue.put(PFMessage(PFMessageContent.MOTION_TIMEOUT))
             
 
