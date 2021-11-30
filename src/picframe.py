@@ -35,12 +35,11 @@ from picframe_motion import PFMotion
 # - Properly identify the size of the screen on linux
 # - Test with usb drive and document how to do it
 # - Better installation process
-# - Option to turn it off if it is dark.
+# - Option to turn it off if it is in a dark room dark.
+# - Detect ambient light and dim the screen if it is darker.
 # - Someday support videos (mp4, mov, wmv, mp3, wav).
 # - Someday create a smartphone app to control it over bluetooth or wifi
 # BUGS:
-# - Need to be able to start it from any directory.  Need to use a better
-#   pathname for the black screen image.
 
 ############################################################
 # print_help

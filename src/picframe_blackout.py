@@ -13,6 +13,7 @@ import datetime
 from picframe_settings import PFSettings
 from picframe_message import PFMessage
 from picframe_messagecontent import PFMessageContent
+from picframe_env import PFEnv
 
 class PFBlackout:
     """

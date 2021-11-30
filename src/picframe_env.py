@@ -188,6 +188,18 @@ class PFEnv:
 
     ############################################################
     #
+    # get_black_image
+    #
+    @staticmethod
+    def get_black_image():
+        """
+        Depending on the OS, return a proper path where the black image
+        is found.
+        """
+        return PFEnv.path_to_platform(os.path.dirname(__file__) + '/' + PFEnv.black_image)
+
+    ############################################################
+    #
     # is_format_supported
     #
     @staticmethod

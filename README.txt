@@ -15,7 +15,7 @@ Getting picframe
 ----------------
     git clone https://github.com/andrewmeltzer/picframe.git
 
-Install on Linux
+Install
 ----------------
     cd picframe
     Create a virtual environment:
@@ -25,7 +25,7 @@ Install on Linux
     sudo apt-get install python3-tk
     pip3 install pillow
     pip3 install pydrive2
-    pip3 install pyheif
+    pip3 install pyheif  (linux only, this isn't supported on Windows)
     pip3 install opencv-python
 
 Configure picframe

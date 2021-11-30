@@ -175,7 +175,7 @@ class PFImage:
                 "raw", heif_img.mode, heif_img.stride,)
 
         else:
-            pil_img = Image.open(PFEnv.black_image)
+            pil_img = Image.open(PFEnv.get_black_image())
             PFEnv.logger.warning("'%s' Unexpected error in get_image(). Format is not supported." % (image_file,))
 
         # Calculate the image width/height ratio and use it
@@ -217,13 +217,13 @@ class PFImage:
 
         PFEnv.logger.debug("Entering display_image(%s)." % (filepath,))
         if filepath is None:
-            PFImage.displayed_img = PFImage.get_image(PFEnv.black_image)
+            PFImage.displayed_img = PFImage.get_image(PFEnv.get_black_image())
         else:
             try:
                 PFImage.displayed_img = PFImage.get_image(filepath)
             except ValueError as exc:
                 PFEnv.logger.warning("Image error %s: %s." % (str(exc), filepath))
-                PFImage.displayed_img = PFImage.get_image(PFEnv.black_image)
+                PFImage.displayed_img = PFImage.get_image(PFEnv.get_black_image())
                 
         top = (PFCanvas.height - PFImage.displayed_img.height())/2
         left = (PFCanvas.width - PFImage.displayed_img.width())/2
@@ -244,7 +244,7 @@ class PFImage:
         Inputs:
         """
 
-        img = PFImage.get_image(PFEnv.black_image)
+        img = PFImage.get_image(PFEnv.get_black_image())
 
         # Calculate where to put the image in the frame
         top = (PFCanvas.height - img.height())/2
