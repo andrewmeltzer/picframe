@@ -28,7 +28,7 @@ from picframe_messagecontent import PFMessageContent
 from picframe_message import PFMessage
 from picframe_image import PFImage
 from picframe_canvas import PFCanvas
-from picframe_motion import PFMotion
+from picframe_video import PFVideo
 
 
 # TODO: ++++
@@ -136,7 +136,7 @@ def main():
 
     timer_p = mp.Process(target=PFTimer.timer_main, args=(PFMessage.queue,))
     blackout_p = mp.Process(target=PFBlackout.blackout_main, args=(PFMessage.queue,))
-    motion_p = mp.Process(target=PFMotion.motion_main, args=(PFMessage.queue,))
+    motion_p = mp.Process(target=PFVideo.motion_main, args=(PFMessage.queue,))
     timer_p.start()
     blackout_p.start()
     if PFSettings.motion_sensor_timeout is not None and PFSettings.motion_sensor_timeout > 0:
@@ -161,7 +161,7 @@ def main():
         raise(e)
 
     if PFSettings.motion_sensor_timeout is not None and PFSettings.motion_sensor_timeout > 0:
-        PFMotion.motion_cleanup()
+        PFVideo.motion_cleanup()
         motion_p.terminate()
     timer_p.terminate()
     blackout_p.terminate()

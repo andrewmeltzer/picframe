@@ -86,6 +86,34 @@ class PFSettings:
     gdrive_photos_folder = "PicFrame"
 
     ############################################################
+    ############################################################
+    #
+    # Advanced settings.  Adjust these carefully
+    #
+
+    ############################################################
+    #
+    # Video settings:
+    #
+    # camera_port is useful if you have two video cameras and the
+    # wrong one is being selected.  If that is the case, first try
+    # to set it to 1, then -1.
+    # default:
+    #   camera_port = 0
+    camera_port = 0
+
+    # pixel_threshold identifies how many pixels need to change 
+    # before a difference is tagged as motion.  If the camera is
+    # lousy, light flickers, or small movements are common, this
+    # can be increased.
+    # default:
+    #   pixel_threshold = 10
+    pixel_threshold = 10
+
+    ############################################################
+    ############################################################
+    ############################################################
+    ############################################################
     #
     # print_settings
     #
