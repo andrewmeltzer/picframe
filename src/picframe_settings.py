@@ -57,9 +57,15 @@ class PFSettings:
 
     ##########################################################
     # How long (minutes) should the motion sensor wait to see motion before
-    # blacking out the screen.  Set to None or 0 to disable the motion
+    # blacking out the screen.  Setting to None or 0 disables the motion
     # detector.
+    # You can also disable the motion detector by setting
+    #   use_motion_detector = False
+    # If you set motion_sensor_timeout to a usable number, you can toggle
+    # the motion sensor on and off using the keyboard.
     motion_sensor_timeout = 1
+    use_motion_sensor = True
+
 
     ##########################################################
     # Where should images be sourced from?

@@ -10,6 +10,7 @@ from picframe_image import PFImage
 from picframe_state import PFState, PFStates
 from picframe_canvas import PFCanvas
 from picframe_env import PFEnv
+from picframe_settings import PFSettings
 
 
 class PFMessage:
@@ -57,25 +58,37 @@ class PFMessage:
         key = evnt.char
 
         if key == 'f':
+            PFEnv.logger.info("Sending message: Fullscreen")
             PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_FULLSCREEN))
         if key == 'n':
+            PFEnv.logger.info("Sending message: Next Image")
             PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_NEXT_IMAGE))
         if key == 'h':
+            PFEnv.logger.info("Sending message: Hold Image")
             PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_HOLD))
         if key == 'b':
+            PFEnv.logger.info("Sending message: Blackout Screen")
             PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_BLACKOUT))
-        if key == 'M':
-            PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_EMULATE_MOTION))
         if key == 'm':
-            PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_EMULATE_MOTION_TIMEOUT))
+            """ ++++
+            if PFVideo.use_motion_sensor:
+                PFEnv.logger.info("Sending message: Toggle Motion Detector Off")
+            else:
+                PFEnv.logger.info("Sending message: Toggle Motion Detector On")
+            """
+            PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_TOGGLE_MOTION_SENSOR))
         if key == 'V':
+            PFEnv.logger.info("Sending message: Increase Brightness")
             PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_INCREASE_BRIGHTNESS))
         if key == 'v':
+            PFEnv.logger.info("Sending message: Decrease Brightness")
             PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_DECREASE_BRIGHTNESS))
 
         if key == 'a':
+            PFEnv.logger.info("Sending message: Use Default Brightness")
             PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_USE_DEFAULT_BRIGHTNESS))
         if key in ('q', 'x'):
+            PFEnv.logger.info("Sending message: Quit")
             PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_QUIT))
 
 
@@ -150,10 +163,14 @@ class PFMessage:
             PFImage.adjust_brightness('down')
         elif message.message == PFMessageContent.KEYBOARD_USE_DEFAULT_BRIGHTNESS:
             PFImage.brightness = 1
-        elif message.message == PFMessageContent.KEYBOARD_EMULATE_MOTION:
-            pass
-        elif message.message == PFMessageContent.KEYBOARD_EMULATE_MOTION_TIMEOUT:
-            PFImage.display_black_image()
+        elif message.message == PFMessageContent.KEYBOARD_TOGGLE_MOTION_SENSOR:
+            """ ++++
+            if PFVideo.use_motion_sensor:
+                PFVideo.use_motion_sensor = False
+            else:
+                PFVideo.use_motion_sensor = True
+            """
+            PFImage.display_next_image()
         elif message.message == PFMessageContent.BLACKOUT:
             PFImage.display_black_image()
         elif message.message == PFMessageContent.END_BLACKOUT:

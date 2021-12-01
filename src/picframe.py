@@ -35,7 +35,6 @@ from picframe_video import PFVideo
 # - Properly identify the size of the screen on linux
 # - Test with usb drive and document how to do it
 # - Better installation process
-# - Option to turn it off if it is in a dark room dark.
 # - Detect ambient light and dim the screen if it is darker.
 # - Someday support videos (mp4, mov, wmv, mp3, wav).
 # - Someday create a smartphone app to control it over bluetooth or wifi
@@ -108,8 +107,7 @@ def show_command_help():
     print("n: Next picture")
     print("h: Toggle hold current picure")
     print("b: Toggle blackout mode")
-    print("M: Motion start as if the motion detector went off")
-    print("m: Motion stop as if the motion detector timed out")
+    print("m: Toggle whether to use the motion detector.")
     print("V: Increase video brightness")
     print("v: Decrease video brightess")
     print("a: Set to default video brightness")

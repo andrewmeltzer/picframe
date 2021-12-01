@@ -28,7 +28,6 @@ class PFState:
     normal_state_map = {
         PFMessageContent.KEYBOARD_HOLD: PFStates.KEYBOARD_HOLD,
         PFMessageContent.KEYBOARD_BLACKOUT: PFStates.KEYBOARD_BLACKOUT,
-        PFMessageContent.KEYBOARD_EMULATE_MOTION_TIMEOUT: PFStates.MOTION_BLACKOUT,
         PFMessageContent.BLACKOUT: PFStates.BLACKOUT,
         PFMessageContent.MOTION_TIMEOUT: PFStates.MOTION_BLACKOUT,
     }
@@ -39,8 +38,8 @@ class PFState:
     }
     motion_blackout_state_map = {
         PFMessageContent.KEYBOARD_HOLD: PFStates.KEYBOARD_HOLD,
-        PFMessageContent.KEYBOARD_EMULATE_MOTION: PFStates.NORMAL,
         PFMessageContent.MOTION: PFStates.NORMAL,
+        PFMessageContent.KEYBOARD_TOGGLE_MOTION_SENSOR: PFStates.NORMAL,
     }
     keyboard_blackout_state_map = {
         PFMessageContent.KEYBOARD_HOLD: PFStates.KEYBOARD_HOLD,
