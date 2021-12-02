@@ -70,12 +70,12 @@ class PFBlackout:
     # blackout_main
     #
     @staticmethod
-    def blackout_main(queue):
+    def blackout_main(canvas_mq):
         """
         Continually loop, checking to see if the blackout status changes
         and if so, send the blackout message.
         Inputs:
-            queue: The message queue
+            canvas_mq: The canvas message queue
         """
         PFEnv.setup_logger()
 
@@ -84,13 +84,13 @@ class PFBlackout:
             if blackout_interval > 0:
                 if not PFBlackout.in_blackout:
                     # Send blackout message
-                    queue.put(PFMessage(PFMessageContent.BLACKOUT))
+                    canvas_mq.put(PFMessage(PFMessageContent.BLACKOUT))
                     PFEnv.logger.info("Going dark for %d seconds." % (blackout_interval,))
                     PFBlackout.in_blackout = True
             else:
                 if PFBlackout.in_blackout:
                     # Send end blackout message
-                    queue.put(PFMessage(PFMessageContent.END_BLACKOUT))
+                    canvas_mq.put(PFMessage(PFMessageContent.END_BLACKOUT))
                     PFBlackout.in_blackout = False
 
             # Test every 60 seconds

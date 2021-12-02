@@ -32,6 +32,11 @@ from picframe_video import PFVideo
 
 
 # TODO: ++++
+# - Message passing to turn off and on the motion sensor
+# - Print status and settings on the screen
+# - Allow the user to adjust speed through commands
+# - Save settings in a different file; allow the user to save screen-modified
+#   settings
 # - Properly identify the size of the screen on linux
 # - Test with usb drive and document how to do it
 # - Better installation process
@@ -127,14 +132,16 @@ def main():
 
     show_command_help()
 
-    PFMessage.queue = mp.Queue()
+    PFMessage.canvas_mq = mp.Queue()
+    PFMessage.video_mq = mp.Queue()
     PFCanvas.init()
     PFImage.init()
 
 
-    timer_p = mp.Process(target=PFTimer.timer_main, args=(PFMessage.queue,))
-    blackout_p = mp.Process(target=PFBlackout.blackout_main, args=(PFMessage.queue,))
-    motion_p = mp.Process(target=PFVideo.motion_main, args=(PFMessage.queue,))
+    timer_p = mp.Process(target=PFTimer.timer_main, args=(PFMessage.canvas_mq,))
+    blackout_p = mp.Process(target=PFBlackout.blackout_main, args=(PFMessage.canvas_mq,))
+    motion_p = mp.Process(target=PFVideo.motion_main, args=(PFMessage.canvas_mq, PFMessage.video_mq))
+
     timer_p.start()
     blackout_p.start()
     if PFSettings.motion_sensor_timeout is not None and PFSettings.motion_sensor_timeout > 0:
@@ -163,7 +170,7 @@ def main():
         motion_p.terminate()
     timer_p.terminate()
     blackout_p.terminate()
-    PFMessage.queue.close()
+    PFMessage.canvas_mq.close()
 
 if __name__ == "__main__":
     PFEnv.init_environment()

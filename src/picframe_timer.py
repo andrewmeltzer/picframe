@@ -36,14 +36,14 @@ class PFTimer:
     # timer_main
     #
     @staticmethod
-    def timer_main(queue):
+    def timer_main(canvas_mq):
         """
         Continually loop, sending a next-image message every sleep interval
         Inputs:
-            queue: The message queue
+            canvas_mq: The canvas message queue
         """
         PFEnv.setup_logger()
         while True:
             PFEnv.logger.debug("Putting next timer message.")
-            queue.put(PFMessage(PFMessageContent.TIMER_NEXT_IMAGE))
+            canvas_mq.put(PFMessage(PFMessageContent.TIMER_NEXT_IMAGE))
             time.sleep(PFSettings.display_time)

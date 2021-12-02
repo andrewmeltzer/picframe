@@ -26,7 +26,21 @@ class PFVideo:
     it decides there has been motion.
     """
     camera = None
-    #++++ use_motion_sensor = True
+    use_motion_sensor = True
+    video_mq = None
+
+    ############################################################
+    #
+    # process_video_message
+    #
+    @staticmethod
+    def process_video_message():
+        """
+        Process the next message from the video message queue based
+        on the current state of the system and the message.
+        """
+        if PFMessage.video_mq.empty():
+            return True
 
     ############################################################
     #
@@ -46,16 +60,16 @@ class PFVideo:
     # motion_main
     #
     @staticmethod
-    def motion_main(queue):
+    def motion_main(canvas_mq, video_mq):
         """
         Continually loop, sending a blackout message if no motion has been
         detected.
         Inputs:
-            queue: The message queue
+            canvas_mq: The canvas message queue
         """
 
         PFEnv.setup_logger()
-        # ++++ PFVideo.use_motion_sensor = PFSettings.use_motion_sensor
+        PFVideo.use_motion_sensor = PFSettings.use_motion_sensor
 
         # Return if nothing to do
         if PFSettings.motion_sensor_timeout is None or PFSettings.motion_sensor_timeout == 0:
@@ -92,9 +106,23 @@ class PFVideo:
         while True:
             start = time.time()
             time.sleep(delay)
+
+            # See if any process sent this one a message
+            if not video_mq.empty():
+                message = video_mq.get_nowait()
+                PFEnv.logger.debug("process_video_message: %s" % (str(message.message),))
+                if message.message == PFMessageContent.KEYBOARD_TOGGLE_MOTION_SENSOR:
+                    if PFVideo.use_motion_sensor:
+                        PFEnv.logger.info("Disabling motion detector")
+                        PFVideo.use_motion_sensor = False
+                        canvas_mq.put(PFMessage(PFMessageContent.MOTION))
+                    else:
+                        PFEnv.logger.info("Enabling motion detector")
+                        PFVideo.use_motion_sensor = True
+
             # See if the motion sensor is disabled via the settings
-            # ++++if not PFVideo.use_motion_sensor:
-            # ++++    continue
+            if not PFVideo.use_motion_sensor:
+                continue
 
             ret, image2 = PFVideo.camera.read()
 
@@ -129,7 +157,7 @@ class PFVideo:
                 if in_motion_timeout:
                     in_motion_timeout = False
                     PFEnv.logger.info("Motion timeout disabled.")
-                    queue.put(PFMessage(PFMessageContent.MOTION))
+                    canvas_mq.put(PFMessage(PFMessageContent.MOTION))
             else:
                 delay = delay_scanning
     
@@ -139,7 +167,7 @@ class PFVideo:
                 if not in_motion_timeout:
                     in_motion_timeout = True
                     PFEnv.logger.info("Motion timeout occurred.")
-                    queue.put(PFMessage(PFMessageContent.MOTION_TIMEOUT))
+                    canvas_mq.put(PFMessage(PFMessageContent.MOTION_TIMEOUT))
     
     
 

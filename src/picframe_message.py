@@ -1,6 +1,6 @@
 """
 picframe_message.py holds and processes the messages passed on the 
-picframe queue. It also generates the messages from key events on 
+picframe queues. It also generates the messages from key events on 
 the canvas.
 
 """
@@ -17,7 +17,8 @@ class PFMessage:
     """
     Create and react to messages.
     """
-    queue = None
+    canvas_mq = None
+    video_mq = None
     message = None
 
     ############################################################
@@ -41,10 +42,10 @@ class PFMessage:
         PFCanvas.canvas.bind("<KeyPress>", PFMessage.keypress)
         
         # Process non-keyboard messages
-        PFCanvas.win.after(100, PFMessage.process_message)
+        PFCanvas.win.after(100, PFMessage.process_canvas_message)
 
         # enque a message to get the first real image on the screen
-        PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_NEXT_IMAGE))
+        PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_NEXT_IMAGE))
 
     ############################################################
     #
@@ -59,37 +60,32 @@ class PFMessage:
 
         if key == 'f':
             PFEnv.logger.info("Sending message: Fullscreen")
-            PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_FULLSCREEN))
+            PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_FULLSCREEN))
         if key == 'n':
-            PFEnv.logger.info("Sending message: Next Image")
-            PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_NEXT_IMAGE))
+            PFEnv.logger.info("Sending message: Next image")
+            PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_NEXT_IMAGE))
         if key == 'h':
-            PFEnv.logger.info("Sending message: Hold Image")
-            PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_HOLD))
+            PFEnv.logger.info("Sending message: Hold image")
+            PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_HOLD))
         if key == 'b':
-            PFEnv.logger.info("Sending message: Blackout Screen")
-            PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_BLACKOUT))
+            PFEnv.logger.info("Sending message: Blackout screen")
+            PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_BLACKOUT))
         if key == 'm':
-            """ ++++
-            if PFVideo.use_motion_sensor:
-                PFEnv.logger.info("Sending message: Toggle Motion Detector Off")
-            else:
-                PFEnv.logger.info("Sending message: Toggle Motion Detector On")
-            """
-            PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_TOGGLE_MOTION_SENSOR))
+            PFEnv.logger.info("Sending message: Toggle motion detector")
+            PFMessage.video_mq.put(PFMessage(PFMessageContent.KEYBOARD_TOGGLE_MOTION_SENSOR))
         if key == 'V':
-            PFEnv.logger.info("Sending message: Increase Brightness")
-            PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_INCREASE_BRIGHTNESS))
+            PFEnv.logger.info("Sending message: Increase brightness")
+            PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_INCREASE_BRIGHTNESS))
         if key == 'v':
-            PFEnv.logger.info("Sending message: Decrease Brightness")
-            PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_DECREASE_BRIGHTNESS))
+            PFEnv.logger.info("Sending message: Decrease brightness")
+            PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_DECREASE_BRIGHTNESS))
 
         if key == 'a':
-            PFEnv.logger.info("Sending message: Use Default Brightness")
-            PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_USE_DEFAULT_BRIGHTNESS))
+            PFEnv.logger.info("Sending message: Use Default brightness")
+            PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_USE_DEFAULT_BRIGHTNESS))
         if key in ('q', 'x'):
             PFEnv.logger.info("Sending message: Quit")
-            PFMessage.queue.put(PFMessage(PFMessageContent.KEYBOARD_QUIT))
+            PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_QUIT))
 
 
     ############################################################
@@ -118,25 +114,26 @@ class PFMessage:
     
     ############################################################
     #
-    # process_message
+    # process_canvas_message
     #
     @staticmethod
-    def process_message():
+    def process_canvas_message():
         """
-        Process the next message from the queue based on the current state
-        of the system and the message.  As a rule of thumb, keyboard actions
+        Process the next message from the canvas message queue based 
+        on the current state of the system and the message.  
+        As a rule of thumb, keyboard actions
         take precedence over everything else.
         """
-        if PFMessage.queue.empty():
-            PFCanvas.win.after(100, PFMessage.process_message)
+        if PFMessage.canvas_mq.empty():
+            PFCanvas.win.after(100, PFMessage.process_canvas_message)
             return True
 
         # See if the canvas has changed size
         PFMessage.adjust_canvas_geom()
 
-        PFMessage.message = PFMessage.queue.get_nowait()
+        PFMessage.message = PFMessage.canvas_mq.get_nowait()
         message = PFMessage.message
-        PFEnv.logger.debug("process_message: %s" % (str(message.message),))
+        PFEnv.logger.debug("process_canvas_message: %s" % (str(message.message),))
 
         # Only go to the next message if in the normal state.
         if message.message == PFMessageContent.TIMER_NEXT_IMAGE:
@@ -163,14 +160,6 @@ class PFMessage:
             PFImage.adjust_brightness('down')
         elif message.message == PFMessageContent.KEYBOARD_USE_DEFAULT_BRIGHTNESS:
             PFImage.brightness = 1
-        elif message.message == PFMessageContent.KEYBOARD_TOGGLE_MOTION_SENSOR:
-            """ ++++
-            if PFVideo.use_motion_sensor:
-                PFVideo.use_motion_sensor = False
-            else:
-                PFVideo.use_motion_sensor = True
-            """
-            PFImage.display_next_image()
         elif message.message == PFMessageContent.BLACKOUT:
             PFImage.display_black_image()
         elif message.message == PFMessageContent.END_BLACKOUT:
@@ -180,7 +169,7 @@ class PFMessage:
         elif message.message == PFMessageContent.DECREASE_BRIGHTNESS:
             PFImage.adjust_brightness('down')
         elif message.message == PFMessageContent.MOTION:
-            PFImage.display_current_image()
+            PFImage.display_next_image()
         elif message.message == PFMessageContent.KEYBOARD_FULLSCREEN:
             PFCanvas.toggle_fullscreen()
             PFMessage.setup_canvas_messaging()
@@ -199,6 +188,6 @@ class PFMessage:
             PFImage.display_current_image()
 
         PFState.new_state(message)
-        PFCanvas.win.after(100, PFMessage.process_message)
+        PFCanvas.win.after(100, PFMessage.process_canvas_message)
 
         return True
