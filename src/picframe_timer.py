@@ -20,30 +20,36 @@ class PFTimer:
     timing.
     """
 
-    ############################################################
-    #
-    # get_sleep_interval
-    #
-    @staticmethod
-    def get_sleep_interval():
-        """
-        How long is it set to sleep for between pictures.
-        """
-        return PFSettings.display_time
+    # TIMER_STEP is the amount of time to increase or decrease the 
+    # display time by when the value is changed.
+    TIMER_STEP = 10
 
     ############################################################
     #
     # timer_main
     #
     @staticmethod
-    def timer_main(canvas_mq):
+    def timer_main(canvas_mq, timer_mq):
         """
         Continually loop, sending a next-image message every sleep interval
         Inputs:
             canvas_mq: The canvas message queue
         """
         PFEnv.setup_logger()
+        display_time = PFSettings.display_time
+
         while True:
             PFEnv.logger.debug("Putting next timer message.")
+            
+            # See if any process sent this one a message
+            if not timer_mq.empty():
+                message = timer_mq.get_nowait()
+                PFEnv.logger.debug("timer message: %s" % (str(message.message),))
+                if message.message == PFMessageContent.KEYBOARD_INCREASE_DISPLAY_TIME:
+                    display_time = display_time + PFTimer.TIMER_STEP
+                if message.message == PFMessageContent.KEYBOARD_DECREASE_DISPLAY_TIME:
+                    if display_time > PFTimer.TIMER_STEP:
+                        display_time = display_time - PFTimer.TIMER_STEP
+
             canvas_mq.put(PFMessage(PFMessageContent.TIMER_NEXT_IMAGE))
-            time.sleep(PFSettings.display_time)
+            time.sleep(display_time)

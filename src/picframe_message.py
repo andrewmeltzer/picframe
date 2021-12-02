@@ -19,6 +19,7 @@ class PFMessage:
     """
     canvas_mq = None
     video_mq = None
+    timer_mq = None
     message = None
 
     ############################################################
@@ -79,6 +80,13 @@ class PFMessage:
         if key == 'v':
             PFEnv.logger.info("Sending message: Decrease brightness")
             PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_DECREASE_BRIGHTNESS))
+
+        if key == 'P':
+            PFEnv.logger.info("Sending message: Increase image display time")
+            PFMessage.timer_mq.put(PFMessage(PFMessageContent.KEYBOARD_INCREASE_DISPLAY_TIME))
+        if key == 'p':
+            PFEnv.logger.info("Sending message: Decrease image display time")
+            PFMessage.timer_mq.put(PFMessage(PFMessageContent.KEYBOARD_DECREASE_DISPLAY_TIME))
 
         if key == 'a':
             PFEnv.logger.info("Sending message: Use Default brightness")

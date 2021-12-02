@@ -32,9 +32,7 @@ from picframe_video import PFVideo
 
 
 # TODO: ++++
-# - Message passing to turn off and on the motion sensor
 # - Print status and settings on the screen
-# - Allow the user to adjust speed through commands
 # - Save settings in a different file; allow the user to save screen-modified
 #   settings
 # - Properly identify the size of the screen on linux
@@ -111,6 +109,8 @@ def show_command_help():
     print("f: Toggle fullscreen")
     print("n: Next picture")
     print("h: Toggle hold current picure")
+    print(f"p: Decrease the amount of time an image is shown by {PFTimer.TIMER_STEP} seconds")
+    print(f"P: Increase the amount of time an image is shown by {PFTimer.TIMER_STEP} seconds")
     print("b: Toggle blackout mode")
     print("m: Toggle whether to use the motion detector.")
     print("V: Increase video brightness")
@@ -134,11 +134,12 @@ def main():
 
     PFMessage.canvas_mq = mp.Queue()
     PFMessage.video_mq = mp.Queue()
+    PFMessage.timer_mq = mp.Queue()
     PFCanvas.init()
     PFImage.init()
 
 
-    timer_p = mp.Process(target=PFTimer.timer_main, args=(PFMessage.canvas_mq,))
+    timer_p = mp.Process(target=PFTimer.timer_main, args=(PFMessage.canvas_mq,PFMessage.timer_mq))
     blackout_p = mp.Process(target=PFBlackout.blackout_main, args=(PFMessage.canvas_mq,))
     motion_p = mp.Process(target=PFVideo.motion_main, args=(PFMessage.canvas_mq, PFMessage.video_mq))
 

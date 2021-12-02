@@ -27,20 +27,6 @@ class PFVideo:
     """
     camera = None
     use_motion_sensor = True
-    video_mq = None
-
-    ############################################################
-    #
-    # process_video_message
-    #
-    @staticmethod
-    def process_video_message():
-        """
-        Process the next message from the video message queue based
-        on the current state of the system and the message.
-        """
-        if PFMessage.video_mq.empty():
-            return True
 
     ############################################################
     #
@@ -110,7 +96,7 @@ class PFVideo:
             # See if any process sent this one a message
             if not video_mq.empty():
                 message = video_mq.get_nowait()
-                PFEnv.logger.debug("process_video_message: %s" % (str(message.message),))
+                PFEnv.logger.debug("Video message: %s" % (str(message.message),))
                 if message.message == PFMessageContent.KEYBOARD_TOGGLE_MOTION_SENSOR:
                     if PFVideo.use_motion_sensor:
                         PFEnv.logger.info("Disabling motion detector")

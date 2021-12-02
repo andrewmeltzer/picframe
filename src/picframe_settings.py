@@ -42,7 +42,7 @@ class PFSettings:
 
 
     ##########################################################
-    # How long should an image be displayed?
+    # How long should an image be displayed (in seconds)?
     display_time = 5
 
     ##########################################################
