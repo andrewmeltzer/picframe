@@ -80,6 +80,31 @@ class PFCanvas:
 
     ############################################################
     #
+    # adjust_canvas_geom
+    #
+    @staticmethod
+    def adjust_canvas_geom():
+        """
+        See if the user has adjsuted the canvas geometry.  
+        """
+        width = PFCanvas.win.winfo_width()
+        height = PFCanvas.win.winfo_height()
+
+        if width != PFCanvas.width or height != PFCanvas.height:
+            PFCanvas.win.destroy()
+            PFCanvas.width = width
+            PFCanvas.height = height
+            PFCanvas.geometry = (width, height)
+            PFCanvas.geometry_str = str(width) + 'x' + str(height)
+
+            PFCanvas.reset_window_size()
+            PFImage.display_first_image()
+            return True
+        else:
+            return False
+
+    ############################################################
+    #
     # get_window
     #
     @staticmethod

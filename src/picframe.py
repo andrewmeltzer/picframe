@@ -24,8 +24,8 @@ from picframe_settings import PFSettings
 from picframe_env import PFEnv
 from picframe_timer import PFTimer
 from picframe_blackout import PFBlackout
-from picframe_messagecontent import PFMessageContent
 from picframe_message import PFMessage
+from picframe_canvas_message import PFCanvasMessage
 from picframe_image import PFImage
 from picframe_canvas import PFCanvas
 from picframe_video import PFVideo
@@ -150,7 +150,7 @@ def main():
 
     # Add the messaging pieces (keyboard events and other events) to
     # the canvas
-    PFMessage.setup_canvas_messaging()
+    PFCanvasMessage.setup_canvas_messaging()
 
     # Queue up a black image as the first image to set it up
     try:

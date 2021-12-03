@@ -12,7 +12,6 @@ import sys
 from picframe_settings import PFSettings
 from picframe_env import PFEnv
 from picframe_message import PFMessage
-from picframe_messagecontent import PFMessageContent
 
 class PFTimer:
     """
@@ -45,11 +44,11 @@ class PFTimer:
             if not timer_mq.empty():
                 message = timer_mq.get_nowait()
                 PFEnv.logger.debug("timer message: %s" % (str(message.message),))
-                if message.message == PFMessageContent.KEYBOARD_INCREASE_DISPLAY_TIME:
+                if message.message == PFMessage.KEYBOARD_INCREASE_DISPLAY_TIME:
                     display_time = display_time + PFTimer.TIMER_STEP
-                if message.message == PFMessageContent.KEYBOARD_DECREASE_DISPLAY_TIME:
+                if message.message == PFMessage.KEYBOARD_DECREASE_DISPLAY_TIME:
                     if display_time > PFTimer.TIMER_STEP:
                         display_time = display_time - PFTimer.TIMER_STEP
 
-            canvas_mq.put(PFMessage(PFMessageContent.TIMER_NEXT_IMAGE))
+            canvas_mq.put(PFMessage(PFMessage.TIMER_NEXT_IMAGE))
             time.sleep(display_time)

@@ -4,9 +4,7 @@ received and the current state.
 
 """
 from enum import Enum, auto
-from picframe_messagecontent import PFMessageContent
-
-
+from picframe_message import PFMessage
 
 class PFStates(Enum):
     """
@@ -26,27 +24,27 @@ class PFState:
     previous_state = PFStates.NORMAL
 
     normal_state_map = {
-        PFMessageContent.KEYBOARD_HOLD: PFStates.KEYBOARD_HOLD,
-        PFMessageContent.KEYBOARD_BLACKOUT: PFStates.KEYBOARD_BLACKOUT,
-        PFMessageContent.BLACKOUT: PFStates.BLACKOUT,
-        PFMessageContent.MOTION_TIMEOUT: PFStates.MOTION_BLACKOUT,
+        PFMessage.KEYBOARD_HOLD: PFStates.KEYBOARD_HOLD,
+        PFMessage.KEYBOARD_BLACKOUT: PFStates.KEYBOARD_BLACKOUT,
+        PFMessage.BLACKOUT: PFStates.BLACKOUT,
+        PFMessage.MOTION_TIMEOUT: PFStates.MOTION_BLACKOUT,
     }
     blackout_state_map = {
-        PFMessageContent.KEYBOARD_HOLD: PFStates.KEYBOARD_HOLD,
-        PFMessageContent.KEYBOARD_BLACKOUT: PFStates.NORMAL,
-        PFMessageContent.END_BLACKOUT: PFStates.NORMAL,
+        PFMessage.KEYBOARD_HOLD: PFStates.KEYBOARD_HOLD,
+        PFMessage.KEYBOARD_BLACKOUT: PFStates.NORMAL,
+        PFMessage.END_BLACKOUT: PFStates.NORMAL,
     }
     motion_blackout_state_map = {
-        PFMessageContent.KEYBOARD_HOLD: PFStates.KEYBOARD_HOLD,
-        PFMessageContent.MOTION: PFStates.NORMAL,
-        PFMessageContent.KEYBOARD_TOGGLE_MOTION_SENSOR: PFStates.NORMAL,
+        PFMessage.KEYBOARD_HOLD: PFStates.KEYBOARD_HOLD,
+        PFMessage.MOTION: PFStates.NORMAL,
+        PFMessage.KEYBOARD_TOGGLE_MOTION_SENSOR: PFStates.NORMAL,
     }
     keyboard_blackout_state_map = {
-        PFMessageContent.KEYBOARD_HOLD: PFStates.KEYBOARD_HOLD,
-        PFMessageContent.KEYBOARD_BLACKOUT: PFStates.NORMAL,
+        PFMessage.KEYBOARD_HOLD: PFStates.KEYBOARD_HOLD,
+        PFMessage.KEYBOARD_BLACKOUT: PFStates.NORMAL,
     }
     keyboard_hold_state_map = {
-        PFMessageContent.KEYBOARD_HOLD: PFStates.NORMAL,
+        PFMessage.KEYBOARD_HOLD: PFStates.NORMAL,
     }
 
 

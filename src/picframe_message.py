@@ -5,18 +5,40 @@ the canvas.
 
 """
 
-from picframe_messagecontent import PFMessageContent
-from picframe_image import PFImage
-from picframe_state import PFState, PFStates
-from picframe_canvas import PFCanvas
-from picframe_env import PFEnv
-from picframe_settings import PFSettings
-
+from enum import Enum, auto
 
 class PFMessage:
     """
-    Create and react to messages.
+    This class holds the messages that get put onto the message queues.
     """
+
+    """
+    What message is being sent.
+    """
+    NOOP = "NOOP"
+    TIMER_NEXT_IMAGE = "TIMER_NEXT_MESSAGE"
+    KEYBOARD_NEXT_IMAGE = "KEYBOARD_NEXT_IMAGE"
+    KEYBOARD_HOLD = "KEYBOARD_HOLD"
+    KEYBOARD_BLACKOUT = "KEYBOARD_BLACKOUT"
+    KEYBOARD_INCREASE_BRIGHTNESS = "KEYBOARD_INCREASE_BRIGHTNESS"
+    KEYBOARD_DECREASE_BRIGHTNESS = "KEYBOARD_DECREASE_BRIGHTNESS"
+    KEYBOARD_INCREASE_DISPLAY_TIME = "KEYBOARD_INCREASE_DISPLAY_TIME"
+    KEYBOARD_DECREASE_DISPLAY_TIME = "KEYBOARD_DECREASE_DISPLAY_TIME"
+    KEYBOARD_USE_DEFAULT_BRIGHTNESS = "KEYBOARD_USE_DEFAULT_BRIGHTNESS"
+    KEYBOARD_TOGGLE_MOTION_SENSOR = "KEYBOARD_TOGGLE_MOTION_SENSOR"
+    KEYBOARD_FULLSCREEN = "KEYBOARD_FULLSCREEN"
+
+    BLACKOUT = "BLACKOUT"
+    END_BLACKOUT = "END_BLACKOUT"
+
+    INCREASE_BRIGHTNESS = "INCREASE_BRIGHTNESS"
+    DECREASE_BRIGHTNESS = "DECREASE_BRIGHTNESS"
+
+    MOTION = "MOTION"
+    MOTION_TIMEOUT = "MOTION_TIMEOUT"
+
+    KEYBOARD_QUIT = "KEYBOARD_QUIT"
+
     canvas_mq = None
     video_mq = None
     timer_mq = None
@@ -24,178 +46,9 @@ class PFMessage:
 
     ############################################################
     #
-    # __message__
+    # __init__
     #
     def __init__(self, message):
         self.message = message
 
 
-    ############################################################
-    #
-    # setup_canvas_messaging
-    #
-    @staticmethod
-    def setup_canvas_messaging():
-        """
-        Set up the necessary messaging information for a canvas.
-        """
-        # When a key is pressed on the canvas, send message to keypress
-        PFCanvas.canvas.bind("<KeyPress>", PFMessage.keypress)
-        
-        # Process non-keyboard messages
-        PFCanvas.win.after(100, PFMessage.process_canvas_message)
-
-        # enque a message to get the first real image on the screen
-        PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_NEXT_IMAGE))
-
-    ############################################################
-    #
-    # keypress
-    #
-    @staticmethod
-    def keypress(evnt):
-        """
-        Capture and react to a keypress event in the display window.
-        """
-        key = evnt.char
-
-        if key == 'f':
-            PFEnv.logger.info("Sending message: Fullscreen")
-            PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_FULLSCREEN))
-        if key == 'n':
-            PFEnv.logger.info("Sending message: Next image")
-            PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_NEXT_IMAGE))
-        if key == 'h':
-            PFEnv.logger.info("Sending message: Hold image")
-            PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_HOLD))
-        if key == 'b':
-            PFEnv.logger.info("Sending message: Blackout screen")
-            PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_BLACKOUT))
-        if key == 'm':
-            PFEnv.logger.info("Sending message: Toggle motion detector")
-            PFMessage.video_mq.put(PFMessage(PFMessageContent.KEYBOARD_TOGGLE_MOTION_SENSOR))
-        if key == 'V':
-            PFEnv.logger.info("Sending message: Increase brightness")
-            PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_INCREASE_BRIGHTNESS))
-        if key == 'v':
-            PFEnv.logger.info("Sending message: Decrease brightness")
-            PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_DECREASE_BRIGHTNESS))
-
-        if key == 'P':
-            PFEnv.logger.info("Sending message: Increase image display time")
-            PFMessage.timer_mq.put(PFMessage(PFMessageContent.KEYBOARD_INCREASE_DISPLAY_TIME))
-        if key == 'p':
-            PFEnv.logger.info("Sending message: Decrease image display time")
-            PFMessage.timer_mq.put(PFMessage(PFMessageContent.KEYBOARD_DECREASE_DISPLAY_TIME))
-
-        if key == 'a':
-            PFEnv.logger.info("Sending message: Use Default brightness")
-            PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_USE_DEFAULT_BRIGHTNESS))
-        if key in ('q', 'x'):
-            PFEnv.logger.info("Sending message: Quit")
-            PFMessage.canvas_mq.put(PFMessage(PFMessageContent.KEYBOARD_QUIT))
-
-
-    ############################################################
-    #
-    # adjust_canvas_geom
-    #
-    @staticmethod
-    def adjust_canvas_geom():
-        """
-        See if the user has adjsuted the canvas geometry.  
-        """
-        width = PFCanvas.win.winfo_width()
-        height = PFCanvas.win.winfo_height()
-
-        if width != PFCanvas.width or height != PFCanvas.height:
-            PFCanvas.win.destroy()
-            PFCanvas.width = width
-            PFCanvas.height = height
-            PFCanvas.geometry = (width, height)
-            PFCanvas.geometry_str = str(width) + 'x' + str(height)
-
-            PFCanvas.reset_window_size()
-            PFImage.display_first_image()
-            PFMessage.setup_canvas_messaging()
-
-    
-    ############################################################
-    #
-    # process_canvas_message
-    #
-    @staticmethod
-    def process_canvas_message():
-        """
-        Process the next message from the canvas message queue based 
-        on the current state of the system and the message.  
-        As a rule of thumb, keyboard actions
-        take precedence over everything else.
-        """
-        if PFMessage.canvas_mq.empty():
-            PFCanvas.win.after(100, PFMessage.process_canvas_message)
-            return True
-
-        # See if the canvas has changed size
-        PFMessage.adjust_canvas_geom()
-
-        PFMessage.message = PFMessage.canvas_mq.get_nowait()
-        message = PFMessage.message
-        PFEnv.logger.debug("process_canvas_message: %s" % (str(message.message),))
-
-        # Only go to the next message if in the normal state.
-        if message.message == PFMessageContent.TIMER_NEXT_IMAGE:
-            if PFState.current_state == PFStates.NORMAL:
-                PFImage.display_next_image()
-
-        # If the keyboard says next image, override any holds or blackouts
-        elif message.message == PFMessageContent.KEYBOARD_NEXT_IMAGE:
-            PFImage.display_next_image()
-
-        elif message.message == PFMessageContent.KEYBOARD_HOLD:
-            if PFState.current_state == PFStates.KEYBOARD_HOLD:
-                PFImage.display_next_image()
-
-        elif message.message == PFMessageContent.KEYBOARD_BLACKOUT:
-            if PFState.current_state == PFStates.KEYBOARD_BLACKOUT:
-                PFImage.display_next_image()
-            else:
-                PFImage.display_black_image()
-
-        elif message.message == PFMessageContent.KEYBOARD_INCREASE_BRIGHTNESS:
-            PFImage.adjust_brightness('up')
-        elif message.message == PFMessageContent.KEYBOARD_DECREASE_BRIGHTNESS:
-            PFImage.adjust_brightness('down')
-        elif message.message == PFMessageContent.KEYBOARD_USE_DEFAULT_BRIGHTNESS:
-            PFImage.brightness = 1
-        elif message.message == PFMessageContent.BLACKOUT:
-            PFImage.display_black_image()
-        elif message.message == PFMessageContent.END_BLACKOUT:
-            PFImage.display_current_image()
-        elif message.message == PFMessageContent.INCREASE_BRIGHTNESS:
-            PFImage.adjust_brightness('up')
-        elif message.message == PFMessageContent.DECREASE_BRIGHTNESS:
-            PFImage.adjust_brightness('down')
-        elif message.message == PFMessageContent.MOTION:
-            PFImage.display_next_image()
-        elif message.message == PFMessageContent.KEYBOARD_FULLSCREEN:
-            PFCanvas.toggle_fullscreen()
-            PFMessage.setup_canvas_messaging()
-            PFImage.display_first_image()
-
-            # This runs forever until a 'q' or 'x' is entered.
-            PFCanvas.win.mainloop()
-
-        elif message.message == PFMessageContent.MOTION_TIMEOUT:
-            PFImage.display_black_image()
-        elif message.message == PFMessageContent.KEYBOARD_QUIT:
-            PFCanvas.win.quit()
-            PFCanvas.canvas.quit()
-            PFCanvas.win.destroy()
-        else:
-            PFImage.display_current_image()
-
-        PFState.new_state(message)
-        PFCanvas.win.after(100, PFMessage.process_canvas_message)
-
-        return True

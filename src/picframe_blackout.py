@@ -12,7 +12,6 @@ import datetime
 
 from picframe_settings import PFSettings
 from picframe_message import PFMessage
-from picframe_messagecontent import PFMessageContent
 from picframe_env import PFEnv
 
 class PFBlackout:
@@ -84,13 +83,13 @@ class PFBlackout:
             if blackout_interval > 0:
                 if not PFBlackout.in_blackout:
                     # Send blackout message
-                    canvas_mq.put(PFMessage(PFMessageContent.BLACKOUT))
+                    canvas_mq.put(PFMessage(PFMessage.BLACKOUT))
                     PFEnv.logger.info("Going dark for %d seconds." % (blackout_interval,))
                     PFBlackout.in_blackout = True
             else:
                 if PFBlackout.in_blackout:
                     # Send end blackout message
-                    canvas_mq.put(PFMessage(PFMessageContent.END_BLACKOUT))
+                    canvas_mq.put(PFMessage(PFMessage.END_BLACKOUT))
                     PFBlackout.in_blackout = False
 
             # Test every 60 seconds

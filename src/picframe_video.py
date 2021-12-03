@@ -15,7 +15,6 @@ import time
 from picframe_env import PFEnv
 from picframe_settings import PFSettings
 from picframe_message import PFMessage
-from picframe_messagecontent import PFMessageContent
 
 class PFVideo:
     """
@@ -97,11 +96,11 @@ class PFVideo:
             if not video_mq.empty():
                 message = video_mq.get_nowait()
                 PFEnv.logger.debug("Video message: %s" % (str(message.message),))
-                if message.message == PFMessageContent.KEYBOARD_TOGGLE_MOTION_SENSOR:
+                if message.message == PFMessage.KEYBOARD_TOGGLE_MOTION_SENSOR:
                     if PFVideo.use_motion_sensor:
                         PFEnv.logger.info("Disabling motion detector")
                         PFVideo.use_motion_sensor = False
-                        canvas_mq.put(PFMessage(PFMessageContent.MOTION))
+                        canvas_mq.put(PFMessage(PFMessage.MOTION))
                     else:
                         PFEnv.logger.info("Enabling motion detector")
                         PFVideo.use_motion_sensor = True
@@ -143,7 +142,7 @@ class PFVideo:
                 if in_motion_timeout:
                     in_motion_timeout = False
                     PFEnv.logger.info("Motion timeout disabled.")
-                    canvas_mq.put(PFMessage(PFMessageContent.MOTION))
+                    canvas_mq.put(PFMessage(PFMessage.MOTION))
             else:
                 delay = delay_scanning
     
@@ -153,7 +152,7 @@ class PFVideo:
                 if not in_motion_timeout:
                     in_motion_timeout = True
                     PFEnv.logger.info("Motion timeout occurred.")
-                    canvas_mq.put(PFMessage(PFMessageContent.MOTION_TIMEOUT))
+                    canvas_mq.put(PFMessage(PFMessage.MOTION_TIMEOUT))
     
     
 
