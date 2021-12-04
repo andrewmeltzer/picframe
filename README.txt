@@ -38,6 +38,10 @@ Note on installing opencv-python on raspberry pi
 It can be very challenging.  What worked for me:
     pip3 install --no-use-pep517 opencv-python
 
+Note that on the raspberry pi, the opencv library seems to fail occasionally with the error message:
+    Corrupt JPEG data: premature end of data segment
+This can generally be ignored.
+
 Configure picframe
 --------------------
     Edit src/picframe_settings.py

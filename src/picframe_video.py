@@ -68,8 +68,10 @@ class PFVideo:
         in_motion_timeout = False
 
         # Delay between two snapshots
-        delay_scanning = 0.2
-        delay_presence = 0.025
+        #delay_scanning = 0.2
+        #delay_presence = 0.025
+        delay_scanning = 0.5
+        delay_presence = 0.0
 
         # How long should it run before the image is stable.
         ramp_frames = 40

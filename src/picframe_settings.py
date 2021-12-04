@@ -19,7 +19,7 @@ class PFSettings:
     # to true, it ignores log_directory and sends logging information to
     # stdout.  Otherwise it creates a logfile and puts it into the log
     # directory.  The logfile name is picframe_<timestamp>.log
-    log_to_stdout = False
+    log_to_stdout = True
     log_directory = '/tmp'
 
     ##########################################################
@@ -50,7 +50,7 @@ class PFSettings:
     # blackout_hour to None.  Otherwise set the values using a 24 hour
     # clock time.
     #blackout_hour = None
-    blackout_hour = 11
+    blackout_hour = 23
     blackout_minute = 0
     end_blackout_hour = 7
     end_blackout_minute = 15
