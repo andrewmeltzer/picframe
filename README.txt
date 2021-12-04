@@ -33,6 +33,11 @@ Install
     pip3 install pyheif  (linux only, this isn't supported on Windows)
     pip3 install opencv-python
 
+Note on installing opencv-python on raspberry pi
+------------------------------------------------
+It can be very challenging.  What worked for me:
+    pip3 install --no-use-pep517 opencv-python
+
 Configure picframe
 --------------------
     Edit src/picframe_settings.py
@@ -96,6 +101,8 @@ To mount a remote linux filesystem
     sudo sshfs -o allow_other <username>@<ip-address>:<remote-dir> /mnt/<your-favorite-mount-point-name>
     add the following line to the bottom of /etc/fstab
     sshfs#<username>@<ip-address>:<remote-dir> /mnt/<your-favorite-mount-point-name> fuse.sshfs defaults 0 0
+    example:
+        sudo sshfs -o allow_other ameltzer@pibackup:/sharedata/backup/ameltzer/Windows/Pictures/ /mnt/pibackup
     
 To unmount a remote linux filesystem:
 ------------------------------------

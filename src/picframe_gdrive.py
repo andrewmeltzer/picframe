@@ -11,6 +11,7 @@ from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 from picframe_settings import PFSettings
 from picframe_env import PFEnv, NoImagesFoundException
+from picframe_message import PFMessage
 
 
 class PFGoogleDrive:
@@ -158,4 +159,6 @@ class PFGoogleDrive:
                         in_desired_folder = True
                     yield from PFGoogleDrive.process_children(in_desired_folder, title, file_id)
             if PFGoogleDrive.image_file_count == 0:
+                PFEnv.logger.error(f"No images found in {file_list}, quitting")
+
                 raise NoImagesFoundException()

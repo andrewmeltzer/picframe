@@ -19,7 +19,7 @@ class PFSettings:
     # to true, it ignores log_directory and sends logging information to
     # stdout.  Otherwise it creates a logfile and puts it into the log
     # directory.  The logfile name is picframe_<timestamp>.log
-    log_to_stdout = True
+    log_to_stdout = False
     log_directory = '/tmp'
 
     ##########################################################
@@ -38,22 +38,22 @@ class PFSettings:
     # generally right unless you are on linux and using more than
     # one monitor, in which case it WILL BE WRONG.
     # Put in the form of fullscreen_geom_str = "1920x1080"
-    fullscreen_geom_str = None
+    fullscreen_geom_str = "1920x1080"
 
 
     ##########################################################
     # How long should an image be displayed (in seconds)?
-    display_time = 5
+    display_time = 30
 
     ##########################################################
     # Should the screen go dark during certain hours?  If not, set the
     # blackout_hour to None.  Otherwise set the values using a 24 hour
     # clock time.
     #blackout_hour = None
-    blackout_hour = 15
+    blackout_hour = 11
     blackout_minute = 0
-    end_blackout_hour = 15
-    end_blackout_minute = 14
+    end_blackout_hour = 7
+    end_blackout_minute = 15
 
     ##########################################################
     # How long (minutes) should the motion sensor wait to see motion before
@@ -63,7 +63,7 @@ class PFSettings:
     #   use_motion_detector = False
     # If you set motion_sensor_timeout to a usable number, you can toggle
     # the motion sensor on and off using the keyboard.
-    motion_sensor_timeout = 1
+    motion_sensor_timeout = 15
     use_motion_sensor = True
 
 
@@ -77,7 +77,7 @@ class PFSettings:
     # image_paths can be a single path, the path to a single file,
     # or a list of comma separated paths.
     #image_paths = ('/mnt/c/tmp/images/IMG_1275.JPG',)
-    image_paths = ('/mnt/c/tmp/images/',)
+    image_paths = ('/mnt/pibackup/',)
     #image_paths = ('../images/black.png',)
     #image_paths = ('/mnt/c/Users/andym/Pictures/',)
 

@@ -7,6 +7,7 @@ import logging
 import ctypes
 import sys
 import os
+from datetime import datetime
 from tkinter import Tk
 from picframe_settings import PFSettings
 

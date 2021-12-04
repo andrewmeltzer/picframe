@@ -160,11 +160,15 @@ def main():
         # This runs forever until a 'q' or 'x' is entered.
         PFCanvas.win.mainloop()
 
-    except Exception as e:
+    except Exception as exc:
         PFSettings.print_settings()
         PFEnv.print_environment()
         PFImage.print_image_state()
-        raise(e)
+        raise(exc)
+    except NoImagesFoundException as exc:
+        PFEnv.logger.info("Sending message: Quit")
+        PFMessage.canvas_mq.put(PFMessage(PFMessage.KEYBOARD_QUIT))
+        raise(exc)
 
     if PFSettings.motion_sensor_timeout is not None and PFSettings.motion_sensor_timeout > 0:
         PFVideo.motion_cleanup()

@@ -8,6 +8,7 @@ from pathlib import Path
 from picframe_settings import PFSettings
 from picframe_env import PFEnv
 from picframe_env import NoImagesFoundException
+from picframe_message import PFMessage
 
 class PFFilesystem:
     """
@@ -82,6 +83,8 @@ class PFFilesystem:
                                 PFEnv.logger.debug("Exiting get_next_file: %s" % (pathdir,))
                                 yield pathdir
             if image_file_count == 0:
+                PFEnv.logger.error(f"No images found in {PFFilesystem.get_image_dirs()}, quitting")
+
                 raise NoImagesFoundException()
 
 

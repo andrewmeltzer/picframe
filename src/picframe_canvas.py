@@ -98,7 +98,6 @@ class PFCanvas:
             PFCanvas.geometry_str = str(width) + 'x' + str(height)
 
             PFCanvas.reset_window_size()
-            PFImage.display_first_image()
             return True
         else:
             return False

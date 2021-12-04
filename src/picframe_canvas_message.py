@@ -103,6 +103,7 @@ class PFCanvasMessage:
         # See if the canvas has changed size
         adjusted = PFCanvas.adjust_canvas_geom()
         if adjusted:
+            PFImage.display_first_image()
             PFCanvasMessage.setup_canvas_messaging()
 
         PFMessage.message = PFMessage.canvas_mq.get_nowait()
