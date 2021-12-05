@@ -12,7 +12,7 @@ import cv2
 from datetime import datetime
 import time
 
-from picframe_env import PFEnv,
+from picframe_env import PFEnv
 from picframe_settings import PFSettings
 from picframe_message import PFMessage
 
@@ -42,6 +42,36 @@ class PFVideo:
         
     ############################################################
     #
+    # images_differ
+    #
+    @staticmethod
+    def image_difference(image1, image2):
+        """
+        Return the number of pixels that the images differ by.
+        """
+        # Triggers
+        brightness_threshold = 50
+        mesh = 10
+
+        # Convert to grayscale and Make diff
+        image1_grey = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY)
+        image2_grey = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
+        capt_diff_grey = cv2.absdiff(image1_grey, image2_grey)
+
+        height, width, channels = image2.shape
+        changedpixels = 0
+        for i_row in range(0, height):
+            if not i_row % mesh:
+                for i_col in range(0, width):
+                    if not i_col % mesh:
+                        if capt_diff_grey[i_row,i_col] > brightness_threshold:
+                            changedpixels += 1
+
+        return changedpixels
+
+
+    ############################################################
+    #
     # motion_main
     #
     @staticmethod
@@ -49,6 +79,12 @@ class PFVideo:
         """
         Continually loop, sending a blackout message if no motion has been
         detected.
+
+        Because of a bug in some of the capturing routines, a bad image
+        is returned occasionally, which to the processor looks like
+        motion. To get around this, three images are compared and all
+        three must be different to call it motion.
+
         Inputs:
             canvas_mq: The canvas message queue
         """
@@ -68,10 +104,8 @@ class PFVideo:
         in_motion_timeout = False
 
         # Delay between two snapshots
-        #delay_scanning = 0.2
-        #delay_presence = 0.025
-        delay_scanning = 0.5
-        delay_presence = 0.0
+        delay_scanning = 0.2
+        delay_presence = 0.025
 
         # How long should it run before the image is stable.
         ramp_frames = 40
@@ -89,6 +123,10 @@ class PFVideo:
             ret, image1 = PFVideo.camera.read()
 
         delay = delay_scanning
+
+        # Set up the images to be identical
+        image2 = image1
+        image3 = image1
 
         while True:
             start = time.time()
@@ -111,39 +149,26 @@ class PFVideo:
             if not PFVideo.use_motion_sensor:
                 continue
 
-            image2 = None
+            # cv2.imshow('capture', image3)
+
             # Sometimes the image isn't read properly.  When it fails,
             # it doesn't return an error message,
             # it just says in stderr:
             #   Corrupt JPEG data: premature end of data segment
-            ret, image2 = PFVideo.camera.read()
-
-            # Triggers
-            brightness_threshold = 50
-            mesh = 10
+            ret, image3 = PFVideo.camera.read()
     
-            height, width, channels = image2.shape
+            # Because of the image-read bug, three images have to all
+            # differ to assume motion.
+            changedpixels_12 = PFVideo.image_difference(image1, image2)
+            changedpixels_13 = PFVideo.image_difference(image1, image3)
+            changedpixels_23 = PFVideo.image_difference(image2, image3)
     
-            # cv2.imshow('capture', image2)
-    
-            # Convert to grayscale and Make diff
-            image1_grey = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY)
-            image2_grey = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
-            capt_diff_grey = cv2.absdiff(image1_grey, image2_grey)
-    
-            # Parse image
-            changedpixels = 0
-            for i_row in range(0, height):
-                if not i_row % mesh:
-                    for i_col in range(0, width):
-                        if not i_col % mesh:
-                            if capt_diff_grey[i_row,i_col] > brightness_threshold:
-                                changedpixels += 1
-    
-            if changedpixels > PFSettings.pixel_threshold:
+            if changedpixels_12 > PFSettings.pixel_threshold \
+               and changedpixels_13 > PFSettings.pixel_threshold \
+               and changedpixels_23 > PFSettings.pixel_threshold:
                 # change capture range
                 delay = delay_presence
-                PFEnv.logger.info(f"Motion detected. changedpixels = {changedpixels}")
+                PFEnv.logger.info(f"Motion detected. changedpixels = {changedpixels_12}, {changedpixels_13}, {changedpixels_23}")
     
                 # Send a message to indicate motion ocurred
                 last_motion = datetime.now()
@@ -162,6 +187,6 @@ class PFVideo:
                     PFEnv.logger.info("Motion timeout occurred.")
                     canvas_mq.put(PFMessage(PFMessage.MOTION_TIMEOUT))
     
-    
-
             image1 = image2
+            image2 = image3
+
