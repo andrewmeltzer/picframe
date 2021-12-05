@@ -12,7 +12,7 @@ import cv2
 from datetime import datetime
 import time
 
-from picframe_env import PFEnv
+from picframe_env import PFEnv, Capturing
 from picframe_settings import PFSettings
 from picframe_message import PFMessage
 
@@ -111,9 +111,20 @@ class PFVideo:
             if not PFVideo.use_motion_sensor:
                 continue
 
-            # when it fails, it says:
+            image2 = None
+            # Sometimes the image isn't read properly.  When it fails,
+            # it doesn't return an error message,
+            # it just says in stdout:
             #   Corrupt JPEG data: premature end of data segment
-            ret, image2 = PFVideo.camera.read()
+
+            # Capture stdout and check for the error.
+            with Capturing() as output:
+                ret, image2 = PFVideo.camera.read()
+
+            if len(output) > 0 and output[0].startswith("Corrupt JPEG data: premature end of data segment"):
+                print(output[0])
+                # continue
+                
 
             # Triggers
             brightness_threshold = 50
