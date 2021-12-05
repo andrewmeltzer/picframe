@@ -7,25 +7,10 @@ import logging
 import ctypes
 import sys
 import os
-from io import StringIO
 from datetime import datetime
 from tkinter import Tk
 from picframe_settings import PFSettings
 
-class Capturing(list):
-    """
-    Capture stdio for the given call.
-    """
-    def __enter__(self):
-        self._stdout = sys.stdout
-        sys.stdout = self._stringio = StringIO()
-        return self
-    def __exit__(self, *args):
-        self.extend(self._stringio.getvalue().splitlines())
-        del self._stringio    # free up some memory
-        sys.stdout = self._stdout
-
-    
 class NoImagesFoundException(Exception):
     """
     Used when the images location yields no usable images.
