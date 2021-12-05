@@ -111,6 +111,8 @@ class PFVideo:
             if not PFVideo.use_motion_sensor:
                 continue
 
+            # when it fails, it says:
+            #   Corrupt JPEG data: premature end of data segment
             ret, image2 = PFVideo.camera.read()
 
             # Triggers
@@ -138,6 +140,7 @@ class PFVideo:
             if changedpixels > PFSettings.pixel_threshold:
                 # change capture range
                 delay = delay_presence
+                PFEnv.logger.info(f"Motion detected. changedpixels = {changedpixels}")
     
                 # Send a message to indicate motion ocurred
                 last_motion = datetime.now()
