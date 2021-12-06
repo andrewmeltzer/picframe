@@ -104,8 +104,10 @@ class PFVideo:
         in_motion_timeout = False
 
         # Delay between two snapshots
-        delay_scanning = 0.2
-        delay_presence = 0.025
+        #delay_scanning = 0.2
+        #delay_presence = 0.025
+        delay_scanning = 0.4
+        delay_presence = 0.05
 
         # How long should it run before the image is stable.
         ramp_frames = 40
@@ -168,7 +170,7 @@ class PFVideo:
                and changedpixels_23 > PFSettings.pixel_threshold:
                 # change capture range
                 delay = delay_presence
-                PFEnv.logger.info(f"Motion detected. changedpixels = {changedpixels_12}, {changedpixels_13}, {changedpixels_23}")
+                PFEnv.logger.debug(f"Motion detected. changedpixels = {changedpixels_12}, {changedpixels_13}, {changedpixels_23}")
     
                 # Send a message to indicate motion ocurred
                 last_motion = datetime.now()

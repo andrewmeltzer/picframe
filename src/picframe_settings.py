@@ -114,7 +114,7 @@ class PFSettings:
     # can be increased.
     # default:
     #   pixel_threshold = 10
-    pixel_threshold = 40
+    pixel_threshold = 15
 
     ############################################################
     ############################################################
