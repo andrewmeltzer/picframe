@@ -17,6 +17,7 @@ class PFCanvasMessage:
     """
     Process canvas-based messages.
     """
+    in_blackout = False
 
     ############################################################
     #
@@ -136,15 +137,18 @@ class PFCanvasMessage:
         elif message.message == PFMessage.KEYBOARD_USE_DEFAULT_BRIGHTNESS:
             PFImage.brightness = 1
         elif message.message == PFMessage.BLACKOUT:
+            PFCanvasMessage.in_blackout = True
             PFImage.display_black_image()
         elif message.message == PFMessage.END_BLACKOUT:
+            PFCanvasMessage.in_blackout = False
             PFImage.display_current_image()
         elif message.message == PFMessage.INCREASE_BRIGHTNESS:
             PFImage.adjust_brightness('up')
         elif message.message == PFMessage.DECREASE_BRIGHTNESS:
             PFImage.adjust_brightness('down')
         elif message.message == PFMessage.MOTION:
-            PFImage.display_next_image()
+            if not PFCanvasMessage.in_blackout:
+                PFImage.display_next_image()
         elif message.message == PFMessage.KEYBOARD_FULLSCREEN:
             PFCanvas.toggle_fullscreen()
             PFCanvasMessage.setup_canvas_messaging()
@@ -154,7 +158,8 @@ class PFCanvasMessage:
             PFCanvas.win.mainloop()
 
         elif message.message == PFMessage.MOTION_TIMEOUT:
-            PFImage.display_black_image()
+            if not PFCanvasMessage.in_blackout:
+                PFImage.display_black_image()
         elif message.message == PFMessage.KEYBOARD_QUIT:
             PFCanvas.win.quit()
             PFCanvas.canvas.quit()
