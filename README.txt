@@ -1,20 +1,58 @@
+Project Picframe 
+Copyright 2021, Alef Solutions, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+
 What is picframe
 ----------------
-Picframe is a digital frame that can 
+Picframe is a digital picture frame that can 
 	- pull pictures from 
     		- any local directory
     		- gdrive
     		- samba
             - USB drive
 	- Sleep (go dark) during the night
-	- Adjust brightness automatically based on the brightness of the room
-	- Turn on and off based on motion
-    - Turn off if the room is dark
-	- Work on linux (also Raspberri pi) and Windows
-	- Run fullscreen or in a window of any chosen size
+	- Allows you to dim the screen for a dark room.
+	- Turn on and off based on motion detected from a webcam
+    - Runs on:
+        - Linux
+        - Raspberry pi
+        - Windows
+        - MacOS
+	- Runs in fullscreen mode or in a window of any chosen size.
+    - Can be controlled from a smartphone via bluetooth.
 
+License
+-------
+Picframe is licensed under the MIT License.  Please see LICENSE.txt.
+
+Todo
+----
+Picframe performs all of the above tasks.  However there are a few
+additional features that would be nice:
+  - Print status and settings on the screen
+  - Save settings in a different file; allow the user to save screen-modified
+    settings
+  - Properly identify the size of the primary screen on linux when there
+    is more than one monitor connected
+  - Easier installation process
+  - Detect ambient light and dim the screen automatically in darker rooms.
+  - Support videos (mp4, mov, wmv, mp3, wav).
+  - Create a smartphone app to control it over bluetooth or wifi.
+
+Notes
+------
 - The motion sensor will not work in WSL2 (Windows Linux).
-- The motion sensor is based on light, so it also will disable itself in a dark room.
+- The motion sensor uses a webcam, so doesn't sense motion in the dark
 
 Getting picframe
 ----------------
@@ -40,11 +78,11 @@ It can be very challenging.  What worked for me:
 
 Note that on the raspberry pi, the opencv library seems to fail occasionally with the error message:
     Corrupt JPEG data: premature end of data segment
-This can generally be ignored.
+This can generally be ignored; the motion sensor is written to handle occasional bad frame reads.
 
 Configure picframe
 --------------------
-    Edit src/picframe_settings.py
+    Edit src/picframe_settings.py.  There are comments in the file.
 
 
 Simple command:
@@ -97,7 +135,7 @@ Google Drive setup:
         - Download the client_secrets.json file 
     - Either download a client_secrets.json or edit the client_secrets.sample.json
     - Once you have a client_secrets.json file, 
-        run firstauth.py to set up access to your data.
+        run picframe_initgdrive.py to set up access to your data.
 
 To mount a remote linux filesystem
 ----------------------------------
@@ -106,12 +144,19 @@ To mount a remote linux filesystem
     add the following line to the bottom of /etc/fstab
     sshfs#<username>@<ip-address>:<remote-dir> /mnt/<your-favorite-mount-point-name> fuse.sshfs defaults 0 0
     example:
-        sudo sshfs -o allow_other ameltzer@pibackup:/sharedata/backup/ameltzer/Windows/Pictures/ /mnt/pibackup
+        sudo sshfs -o allow_other myname@pibackup:/sharedata/backup/myname/Pictures/ /mnt/pibackup
     
 To unmount a remote linux filesystem:
 ------------------------------------
     umount /mnt/<your-favorite-mount-point>
 
 
+To control picframe from your smartphone
+----------------------------------------
+The is actually a bit of a hack, and a nice project someone could do is to create a nicer bluetooth app for it.
+
+Picframe response to keyboard commands to do almost everything.  All you need to do is download a bluetooth keyboard (I use something called "Bluetooth Keyboard & Mouse").
+
+Once you have the keyboard connected to your device, just use the keyboard commands.
 
 

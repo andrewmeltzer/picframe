@@ -1,4 +1,16 @@
-#!/mnt/c/tmp/frame/env/bin/python3
+
+# Project Picframe
+# Copyright 2021, Alef Solutions, Inc.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+
 """
 Picframe is a digital frame that can
 - pull pictures from
@@ -30,18 +42,6 @@ from picframe_image import PFImage
 from picframe_canvas import PFCanvas
 from picframe_video import PFVideo
 
-
-# TODO: ++++
-# - Print status and settings on the screen
-# - Save settings in a different file; allow the user to save screen-modified
-#   settings
-# - Properly identify the size of the screen on linux
-# - Test with usb drive and document how to do it
-# - Better installation process
-# - Detect ambient light and dim the screen if it is darker.
-# - Someday support videos (mp4, mov, wmv, mp3, wav).
-# - Someday create a smartphone app to control it over bluetooth or wifi
-# BUGS:
 
 ############################################################
 # print_help
