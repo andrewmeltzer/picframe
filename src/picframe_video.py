@@ -103,7 +103,7 @@ class PFVideo:
         PFVideo.use_motion_sensor = PFSettings.use_motion_sensor
 
         # Return if nothing to do
-        if PFSettings.motion_sensor_timeout is None or PFSettings.motion_sensor_timeout == 0:
+        if PFSettings.motion_sensor_timeout is None or PFSettings.motion_sensor_timeout == 0 or not PFSettings.use_motion_sensor:
             return
 
         # Keep track of the last time motion was seen so we know when to 
