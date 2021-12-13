@@ -88,6 +88,7 @@ class PFSettings:
     # image_paths can be a single path, the path to a single file,
     # or a list of comma separated paths.
     #image_paths = ('/mnt/c/tmp/images/IMG_1275.JPG',)
+    #image_paths = ('/mnt/c/tmp/images/',)
     image_paths = ('/mnt/pibackup/',)
     #image_paths = ('../images/black.png',)
     #image_paths = ('/mnt/c/Users/andym/Pictures/',)
@@ -126,31 +127,4 @@ class PFSettings:
     # default:
     #   pixel_threshold = 10
     pixel_threshold = 15
-
-    ############################################################
-    ############################################################
-    ############################################################
-    ############################################################
-    #
-    # print_settings
-    #
-    @staticmethod
-    def print_settings():
-        """
-        Print the current settings.
-        """
-        print("%-20s: %s" % ("log_to_stdout", str(PFSettings.log_to_stdout)))
-        print("%-20s: %s" % ("log_directory", str(PFSettings.log_directory)))
-        print("%-20s: %s" % ("debug_level", str(PFSettings.debug_level)))
-        print("%-20s: %s" % ("fullscreen", str(PFSettings.fullscreen)))
-        print("%-20s: %s" % ("geometry_str", str(PFSettings.geometry_str)))
-        print("%-20s: %s" % ("display_time", str(PFSettings.display_time)))
-        print("%-20s: %s" % ("blackout_hour", str(PFSettings.blackout_hour)))
-        print("%-20s: %s" % ("blackout_minute", str(PFSettings.blackout_minute)))
-        print("%-20s: %s" % ("end_blackout_hour", str(PFSettings.end_blackout_hour)))
-        print("%-20s: %s" % ("end_blackout_minute", str(PFSettings.end_blackout_minute)))
-        print("%-20s: %s" % ("image_source", str(PFSettings.image_source)))
-        print("%-20s: %s" % ("image_paths", str(PFSettings.image_paths)))
-        print("%-20s: %s" % ("gdrive_root_folder", str(PFSettings.gdrive_root_folder)))
-        print("%-20s: %s" % ("gdrive_photos_folder", str(PFSettings.gdrive_photos_folder)))
 
