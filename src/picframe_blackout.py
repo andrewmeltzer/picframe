@@ -62,6 +62,9 @@ class PFBlackout:
             blackout_length = (end_blackout_time * secs_per_min) \
                 + (24 * mins_per_hour) - now_time
 
+            blackout_length = (end_blackout_time + (24 * mins_per_hour) \
+                    - now_time) * secs_per_min
+
         # if it is blacked out across midnight and it is after midnight
         # but in the blackout period
         if end_blackout_time < blackout_time and now_time < end_blackout_time:
