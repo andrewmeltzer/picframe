@@ -234,6 +234,9 @@ class PFImage:
             except ValueError as exc:
                 PFEnv.logger.warning("Image error %s: %s." % (str(exc), filepath))
                 PFImage.displayed_img = PFImage.get_image(PFEnv.get_black_image())
+            except OSError as exc:
+                PFEnv.logger.warning("Image error %s: %s." % (str(exc), filepath))
+                PFImage.displayed_img = PFImage.get_image(PFEnv.get_black_image())
                 
         top = (PFCanvas.height - PFImage.displayed_img.height())/2
         left = (PFCanvas.width - PFImage.displayed_img.width())/2
