@@ -161,7 +161,7 @@ def main():
         PFCanvas.win.mainloop()
 
     except Exception as exc:
-        PFSettings.print_settings()
+        PFEnv.print_settings()
         PFEnv.print_environment()
         PFImage.print_image_state()
         raise(exc)
