@@ -39,7 +39,7 @@ class NoImagesFoundException(Exception):
 
 class PFEnv:
     """
-    PFEnv supplies information about the environment that the fram
+    PFEnv supplies information about the environment that the frame
     is running in, such as the monitor information, the OS, etc.
     """
     geometry = []
@@ -236,41 +236,72 @@ class PFEnv:
 
     ############################################################
     #
-    # print_environment
+    # get_environment_str
     #
     @staticmethod
-    def print_environment():
+    def get_environment_str():
         """
-        Print the current settings.
+        Get a string of the current settings.
         """
-        print("%-20s: %s" % ("geometry", str(PFEnv.geometry)))
-        print("%-20s: %s" % ("screen_width", str(PFEnv.screen_width)))
-        print("%-20s: %s" % ("screen_height", str(PFEnv.screen_height)))
-        print("%-20s: %s" % ("geometry_str", str(PFEnv.geometry_str)))
-        print("%-20s: %s" % ("supported_types", str(PFEnv.supported_types)))
-        print("%-20s: %s" % ("logfile", str(PFEnv.logfile)))
+
+        outstr = \
+        ("%-20s: %s" % ("geometry", str(PFEnv.geometry))) + os.linesep + \
+        ("%-20s: %s" % ("screen_width", str(PFEnv.screen_width))) + os.linesep + \
+        ("%-20s: %s" % ("screen_height", str(PFEnv.screen_height))) + os.linesep + \
+        ("%-20s: %s" % ("geometry_str", str(PFEnv.geometry_str))) + os.linesep + \
+        ("%-20s: %s" % ("supported_types", str(PFEnv.supported_types))) + os.linesep + \
+        ("%-20s: %s" % ("logfile", str(PFEnv.logfile))) + os.linesep
+        return outstr
 
     ############################################################
     #
-    # print_settings
+    # get_settings_str
     #
     @staticmethod
-    def print_settings():
+    def get_settings_str():
         """
-        Print the current settings.
+        Get a string containing the current settings.
         """
-        print("%-20s: %s" % ("log_to_stdout", str(PFSettings.log_to_stdout)))
-        print("%-20s: %s" % ("log_directory", str(PFSettings.log_directory)))
-        print("%-20s: %s" % ("debug_level", str(PFSettings.debug_level)))
-        print("%-20s: %s" % ("fullscreen", str(PFSettings.fullscreen)))
-        print("%-20s: %s" % ("geometry_str", str(PFSettings.geometry_str)))
-        print("%-20s: %s" % ("display_time", str(PFSettings.display_time)))
-        print("%-20s: %s" % ("blackout_hour", str(PFSettings.blackout_hour)))
-        print("%-20s: %s" % ("blackout_minute", str(PFSettings.blackout_minute)))
-        print("%-20s: %s" % ("end_blackout_hour", str(PFSettings.end_blackout_hour)))
-        print("%-20s: %s" % ("end_blackout_minute", str(PFSettings.end_blackout_minute)))
-        print("%-20s: %s" % ("image_source", str(PFSettings.image_source)))
-        print("%-20s: %s" % ("image_paths", str(PFSettings.image_paths)))
-        print("%-20s: %s" % ("gdrive_root_folder", str(PFSettings.gdrive_root_folder)))
-        print("%-20s: %s" % ("gdrive_photos_folder", str(PFSettings.gdrive_photos_folder)))
+        outstr = \
+        ("%-20s: %s" % ("log_to_stdout", str(PFSettings.log_to_stdout))) + os.linesep + \
+        ("%-20s: %s" % ("log_directory", str(PFSettings.log_directory))) + os.linesep + \
+        ("%-20s: %s" % ("debug_level", str(PFSettings.debug_level))) + os.linesep + \
+        ("%-20s: %s" % ("fullscreen", str(PFSettings.fullscreen))) + os.linesep + \
+        ("%-20s: %s" % ("geometry_str", str(PFSettings.geometry_str))) + os.linesep + \
+        ("%-20s: %s" % ("display_time", str(PFSettings.display_time))) + os.linesep + \
+        ("%-20s: %s" % ("blackout_hour", str(PFSettings.blackout_hour))) + os.linesep + \
+        ("%-20s: %s" % ("blackout_minute", str(PFSettings.blackout_minute))) + os.linesep + \
+        ("%-20s: %s" % ("end_blackout_hour", str(PFSettings.end_blackout_hour))) + os.linesep + \
+        ("%-20s: %s" % ("end_blackout_minute", str(PFSettings.end_blackout_minute))) + os.linesep + \
+        ("%-20s: %s" % ("image_source", str(PFSettings.image_source))) + os.linesep + \
+        ("%-20s: %s" % ("image_paths", str(PFSettings.image_paths))) + os.linesep + \
+        ("%-20s: %s" % ("gdrive_root_folder", str(PFSettings.gdrive_root_folder))) + os.linesep + \
+        ("%-20s: %s" % ("gdrive_photos_folder", str(PFSettings.gdrive_photos_folder))) + os.linesep 
 
+        return outstr
+
+    ############################################################
+    #
+    # get_help_str
+    #
+    @staticmethod
+    def get_help_str():
+        """
+        Get a string containing the help commands
+        """
+        outstr = \
+        ("f: Toggle fullscreen") + os.linesep + \
+        ("n: Next picture") + os.linesep + \
+        ("c: Toggle hold current picure") + os.linesep + \
+        (f"p: Decrease the amount of time an image is shown by {PFSettings.timer_step} seconds") + os.linesep + \
+        (f"P: Increase the amount of time an image is shown by {PFSettings.timer_step} seconds") + os.linesep + \
+        ("b: Toggle blackout mode") + os.linesep + \
+        ("h: Toggle help screen") + os.linesep + \
+        ("d: Toggle display detailed information") + os.linesep + \
+        ("m: Toggle whether to use the motion detector.") + os.linesep + \
+        ("V: Increase video brightness") + os.linesep + \
+        ("v: Decrease video brightess") + os.linesep + \
+        ("a: Set to default video brightness") + os.linesep + \
+        ("x or q: Quit")
+
+        return outstr

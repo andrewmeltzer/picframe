@@ -106,18 +106,7 @@ def show_command_help():
     """
     Display the keyboard commands.
     """
-    print("f: Toggle fullscreen")
-    print("n: Next picture")
-    print("h: Toggle hold current picure")
-    print(f"p: Decrease the amount of time an image is shown by {PFTimer.TIMER_STEP} seconds")
-    print(f"P: Increase the amount of time an image is shown by {PFTimer.TIMER_STEP} seconds")
-    print("b: Toggle blackout mode")
-    print("m: Toggle whether to use the motion detector.")
-    print("V: Increase video brightness")
-    print("v: Decrease video brightess")
-    print("a: Set to default video brightness")
-    print("x or q: Quit")
-
+    print(PFEnv.get_help_str())
 
 ############################################################
 #
@@ -137,7 +126,6 @@ def main():
     PFMessage.timer_mq = mp.Queue()
     PFCanvas.init()
     PFImage.init()
-
 
     timer_p = mp.Process(target=PFTimer.timer_main, args=(PFMessage.canvas_mq,PFMessage.timer_mq))
     blackout_p = mp.Process(target=PFBlackout.blackout_main, args=(PFMessage.canvas_mq,))
@@ -161,8 +149,8 @@ def main():
         PFCanvas.win.mainloop()
 
     except Exception as exc:
-        PFEnv.print_settings()
-        PFEnv.print_environment()
+        print(PFEnv.get_settings_str())
+        print(PFEnv.get_environment_str())
         PFImage.print_image_state()
         raise(exc)
     except NoImagesFoundException as exc:

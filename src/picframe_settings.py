@@ -128,3 +128,7 @@ class PFSettings:
     #   pixel_threshold = 10
     pixel_threshold = 15
 
+
+    # TIMER_STEP is the amount of time in seconds to increase or decrease
+    # the display time by when the keyboard toggle is used.
+    timer_step = 10

@@ -29,10 +29,6 @@ class PFTimer:
     timing.
     """
 
-    # TIMER_STEP is the amount of time to increase or decrease the 
-    # display time by when the value is changed.
-    TIMER_STEP = 10
-
     ############################################################
     #
     # timer_main
@@ -55,10 +51,10 @@ class PFTimer:
                 message = timer_mq.get_nowait()
                 PFEnv.logger.debug("timer message: %s" % (str(message.message),))
                 if message.message == PFMessage.KEYBOARD_INCREASE_DISPLAY_TIME:
-                    display_time = display_time + PFTimer.TIMER_STEP
+                    display_time = display_time + PFSettings.timer_step
                 if message.message == PFMessage.KEYBOARD_DECREASE_DISPLAY_TIME:
-                    if display_time > PFTimer.TIMER_STEP:
-                        display_time = display_time - PFTimer.TIMER_STEP
+                    if display_time > PFSettings.timer_step:
+                        display_time = display_time - PFSettings.timer_step
 
             canvas_mq.put(PFMessage(PFMessage.TIMER_NEXT_IMAGE))
             time.sleep(display_time)

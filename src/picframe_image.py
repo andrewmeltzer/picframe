@@ -43,6 +43,7 @@ class PFImage:
     image_id = None
     displayed_img = None
     brightness = 1
+    text = None
 
     ############################################################
     #
@@ -322,3 +323,32 @@ class PFImage:
         PFImage.current_image = None
         PFImage.display_image(None)
         PFEnv.logger.debug("Exiting display_black_image().")
+
+    ############################################################
+    #
+    # show_info
+    #
+    @staticmethod
+    def show_info(info_type):
+        """
+        Show information on the screen.
+        """
+        if info_type == "help":
+            PFCanvas.text = PFCanvas.canvas.create_text(10,10, anchor=NW, text=PFEnv.get_help_str(), fill="white", font=('Helvetica 12'))
+        else:
+            PFCanvas.text = PFCanvas.canvas.create_text(10,10, anchor=NW, text=PFEnv.get_settings_str() + PFEnv.get_environment_str(), fill="white", font=('Helvetica 12'))
+        PFImage.display_image(None)
+
+    ############################################################
+    #
+    # remove_info
+    #
+    @staticmethod
+    def remove_info():
+        """
+        Remove text information from the screen.
+        """
+        PFCanvas.canvas.delete(PFCanvas.text)
+        PFImage.display_next_image()
+
+

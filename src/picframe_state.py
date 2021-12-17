@@ -39,6 +39,8 @@ class PFState:
         PFMessage.KEYBOARD_BLACKOUT: PFStates.KEYBOARD_BLACKOUT,
         PFMessage.BLACKOUT: PFStates.BLACKOUT,
         PFMessage.MOTION_TIMEOUT: PFStates.MOTION_BLACKOUT,
+        PFMessage.KEYBOARD_HELP_INFO: PFStates.KEYBOARD_HOLD,
+        PFMessage.KEYBOARD_DETAILS_INFO: PFStates.KEYBOARD_HOLD,
     }
     blackout_state_map = {
         PFMessage.KEYBOARD_HOLD: PFStates.KEYBOARD_HOLD,
@@ -56,6 +58,8 @@ class PFState:
     }
     keyboard_hold_state_map = {
         PFMessage.KEYBOARD_HOLD: PFStates.NORMAL,
+        PFMessage.KEYBOARD_HELP_INFO: PFStates.NORMAL,
+        PFMessage.KEYBOARD_DETAILS_INFO: PFStates.NORMAL,
     }
 
 

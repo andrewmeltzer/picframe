@@ -29,6 +29,7 @@ class PFCanvasMessage:
     Process canvas-based messages.
     """
     in_blackout = False
+    showing_text = False
 
     ############################################################
     #
@@ -65,8 +66,8 @@ class PFCanvasMessage:
         if key == 'n':
             PFEnv.logger.info("Sending message: Next image")
             PFMessage.canvas_mq.put(PFMessage(PFMessage.KEYBOARD_NEXT_IMAGE))
-        if key == 'h':
-            PFEnv.logger.info("Sending message: Hold image")
+        if key == 'c':
+            PFEnv.logger.info("Sending message: Hold current image")
             PFMessage.canvas_mq.put(PFMessage(PFMessage.KEYBOARD_HOLD))
         if key == 'b':
             PFEnv.logger.info("Sending message: Blackout screen")
@@ -77,6 +78,12 @@ class PFCanvasMessage:
         if key == 'V':
             PFEnv.logger.info("Sending message: Increase brightness")
             PFMessage.canvas_mq.put(PFMessage(PFMessage.KEYBOARD_INCREASE_BRIGHTNESS))
+        if key == 'h':
+            PFEnv.logger.info("Sending message: Toggle help info")
+            PFMessage.canvas_mq.put(PFMessage(PFMessage.KEYBOARD_HELP_INFO))
+        if key == 'd':
+            PFEnv.logger.info("Sending message: Toggle details info")
+            PFMessage.canvas_mq.put(PFMessage(PFMessage.KEYBOARD_DETAILS_INFO))
         if key == 'v':
             PFEnv.logger.info("Sending message: Decrease brightness")
             PFMessage.canvas_mq.put(PFMessage(PFMessage.KEYBOARD_DECREASE_BRIGHTNESS))
@@ -140,6 +147,22 @@ class PFCanvasMessage:
                 PFImage.display_next_image()
             else:
                 PFImage.display_black_image()
+
+        elif message.message == PFMessage.KEYBOARD_HELP_INFO:
+            if PFCanvasMessage.showing_text:
+                PFImage.remove_info()
+                PFCanvasMessage.showing_text = False
+            else:
+                PFImage.show_info("help")
+                PFCanvasMessage.showing_text = True
+
+        elif message.message == PFMessage.KEYBOARD_DETAILS_INFO:
+            if PFCanvasMessage.showing_text:
+                PFImage.remove_info()
+                PFCanvasMessage.showing_text = False
+            else:
+                PFImage.show_info("details")
+                PFCanvasMessage.showing_text = True
 
         elif message.message == PFMessage.KEYBOARD_INCREASE_BRIGHTNESS:
             PFImage.adjust_brightness('up')

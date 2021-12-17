@@ -189,3 +189,4 @@ class PFCanvas:
 
         PFCanvas.reset_window_size()
         PFCanvas.canvas.focus_set()
+
