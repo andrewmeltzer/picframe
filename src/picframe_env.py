@@ -290,13 +290,13 @@ class PFEnv:
         Get a string containing the help commands
         """
         outstr = \
+        ("h: Toggle help screen") + os.linesep + \
         ("f: Toggle fullscreen") + os.linesep + \
         ("n: Next picture") + os.linesep + \
         ("c: Toggle hold current picure") + os.linesep + \
-        (f"p: Decrease the amount of time an image is shown by {PFSettings.timer_step} seconds") + os.linesep + \
-        (f"P: Increase the amount of time an image is shown by {PFSettings.timer_step} seconds") + os.linesep + \
+        (f"t: Decrease the amount of time an image is shown by {PFSettings.timer_step} seconds") + os.linesep + \
+        (f"T: Increase the amount of time an image is shown by {PFSettings.timer_step} seconds") + os.linesep + \
         ("b: Toggle blackout mode") + os.linesep + \
-        ("h: Toggle help screen") + os.linesep + \
         ("d: Toggle display detailed information") + os.linesep + \
         ("m: Toggle whether to use the motion detector.") + os.linesep + \
         ("V: Increase video brightness") + os.linesep + \

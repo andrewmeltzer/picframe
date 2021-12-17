@@ -88,10 +88,10 @@ class PFCanvasMessage:
             PFEnv.logger.info("Sending message: Decrease brightness")
             PFMessage.canvas_mq.put(PFMessage(PFMessage.KEYBOARD_DECREASE_BRIGHTNESS))
 
-        if key == 'P':
+        if key == 'T':
             PFEnv.logger.info("Sending message: Increase image display time")
             PFMessage.timer_mq.put(PFMessage(PFMessage.KEYBOARD_INCREASE_DISPLAY_TIME))
-        if key == 'p':
+        if key == 't':
             PFEnv.logger.info("Sending message: Decrease image display time")
             PFMessage.timer_mq.put(PFMessage(PFMessage.KEYBOARD_DECREASE_DISPLAY_TIME))
 
