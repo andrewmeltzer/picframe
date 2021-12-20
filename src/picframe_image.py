@@ -334,12 +334,28 @@ class PFImage:
     @staticmethod
     def show_info(info_type):
         """
-        Show information on the screen.
+        Show information on the screen.  Draw it as large as possible, but
+        the only way I can figure out how to do this is to create it and
+        measure it, then try again smaller if it is too large.
         """
-        if info_type == "help":
-            PFCanvas.text = PFCanvas.canvas.create_text(10,10, anchor=NW, text=PFEnv.get_help_str(), fill="white", font=('Helvetica 12'))
-        else:
-            PFCanvas.text = PFCanvas.canvas.create_text(10,10, anchor=NW, text=PFEnv.get_settings_str() + PFEnv.get_environment_str(), fill="white", font=('Helvetica 12'))
+        too_large = True
+        font_size = 36
+
+        while too_large:
+            if info_type == "help":
+                PFCanvas.text = PFCanvas.canvas.create_text(10,10, anchor=NW, text=PFEnv.get_help_str(), fill="white", font=('Helvetica', str(font_size)))
+            else:
+                PFCanvas.text = PFCanvas.canvas.create_text(10,10, anchor=NW, text=PFEnv.get_settings_str() + PFEnv.get_environment_str(), fill="white", font=('Helvetica', str(font_size)))
+
+            text_width = PFCanvas.canvas.bbox(PFCanvas.text)[2]
+            text_height = PFCanvas.canvas.bbox(PFCanvas.text)[3]
+
+            if text_width > PFCanvas.width or text_height>PFCanvas.height:
+                font_size = font_size - 2
+                PFCanvas.canvas.delete(PFCanvas.text)
+            else:
+                too_large = False
+
         PFImage.display_image(None)
 
     ############################################################

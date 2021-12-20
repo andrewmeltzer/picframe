@@ -129,7 +129,14 @@ class PFCanvasMessage:
         message = PFMessage.message
         PFEnv.logger.debug("process_canvas_message: %s" % (str(message.message),))
 
-        # Only go to the next message if in the normal state.
+        # While it is showing text, the only thing it is allowed to do
+        # is stop showing text or quit.
+        if PFCanvasMessage.showing_text and \
+            message.message not in (PFMessage.KEYBOARD_HELP_INFO, PFMessage.KEYBOARD_DETAILS_INFO, PFMessage.KEYBOARD_QUIT):
+            PFCanvas.win.after(100, PFCanvasMessage.process_canvas_message)
+            return True
+
+        # Only go to the next image if in the normal state.
         if message.message == PFMessage.TIMER_NEXT_IMAGE:
             if PFState.current_state == PFStates.NORMAL:
                 PFImage.display_next_image()
