@@ -332,14 +332,17 @@ class PFImage:
     # show_info
     #
     @staticmethod
-    def show_info(info_type):
+    def show_info(info_type, errmsg=''):
         """
         Show information on the screen.
         """
         if info_type == "help":
             PFCanvas.text = PFCanvas.canvas.create_text(10,10, anchor=NW, text=PFEnv.get_help_str(), fill="white", font=('Helvetica 12'))
-        else:
+        elif info_type == "details":
             PFCanvas.text = PFCanvas.canvas.create_text(10,10, anchor=NW, text=PFEnv.get_settings_str() + PFEnv.get_environment_str(), fill="white", font=('Helvetica 12'))
+        else:
+            PFCanvas.text = PFCanvas.canvas.create_text(10,10, anchor=NW, text=errmsg + os.linesep + PFEnv.get_settings_str() + PFEnv.get_environment_str(), fill="white", font=('Helvetica 12'))
+            
         PFImage.display_image(None)
 
     ############################################################
