@@ -154,8 +154,6 @@ def main():
         PFImage.print_image_state()
         raise(exc)
     except NoImagesFoundException as exc:
-        PFImage.show_info("Error message", "ERROR: No images found.  Quitting")
-        PFEnv.logger.error("No images found.")
         PFMessage.canvas_mq.put(PFMessage(PFMessage.KEYBOARD_QUIT))
         raise(exc)
 

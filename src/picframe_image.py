@@ -23,7 +23,7 @@ from tkinter import NW
 from PIL import ImageTk, Image, ImageOps, ImageEnhance
 
 from picframe_settings import PFSettings
-from picframe_env import PFEnv
+from picframe_env import PFEnv, NoImagesFoundException
 from picframe_gdrive import PFGoogleDrive
 from picframe_filesystem import PFFilesystem
 from picframe_canvas import PFCanvas
@@ -275,18 +275,24 @@ class PFImage:
         Get and display the next image as returned.  This is the external
         interface to this class.
         """
-        image_file = next(PFImage.image_file_gen)
-
-        PFImage.previous_image = PFImage.current_image
-        PFImage.current_image = image_file
-
-        filename, file_extension = os.path.splitext(image_file)
-        while file_extension.lower() not in PFEnv.supported_types:
-            print(f"WARNING: File type '{file_extension}' is not supported.")
+        try:
             image_file = next(PFImage.image_file_gen)
-            filename, file_extension = os.path.splitext(image_file)
 
-        PFImage.display_image(image_file)
+            PFImage.previous_image = PFImage.current_image
+            PFImage.current_image = image_file
+    
+            filename, file_extension = os.path.splitext(image_file)
+            while file_extension.lower() not in PFEnv.supported_types:
+                print(f"WARNING: File type '{file_extension}' is not supported.")
+                image_file = next(PFImage.image_file_gen)
+                filename, file_extension = os.path.splitext(image_file)
+
+            PFImage.display_image(image_file)
+        except NoImagesFoundException as exc:
+            PFImage.show_info("Error message", "ERROR: No images found.")
+            PFEnv.logger.error("No images found.")
+            raise(exc)
+
 
     ############################################################
     #
@@ -347,7 +353,7 @@ class PFImage:
             elif info_type == "details":
                 PFCanvas.text = PFCanvas.canvas.create_text(10,10, anchor=NW, text=PFEnv.get_settings_str() + PFEnv.get_environment_str(), fill="white", font=('Helvetica', str(font_size)))
             else:
-                PFCanvas.text = PFCanvas.canvas.create_text(10,10, anchor=NW, text=errmsg + os.linesep + PFEnv.get_settings_str() + PFEnv.get_environment_str(), fill="white", font=('Helvetica 12'))
+                PFCanvas.text = PFCanvas.canvas.create_text(10,10, anchor=NW, text=errmsg + os.linesep + PFEnv.get_settings_str() + PFEnv.get_environment_str(), fill="white", font=('Helvetica', str(font_size)))
 
             text_width = PFCanvas.canvas.bbox(PFCanvas.text)[2]
             text_height = PFCanvas.canvas.bbox(PFCanvas.text)[3]
