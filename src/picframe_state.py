@@ -50,6 +50,7 @@ class PFState:
     motion_blackout_state_map = {
         PFMessage.KEYBOARD_HOLD: PFStates.KEYBOARD_HOLD,
         PFMessage.MOTION: PFStates.NORMAL,
+        PFMessage.BLACKOUT: PFStates.BLACKOUT,
         PFMessage.KEYBOARD_TOGGLE_MOTION_SENSOR: PFStates.NORMAL,
     }
     keyboard_blackout_state_map = {

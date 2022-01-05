@@ -110,7 +110,7 @@ class PFEnv:
             else:
                 logger_handler = logging.StreamHandler(sys.stdout)
     
-            log_formatter = logging.Formatter('{"time": "%(asctime)s", "level": "%(levelname)s", "info": %(message)s}')
+            log_formatter = logging.Formatter('{"time": "%(asctime)s", "level": "%(levelname)s", "message": %(message)s}')
             # log_formatter.converter = time.gmtime
             PFEnv.logger.setLevel(PFSettings.debug_level)
     

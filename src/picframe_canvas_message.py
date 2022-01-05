@@ -206,7 +206,8 @@ class PFCanvasMessage:
             PFCanvas.canvas.quit()
             PFCanvas.win.destroy()
         else:
-            PFImage.display_current_image()
+            if not PFCanvasMessage.in_blackout:
+                PFImage.display_current_image()
 
         PFState.new_state(message)
         PFCanvas.win.after(100, PFCanvasMessage.process_canvas_message)
