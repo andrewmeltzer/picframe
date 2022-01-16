@@ -19,6 +19,7 @@ in the correct location in the canvas.
 
 import sys
 import os
+from datetime import datetime
 from tkinter import NW
 from PIL import ImageTk, Image, ImageOps, ImageEnhance
 
@@ -278,6 +279,7 @@ class PFImage:
         try:
             image_file = next(PFImage.image_file_gen)
 
+            PFEnv.logger.info(f"Next image: {image_file}")
             PFImage.previous_image = PFImage.current_image
             PFImage.current_image = image_file
     
@@ -346,6 +348,8 @@ class PFImage:
         """
         too_large = True
         font_size = 36
+        datestr = f"Time: {str(datetime.now().strftime(PFEnv.HMS_FMT_STR))}" 
+        timestamp = datetime.now().strftime(PFEnv.HMS_FMT_STR)
 
         while too_large:
             if info_type == "help":
@@ -353,7 +357,7 @@ class PFImage:
             elif info_type == "details":
                 PFCanvas.text = PFCanvas.canvas.create_text(10,10, anchor=NW, text=PFEnv.get_settings_str() + PFEnv.get_environment_str(), fill="white", font=('Helvetica', str(font_size)))
             else:
-                PFCanvas.text = PFCanvas.canvas.create_text(10,10, anchor=NW, text=errmsg + os.linesep + PFEnv.get_settings_str() + PFEnv.get_environment_str(), fill="white", font=('Helvetica', str(font_size)))
+                PFCanvas.text = PFCanvas.canvas.create_text(10,10, anchor=NW, text=errmsg + os.linesep + datestr + os.linesep + PFEnv.get_settings_str() + PFEnv.get_environment_str(), fill="white", font=('Helvetica', str(font_size)))
 
             text_width = PFCanvas.canvas.bbox(PFCanvas.text)[2]
             text_height = PFCanvas.canvas.bbox(PFCanvas.text)[3]

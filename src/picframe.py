@@ -31,6 +31,7 @@ import os
 import time
 from datetime import datetime
 import multiprocessing as mp
+import traceback
 
 from picframe_settings import PFSettings
 from picframe_env import PFEnv
@@ -148,13 +149,19 @@ def main():
         # This runs forever until a 'q' or 'x' is entered.
         PFCanvas.win.mainloop()
 
+    except NoImagesFoundException as exc:
+        PFMessage.canvas_mq.put(PFMessage(PFMessage.KEYBOARD_QUIT))
+        raise(exc)
+    except OutOfMemoryException as exc:
+        PFMessage.canvas_mq.put(PFMessage(PFMessage.KEYBOARD_QUIT))
+        print("ERROR: Out of Memory!")
+        traceback.print_stack()
+        raise(exc)
+        
     except Exception as exc:
         print(PFEnv.get_settings_str())
         print(PFEnv.get_environment_str())
         PFImage.print_image_state()
-        raise(exc)
-    except NoImagesFoundException as exc:
-        PFMessage.canvas_mq.put(PFMessage(PFMessage.KEYBOARD_QUIT))
         raise(exc)
 
     if PFSettings.motion_sensor_timeout is not None and PFSettings.motion_sensor_timeout > 0:
