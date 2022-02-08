@@ -34,7 +34,7 @@ import multiprocessing as mp
 import traceback
 
 from picframe_settings import PFSettings
-from picframe_env import PFEnv
+from picframe_env import PFEnv, NoImagesFoundException
 from picframe_timer import PFTimer
 from picframe_blackout import PFBlackout
 from picframe_message import PFMessage
@@ -152,7 +152,7 @@ def main():
     except NoImagesFoundException as exc:
         PFMessage.canvas_mq.put(PFMessage(PFMessage.KEYBOARD_QUIT))
         raise(exc)
-    except OutOfMemoryException as exc:
+    except MemoryError as exc:
         PFMessage.canvas_mq.put(PFMessage(PFMessage.KEYBOARD_QUIT))
         print("ERROR: Out of Memory!")
         traceback.print_stack()

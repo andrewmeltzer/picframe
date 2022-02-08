@@ -168,9 +168,14 @@ class PFImage:
         # Need PIL library to handle JPG files.
 
         filename, file_extension = os.path.splitext(image_file)
-
         img = None
-        if file_extension.lower() in ('.jpeg', '.tif', '.gif', '.jpg', '.png'):
+
+        filesize = os.path.getsize(image_file)
+        if filesize > PFEnv.max_image_size:
+            pil_img = Image.open(PFEnv.get_black_image())
+            PFEnv.logger.warning("'%s' Image file size too large." % (image_file,))
+
+        elif file_extension.lower() in ('.jpeg', '.tif', '.gif', '.jpg', '.png'):
             pil_img = Image.open(image_file)
 
             # Use the exif information to properly orient the image.

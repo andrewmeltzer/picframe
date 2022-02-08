@@ -59,6 +59,10 @@ class PFEnv:
     # Location of the log file.  This is set when the logger is initialized
     logfile = None
 
+    # What is the maximum imagefile size that will be allowed.  Too big
+    # have errors or hang.
+    max_image_size = 50000000
+
     ############################################################
     #
     # init_environment
@@ -71,9 +75,6 @@ class PFEnv:
         """
         if sys.platform in ("linux", "linux2"):
             PFEnv.supported_types = ('.avif', '.heic', '.png', '.tif', '.gif', '.jpg', '.jpeg')
-            # TIF doesn't seem to be supported on the raspberry pi version
-            if 'arm' in os.uname().machine:
-                PFEnv.supported_types = ('.avif', '.heic', '.png', '.gif', '.jpg', '.jpeg')
         else:
             PFEnv.supported_types = ('.png', '.jpg', '.tif', '.gif', '.jpeg')
 
