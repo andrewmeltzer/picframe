@@ -146,6 +146,11 @@ To mount a remote linux filesystem
     example:
         sudo sshfs -o allow_other myname@pibackup:/sharedata/backup/myname/Pictures/ /mnt/pibackup
     
+
+Example Picframe synology_gdrive mount command:
+-----------------------------------------------
+sudo mount -o nolock -t nfs 192.168.0.35:/volume1/GoogleDrive /mnt/synology_gdrive
+
 To unmount a remote linux filesystem:
 ------------------------------------
     umount /mnt/<your-favorite-mount-point>
