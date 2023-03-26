@@ -61,7 +61,7 @@ class PFEnv:
 
     # What is the maximum imagefile size that will be allowed.  Too big
     # have errors or hang.
-    max_image_size = 50000000
+    max_image_size = 30000000
 
     ############################################################
     #
